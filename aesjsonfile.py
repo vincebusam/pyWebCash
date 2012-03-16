@@ -31,7 +31,11 @@ if __name__ == "__main__":
     passwd = sys.argv[2]
     obj = {}
     if os.path.exists(fn):
-        obj = aesjsonload(fn,passwd)
+        try:
+            obj = aesjsonload(fn,passwd)
+        except ValueError:
+            print "Incorrect password or corrupt file"
+            sys.exit(1)
     if len(sys.argv) > 3:
         obj.update(json.loads(sys.argv[3]))
         aesjsondump(fn,obj,passwd)
