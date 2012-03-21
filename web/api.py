@@ -9,8 +9,7 @@ import datetime
 sys.path.append("../db")
 sys.path.append("../")
 
-import config
-import aesjsonfile
+import db
 
 def exit_error(code,message):
     print "Status: %s" % (code)
@@ -39,7 +38,7 @@ if not username or not password:
     exit_error(400,"incomplete username/password")
 
 try:
-    db = aesjsonfile.load("%s/%s.json"%(config.dbdir,username),password)
+    mydb = db.DB(username, password)
 except Exception, e:
     exit_error(403,"Bad password: %s" % (e))
 
