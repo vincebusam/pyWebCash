@@ -65,7 +65,8 @@ for acct in accounts:
             for checkid in range(1,20):
                 if not b.find_elements_by_id("icon%s"%(checkid)):
                     continue
-                b.find_element_by_id("icon%s"%(checkid)).text
+                amount = b.find_element_by_id("icon%s"%(checkid)).text
+                print "Check %s %s" % (checkid, amount)
                 gotcheck = False
                 if not scrolluntilclick(b,b.find_element_by_xpath("//td[@id='icon%s']/a/img"%(checkid))):
                     continue
