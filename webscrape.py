@@ -46,6 +46,8 @@ for acct in accounts:
         date = b.find_element_by_xpath("//tr[@id='row%s']/td[3]" % (loop)).text
         if not datematch.match(date):
             continue
+        if date.startswith("02"):
+            break
         desc = b.find_element_by_xpath("//tr[@id='row%s']/td[4]" % (loop)).text.replace("\n","")
         amount = b.find_element_by_xpath("//tr[@id='row%s']/td[7]" % (loop)).text
         print "Transaction: %s %s %s %s" % (acct,date,desc,amount)
