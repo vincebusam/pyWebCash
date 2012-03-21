@@ -20,7 +20,7 @@ def scrolluntilclick(b,e):
 if len(sys.argv) < 2:
     sys.exit(1)
 
-datematch = re.compile("\d{2}/\d{2}/\d{4}")
+datematch = re.compile("(\d{2})/(\d{2})/(\d{4})")
 
 # Params - dict of username, password, state, date, seenids
 def downloadaccount(params):
@@ -43,22 +43,23 @@ def downloadaccount(params):
             if not b.find_elements_by_id("row%s" % (loop)):
                 break
             date = b.find_element_by_xpath("//tr[@id='row%s']/td[3]" % (loop)).text
-            if not datematch.match(date):
+            m = datematch.match(date)
+            if not m:
                 continue
-            if date.startswith("02"):
+            date = datetime.date(m.group(3),m.group(1),m.group(2))
+            if date < (params["lastcheck"]-datetime.timedelta(days=4)):
                 break
             desc = b.find_element_by_xpath("//tr[@id='row%s']/td[4]" % (loop)).text.replace("\n","")
             amount = b.find_element_by_xpath("//tr[@id='row%s']/td[7]" % (loop)).text
             print "Transaction: %s %s %s %s" % (acct,date,desc,amount)
-            if not scrolluntilclick(b,b.find_element_by_id("rtImg%i"%(loop))):
+            if scrolluntilclick(b,b.find_element_by_id("rtImg%i"%(loop))):
+                attrs = {}
+                for line in b.find_element_by_id("exptd%s"%(loop)).text.split("\n"):
+                    if ":" in line:
+                        attrs[line.split(":")[0].strip()] = line.split(":")[1].strip()
+                if attrs:
+                    print attrs
                 continue
-            attrs = {}
-            for line in b.find_element_by_id("exptd%s"%(loop)).text.split("\n"):
-                if ":" in line:
-                    attrs[line.split(":")[0].strip()] = line.split(":")[1].strip()
-            if attrs:
-                print attrs
-            continue
             if b.find_elements_by_id("ViewImages"):
                 b.find_element_by_id("ViewImages").click()
                 for checkid in range(1,20):
@@ -84,6 +85,6 @@ if __name__ == "__main__":
     params["username"] = sys.argv[1]
     #print "Enter password for %s: " % (params["username"]),
     params["password"] = getpass.getpass()
-    params["lastcheck"] = str(datetime.date.today()-datetime.timedelta(days=14))
+    params["lastcheck"] = datetime.date.today()-datetime.timedelta(days=14)
     params["seenids"] = []
     downloadaccount(params)
