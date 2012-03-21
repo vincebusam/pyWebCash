@@ -1,1 +1,3 @@
 *.json
+chromedriver.log
+*.png
