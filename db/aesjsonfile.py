@@ -11,7 +11,7 @@ pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
 EncodeAES = lambda c, s: base64.b64encode(c.encrypt(pad(s)))
 DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip(PADDING)
 
-def aesjsonload(fn,passwd):
+def load(fn,passwd):
     if len(passwd) > BLOCK_SIZE:
         raise Exception("Password too long")
     f = open(fn,"r")
@@ -19,7 +19,7 @@ def aesjsonload(fn,passwd):
     f.close()
     return json.loads(AES.new(pad(passwd)).decrypt(base64.b64decode(data)).rstrip(PADDING))
 
-def aesjsondump(fn,obj,passwd):
+def dump(fn,obj,passwd):
     if len(passwd) > BLOCK_SIZE:
         raise Exception("Password too long")
     data = base64.b64encode(AES.new(pad(passwd)).encrypt(pad(json.dumps(obj))))
@@ -36,11 +36,11 @@ if __name__ == "__main__":
     obj = {}
     if os.path.exists(fn):
         try:
-            obj = aesjsonload(fn,passwd)
+            obj = load(fn,passwd)
         except ValueError:
             print "Incorrect password or corrupt file"
             sys.exit(1)
     if len(sys.argv) > 3:
         obj.update(json.loads(sys.argv[3]))
-        aesjsondump(fn,obj,passwd)
+        dump(fn,obj,passwd)
     print json.dumps(obj,indent=2)
