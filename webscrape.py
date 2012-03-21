@@ -34,11 +34,12 @@ while not b.find_elements_by_id("tlpvt-passcode-input"):
     time.sleep(5)
 b.find_element_by_id("tlpvt-passcode-input").send_keys(password)
 b.find_element_by_name("confirm-sitekey-submit").click()
-accounts = {}
+accounts = []
 for a in b.find_elements_by_xpath("//div[contains(@class,'image-account')]/a"):
-    accounts[a.get_attribute("id")] = a.get_attribute("href")
+    if a.get_attribute("id") not in accounts:
+        accounts.append(a.get_attribute("id"))
 for acct in accounts:
-    b.get(accounts[acct])
+    b.find_element_by_id(acct).click()
     for loop in range(1000):
         if not b.find_elements_by_id("row%s" % (loop)):
             break
@@ -62,6 +63,9 @@ for acct in accounts:
                 b.get(b.find_element_by_xpath("//td[@class='imageborder']/img").get_attribute("src"))
                 b.save_screenshot(("%s-%s-%s.png"%(acct,date,checkid)).replace("/","_"))
                 b.back()
+    balance = b.find_element_by_class_name("module1bkgd13").text
+    print "Balance %s %s" % (acct, balance)
+    b.find_element_by_link_text("Accounts Overview").click()
 b.find_element_by_link_text("Sign Off").click()
 time.sleep(5)
 b.close()
