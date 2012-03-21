@@ -11,7 +11,7 @@ sys.path.append("../")
 
 import db
 
-def exit_error(code,message):
+def exit_error(code, message):
     print "Status: %s" % (code)
     print "Content-type: application/json"
     print
@@ -50,6 +50,7 @@ if action == "login":
     print cookies
     print
     print json.dumps(True)
+    sys.exit(0)
 elif action == "logout":
     expire = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime("%a, %d-%b-%Y %H:%M:%S PST")
     cookies = Cookie.SimpleCookie()
@@ -61,5 +62,12 @@ elif action == "logout":
     print cookies
     print
     print json.dumps(True)
+    sys.exit(0)
+
+print "Content-type: application/json"
+print
+
+if action == "accountstodo":
+    print json.dumps(mydb.accountstodo(), indent=2)
 else:
     exit_error(404,"Method not found")
