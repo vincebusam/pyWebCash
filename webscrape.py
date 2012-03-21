@@ -49,9 +49,16 @@ for acct in accounts:
         desc = b.find_element_by_xpath("//tr[@id='row%s']/td[4]" % (loop)).text.replace("\n","")
         amount = b.find_element_by_xpath("//tr[@id='row%s']/td[7]" % (loop)).text
         print "Transaction: %s %s %s %s" % (acct,date,desc,amount)
-        if "BKOFAMERICA ATM DEPOSIT" in desc:
-            if not scrolluntilclick(b,b.find_element_by_id("rtImg%i"%(loop))):
-                continue
+        if not scrolluntilclick(b,b.find_element_by_id("rtImg%i"%(loop))):
+            continue
+        attrs = {}
+        for line in b.find_element_by_id("exptd%s"%(loop)).text.split("\n"):
+            if ":" in line:
+                attrs[line.split(":")[0].strip()] = line.split(":")[1].strip()
+        if attrs:
+            print attrs
+        continue
+        if b.find_elements_by_id("ViewImages"):
             b.find_element_by_id("ViewImages").click()
             for checkid in range(1,20):
                 if not b.find_elements_by_id("icon%s"%(checkid)):
