@@ -46,7 +46,7 @@ def downloadaccount(params):
             m = datematch.match(date)
             if not m:
                 continue
-            date = datetime.date(m.group(3),m.group(1),m.group(2))
+            date = datetime.date(int(m.group(3)),int(m.group(1)),int(m.group(2)))
             if date < (params["lastcheck"]-datetime.timedelta(days=4)):
                 break
             desc = b.find_element_by_xpath("//tr[@id='row%s']/td[4]" % (loop)).text.replace("\n","")
