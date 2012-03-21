@@ -12,12 +12,16 @@ EncodeAES = lambda c, s: base64.b64encode(c.encrypt(pad(s)))
 DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip(PADDING)
 
 def aesjsonload(fn,passwd):
+    if len(passwd) > BLOCK_SIZE:
+        raise Exception("Password too long")
     f = open(fn,"r")
     data = f.read()
     f.close()
     return json.loads(AES.new(pad(passwd)).decrypt(base64.b64decode(data)).rstrip(PADDING))
 
 def aesjsondump(fn,obj,passwd):
+    if len(passwd) > BLOCK_SIZE:
+        raise Exception("Password too long")
     data = base64.b64encode(AES.new(pad(passwd)).encrypt(pad(json.dumps(obj))))
     f = open(fn,"w")
     f.write(data)
