@@ -1,0 +1,2 @@
+Addhandler cgi-script .py
+Options +ExecCGI
