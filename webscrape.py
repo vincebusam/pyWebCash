@@ -1,20 +1,27 @@
 #!/usr/bin/python
+import sys
+import time
+import getpass
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import *
 
-username = ""
-password = ""
+if len(sys.argv) < 2:
+    sys.exit(1)
+username = sys.argv[1]
+print "Enter password for %s: " % (username),
+password = getpass.getpass()
 
 b = webdriver.Chrome()
 b.get("https://www.bankofamerica.com/")
 b.find_element_by_id("id").send_keys(username)
 Select(b.find_element_by_id("stateselect")).select_by_value("CA")
 b.find_element_by_id("top-button").click()
+time.sleep(5)
 b.find_element_by_id("tlpvt-passcode-input").send_keys(password)
 b.find_element_by_name("confirm-sitekey-submit").click()
 accounts = {}
-for a in b.find_elements_by_xpath("//div[contains(@class,'image-account')]/a")
+for a in b.find_elements_by_xpath("//div[contains(@class,'image-account')]/a"):
     accounts[a.get_attribute("id")] = a.get_attribute("href")
 for acct in accounts:
     b.get(accounts[acct])
