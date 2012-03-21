@@ -14,3 +14,5 @@ if not api.callapi("login",{"username": username, "password": password}):
 
 todo = api.callapi("accountstodo")
 print todo
+
+api.callapi("logout")
