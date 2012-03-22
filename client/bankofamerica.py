@@ -10,7 +10,7 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.keys import Keys
 
 def generateid(t):
-    return "bofa-%s-%s-%s" % (t["subaccount"],t["date"],hashlib.sha1(t["desc"]).hexdigest())
+    return "%s-bofa-%s-%s" % (t["date"],t["subaccount"],hashlib.sha1(t["desc"]).hexdigest())
 
 def scrolluntilclick(b,e):
     for retry in range(40):
