@@ -23,10 +23,11 @@ def scrolluntilclick(b,e):
 
 datematch = re.compile("(\d{2})/(\d{2})/(\d{4})")
 
-# Params - dict of username, password, state, date, seenids
+# Params - dict of name, username, password, state, date, seenids
 def downloadaccount(params):
     # By default, we'll get all transactions since 2000!
     params.setdefault("lastcheck",datetime.date(2000,1,1))
+    params["lastcheck"] -= datetime.timedelta(days=4)
     params.setdefault("seenids",[])
     b = webdriver.Chrome()
     b.get("https://www.bankofamerica.com/")
@@ -54,7 +55,7 @@ def downloadaccount(params):
             if not m:
                 continue
             transaction["date"] = datetime.date(int(m.group(3)),int(m.group(1)),int(m.group(2)))
-            if transaction["date"] < (params["lastcheck"]-datetime.timedelta(days=4)):
+            if transaction["date"] < params["lastcheck"]:
                 break
             transaction["desc"] = b.find_element_by_xpath("//tr[@id='row%s']/td[4]" % (loop)).text.replace("\n","")
             transaction["amount"] = b.find_element_by_xpath("//tr[@id='row%s']/td[7]" % (loop)).text
