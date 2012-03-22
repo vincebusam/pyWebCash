@@ -1,4 +1,8 @@
+#!/usr/bin/python
 import sys
+import copy
+import json
+import getpass
 import aesjsonfile
 
 sys.path.append("../")
@@ -16,3 +20,19 @@ class DB(object):
 
     def accountstodo(self):
         return self.db["accounts"]
+
+    def accounts(self):
+        ret = copy.deepcopy(self.db["accounts"])
+        for acct in ret:
+            acct.pop("password",None)
+        return ret
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        sys.exit(1)
+    password = getpass.getpass()
+    db = DB(sys.argv[1],password)
+    print "accountstodo"
+    print json.dumps(db.accountstodo(),indent=2)
+    print "accounts"
+    print json.dumps(db.accounts(),indent=2)
