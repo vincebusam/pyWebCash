@@ -24,7 +24,16 @@ class DB(object):
         aesjsonfile.dump("%s/%s.json"%(config.dbdir, self.username), self.db, self.password)
 
     def accountstodo(self):
-        return self.db["accounts"]
+        ret = copy.deepcopy(self.db["accounts"])
+        for acct in ret:
+            acct["seenids"] = []
+            for trans in self.db.get("transactions",[]):
+                if trans["account"] == acct["name"]:
+                    acct["lastcheck"] = trans["date"]
+                    acct["seenids"].append(trans["id"])
+                    if len(acct["seenids"]) >= 10:
+                        break
+        return ret
 
     def accounts(self):
         ret = copy.deepcopy(self.db["accounts"])
