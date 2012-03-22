@@ -77,7 +77,7 @@ def downloadaccount(params):
         print "Balance %s %s" % (acct, balance)
         b.find_element_by_link_text("Accounts Overview").click()
     b.find_element_by_link_text("Sign Off").click()
-    time.sleep(5)
+    time.sleep(2.5)
     b.close()
 
 if __name__ == "__main__":
