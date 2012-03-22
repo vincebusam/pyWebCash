@@ -10,7 +10,7 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.keys import Keys
 
 def generateid(t):
-    return "%s-bofa-%s-%s" % (t["date"],t["subaccount"],hashlib.sha1(t["desc"]).hexdigest())
+    return "%s-%s-%s-%s" % (t["date"],t["account"],t["subaccount"],hashlib.sha1(t["desc"]).hexdigest())
 
 def scrolluntilclick(b,e):
     for retry in range(40):
@@ -46,7 +46,7 @@ def downloadaccount(params):
     for acct in accounts:
         b.find_element_by_id(acct).click()
         for loop in range(1000):
-            transaction = {"account": "bankofamerica", "subaccount": acct}
+            transaction = {"account": params["name"], "subaccount": acct}
             if not b.find_elements_by_id("row%s" % (loop)):
                 break
             date = b.find_element_by_xpath("//tr[@id='row%s']/td[3]" % (loop)).text
@@ -73,7 +73,7 @@ def downloadaccount(params):
                 for checkid in range(1,20):
                     if not b.find_elements_by_id("icon%s"%(checkid)):
                         continue
-                    subtrans = {"account": "bankofamerica",
+                    subtrans = {"account": params["name"],
                                 "subaccount": acct,
                                 "parent": transaction["id"],
                                 "date": transaction["date"],
@@ -90,7 +90,7 @@ def downloadaccount(params):
                     print subtrans
         balance = b.find_element_by_class_name("module1bkgd13").text
         print "Balance %s %s" % (acct, balance)
-        balances.append({"account": "bankofamerica", "subaccount": acct, "balance": balance, "date": datetime.date.today()})
+        balances.append({"account": params["name"], "subaccount": acct, "balance": balance, "date": datetime.date.today()})
         b.find_element_by_link_text("Accounts Overview").click()
     b.find_element_by_link_text("Sign Off").click()
     time.sleep(2.5)
