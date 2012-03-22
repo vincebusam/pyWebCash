@@ -3,6 +3,11 @@ import sys
 import api
 import getpass
 
+# Banks
+banks = {}
+import bankofamerica
+banks["bankofamerica"] = bankofamerica
+
 print "Login"
 print "Username: ",
 username = sys.stdin.readline().strip()
@@ -14,5 +19,12 @@ if not api.callapi("login",{"username": username, "password": password}):
 
 todo = api.callapi("accountstodo")
 print todo
+
+for account in todo:
+    if account["bankname"] not in banks:
+        print "No scraper for %s!" % (account["bankname"])
+        continue
+    print "Scraping %s..." % (account["bankname"])
+    #data = banks[account["bankname"].downloadaccount(account)
 
 api.callapi("logout")
