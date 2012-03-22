@@ -25,6 +25,10 @@ class DB(object):
         ret = copy.deepcopy(self.db["accounts"])
         for acct in ret:
             acct.pop("password",None)
+            acct["subaccounts"] = []
+            for sub in self.db.get("balances",{}).get(acct["name"],{}):
+                acct["subaccounts"].append({"name": sub, "amount": self.db["balances"][acct["name"]][sub][0]["amount"],
+                                            "date": self.db["balances"][acct["name"]][sub][0]["lastdate"]})
         return ret
 
 if __name__ == "__main__":
