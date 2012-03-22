@@ -2,6 +2,7 @@
 import os
 import sys
 import cgi
+import time
 import json
 import random
 import string
@@ -33,6 +34,8 @@ if os.getenv("HTTP_COOKIE"):
         cookies = Cookie.SimpleCookie()
         cookies.load(os.getenv("HTTP_COOKIE"))
         sessionfn = "%s/%s.json" % (config.sessiondir, cookies["sessionid"].value)
+        if os.path.exists(sessionfn) and os.path.getmtime(sessionfn) < (time.time()-config.sessiontimeout):
+            os.remove(sessionfn)
         if not os.path.exists(sessionfn):
             exit_error(403, "Session Expired")
         try:
@@ -47,12 +50,19 @@ if os.getenv("HTTP_COOKIE"):
         pass
 
 if not username or not password:
+    if sessionfn:
+        os.remove(sessionfn)
     exit_error(400,"incomplete username/password")
 
 try:
     mydb = db.DB(username, password)
 except Exception, e:
+    if sessionfn:
+        os.remove(sessionfn)
     exit_error(403,"Bad password: %s" % (e))
+
+if sessionfn:
+    os.utime(sessionfn, None)
 
 if action == "login":
     cookies = Cookie.SimpleCookie()
