@@ -16,6 +16,11 @@ class DB(object):
         self.db = aesjsonfile.load("%s/%s.json"%(config.dbdir, self.username), self.password)
 
     def save(self):
+        for a in self.db.get("balances",{}):
+            for s in self.db["balances"][a]:
+                self.db["balances"][a][s].sort(key=lambda x: x["lastdate"], reverse=True)
+        if self.db.get("transactions"):
+            self.db.transactions.sort(key=lambda x: x["id"], reverse=True)
         aesjsonfile.dump("%s/%s.json"%(config.dbdir, self.username), self.db, self.password)
 
     def accountstodo(self):
