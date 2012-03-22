@@ -17,16 +17,22 @@ def editfile(fn, password):
         try:
             f.seek(0)
             db = json.load(f)
-            f.close()
             aesjsonfile.dump(fn, db, password)
-            return
+            break
         except Exception, e:
             print "Error in json"
             print e
             print "Try again (y/n)? ",
             input = sys.stdin.readline()
             if not input.lower().startswith("y"):
-                return
+                break
+    f.seek(0,2)
+    len = f.tell()
+    print len
+    f.seek(0)
+    f.write(" " * len)
+    f.flush()
+    f.close()
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
