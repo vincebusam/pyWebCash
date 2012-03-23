@@ -14,7 +14,7 @@ def generateid(t):
     return "%s-%s-%s-%s" % (t["date"],t["account"],t["subaccount"],hashlib.sha1(t["desc"]).hexdigest())
 
 def scrolluntilclick(b,e):
-    for retry in range(40):
+    for retry in range(80):
         try:
             e.click()
             return True
@@ -89,7 +89,7 @@ def downloadaccount(params):
                     transaction["file"] = checkfn
             newtransactions.append(transaction)
             if b.find_elements_by_id("ViewImages"):
-                b.find_element_by_id("ViewImages").click()
+                scrolluntilclick(b,b.find_element_by_id("ViewImages"))
                 for checkid in range(1,20):
                     if not b.find_elements_by_id("icon%s"%(checkid)):
                         continue
@@ -100,14 +100,21 @@ def downloadaccount(params):
                                 "desc": "BofA Check Deposit",
                                 "id": "%s-%s" % (transaction["id"], checkid) }
                     subtrans["amount"] = b.find_element_by_id("icon%s"%(checkid)).text
-                    if not scrolluntilclick(b,b.find_element_by_xpath("//td[@id='icon%s']/a/img"%(checkid))):
-                        continue
-                    b.get(b.find_element_by_xpath("//td[@class='imageborder']/img").get_attribute("src"))
-                    checkfn = subtrans["id"] + ".png"
-                    files[checkfn] = b.get_screenshot_as_base64()
-                    b.back()
-                    subtrans["file"] = checkfn
-                    print subtrans
+                    if not subtrans["amount"].strip():
+                        # Something gets wonky.  In this case, let's re-load the page and continue
+                        b.find_element_by_link_text("Account Details").click()
+                        scrolluntilclick(b,b.find_element_by_id("rtImg%i"%(loop)))
+                        scrolluntilclick(b,b.find_element_by_id("ViewImages"))
+                        subtrans["amount"] = b.find_element_by_id("icon%s"%(checkid)).text
+                        if not subtrans["amount"].strip():
+                            print "Warning: Empty transaction!"
+                            subtrans["amount"] = "$0"
+                    if scrolluntilclick(b,b.find_element_by_xpath("//td[@id='icon%s']/a/img"%(checkid))):
+                        b.get(b.find_element_by_xpath("//td[@class='imageborder']/img").get_attribute("src"))
+                        checkfn = subtrans["id"] + ".png"
+                        files[checkfn] = b.get_screenshot_as_base64()
+                        b.back()
+                        subtrans["file"] = checkfn
                     newtransactions.append(subtrans)
         balance = b.find_element_by_class_name("module1bkgd13").text
         print "Balance %s %s" % (acct, balance)
