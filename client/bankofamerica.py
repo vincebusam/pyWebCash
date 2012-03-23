@@ -55,6 +55,7 @@ def downloadaccount(params):
     balances = []
     files = {}
     for acct in accounts:
+        print "Download transactions from %s" % (acct)
         b.find_element_by_id(acct).click()
         for loop in range(1000):
             transaction = {"account": params["name"], "subaccount": acct}
@@ -70,7 +71,6 @@ def downloadaccount(params):
             transaction["desc"] = b.find_element_by_xpath("//tr[@id='row%s']/td[4]" % (loop)).text.replace("\n","")
             transaction["amount"] = b.find_element_by_xpath("//tr[@id='row%s']/td[7]" % (loop)).text
             transaction["id"] = generateid(transaction)
-            print transaction
             if transaction["id"] in params["seenids"]:
                 print "Already have %s" % (transaction["id"])
                 continue
