@@ -24,10 +24,15 @@ def scrolluntilclick(b,e):
 
 datematch = re.compile("(\d{2})/(\d{2})/(\d{4})")
 
+splitdate = lambda x: map(int,x.split("-"))
+parsedate = lambda x: datetime.date(splitdate(x)[0],splitdate(x)[1],splitdate(x)[2])
+
 # Params - dict of name, username, password, state, date, seenids
 def downloadaccount(params):
     # By default, we'll get all transactions since 2000!
     params.setdefault("lastcheck",datetime.date(2000,1,1))
+    if type(params["lastcheck"]) in [ str, unicode ]:
+        params["lastcheck"] = parsedate(params["lastcheck"])
     params["lastcheck"] -= datetime.timedelta(days=4)
     params.setdefault("seenids",[])
     params.setdefault("name","BofA")
@@ -101,6 +106,7 @@ def downloadaccount(params):
                     b.back()
                     subtrans["file"] = checkfn
                     print subtrans
+                    newtransactions.append(subtrans)
         balance = b.find_element_by_class_name("module1bkgd13").text
         print "Balance %s %s" % (acct, balance)
         balances.append({"account": params["name"], "subaccount": acct, "balance": balance, "date": datetime.date.today()})
