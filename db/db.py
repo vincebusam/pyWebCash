@@ -101,6 +101,10 @@ class DB(object):
                 trans["orig_amount_str"] = trans["amount"]
                 trans["amount"] = parse_amount(trans["amount"])
                 self.db["transactions"].append(trans)
+                if trans.get("parent"):
+                    p = self.search({"id": trans["parent"]})
+                    if p:
+                        self.updatetransaction(trans["parent"], {"amount": p["amount"]-amount}, False)
         self.db["transactions"].sort(cmp=lambda x,y: cmp(x["date"],y["date"]) or cmp(x["id"],y["id"]), reverse=True)
         for bal in data.get("balances",[]):
             amount = parse_amount(bal["balance"])
