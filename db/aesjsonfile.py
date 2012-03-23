@@ -27,6 +27,12 @@ def dump(fn, obj, passwd):
     f.write(data)
     f.close()
 
+def enc(data, passwd):
+    return AES.new(pad(passwd)).encrypt(pad(data))
+
+def dec(data, passwd):
+    return AES.new(pad(passwd)).decrypt(data).rstrip(PADDING)
+
 if __name__ == "__main__":
     if len(sys.argv) < 3:
         print "Usage: %s filename password <json update>" % (sys.argv[0])

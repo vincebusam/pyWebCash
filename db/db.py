@@ -1,7 +1,11 @@
 #!/usr/bin/python
+import os
 import sys
 import copy
 import json
+import base64
+import string
+import random
 import getpass
 import aesjsonfile
 
@@ -67,8 +71,23 @@ class DB(object):
     def getallids(self):
         return [x["id"] for x in self.db["transactions"]]
 
+    def getimgfn(self, trans):
+        return "%s/%s/%s" % (config.imgdir, self.username, trans.get("file","null"))
+
     def newtransactions(self, data):
         for trans in data.get("transactions",[]):
+            print trans.get("file")
+            if trans.get("file") and data.get("files",{}).get(trans["file"]) and not os.path.exists(self.getimgfn(trans)):
+                print "Got file"
+                trans["filekey"] = ''.join(random.choice(string.ascii_letters + string.digits) for x in range(32))
+                if not os.path.exists(os.path.dirname(self.getimgfn(trans))):
+                    os.mkdir(os.path.dirname(self.getimgfn(trans)))
+                img = base64.b64decode(data["files"][trans["file"]])
+                img = aesjsonfile.enc(img, trans["filekey"])
+                open("%s/%s/%s" % (config.imgdir, self.username, trans["file"]), "w").write(img)
+                if trans["id"] in self.getallids():
+                    # Update the key
+                    pass
             if trans["id"] not in self.getallids():
                 for k,v in trans.iteritems():
                     trans["orig_"+k] = v
@@ -96,3 +115,5 @@ if __name__ == "__main__":
     print "accounts"
     print json.dumps(db.accounts(), indent=2)
     print json.dumps(db.search(limit=10), indent=2)
+    if os.getenv("DATAFILE"):
+        print json.dumps(db.newtransactions(json.load(open(os.getenv("DATAFILE")))), indent=2)
