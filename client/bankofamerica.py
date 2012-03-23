@@ -71,6 +71,15 @@ def downloadaccount(params):
                 for line in b.find_element_by_id("exptd%s"%(loop)).text.split("\n"):
                     if ":" in line:
                         transaction["attr_" + line.split(":")[0].strip()] = line.split(":")[1].strip()
+            if b.find_elements_by_id("ViewImgFront"):
+                b.find_element_by_id("ViewImgFront").click()
+                image = [x for x in b.find_elements_by_xpath("//tr[@id='exp0']//img") if "/cgi-bin" in x.get_attribute("src")]
+                if image:
+                    b.get(image[0].get_attribute("src"))
+                    checkfn = transaction["id"] + ".png"
+                    files[checkfn] = b.get_screenshot_as_base64()
+                    b.back()
+                    transaction["file"] = checkfn
             newtransactions.append(transaction)
             if b.find_elements_by_id("ViewImages"):
                 b.find_element_by_id("ViewImages").click()
