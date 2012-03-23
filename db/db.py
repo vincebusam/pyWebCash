@@ -50,7 +50,7 @@ class DB(object):
             if type(query) in [ str, unicode ]:
                 if query not in json.dumps(trans.values()):
                     continue
-            else:
+            elif query and type(query) == dict:
                 for k in query:
                     if not trans.get(k) or query[k] not in trans[k]:
                         continue
