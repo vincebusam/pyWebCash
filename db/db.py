@@ -80,7 +80,8 @@ class DB(object):
                 trans.update(new)
                 if save:
                     self.save()
-                break
+                return True
+        return False
 
     def newtransactions(self, data):
         for trans in data.get("transactions",[]):

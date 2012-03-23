@@ -104,5 +104,11 @@ elif action == "search":
                            form.getfirst("startdate") or "0",
                            form.getfirst("enddate") or "9999",
                            form.getfirst("limit") or 100))
+elif action == "updatetransaction":
+    try:
+        data = json.loads(form.getfirst("data"))
+    except Exception, e:
+        exit_error(400, "Bad transactions: %s %s" % (e, form.getfirst("data")[:20]))
+    json_print(mydb.updatetransaction(form.getfirst("id"),data))
 else:
     exit_error(404,"Method not found")
