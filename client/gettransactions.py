@@ -1,6 +1,8 @@
 #!/usr/bin/python
+import os
 import sys
 import api
+import json
 import getpass
 
 # Banks
@@ -18,14 +20,16 @@ if not api.callapi("login",{"username": username, "password": password}):
     sys.exit(1)
 
 todo = api.callapi("accountstodo")
-print todo
 
 for account in todo:
     if account["bankname"] not in banks:
         print "No scraper for %s!" % (account["bankname"])
         continue
     print "Scraping %s..." % (account["bankname"])
-    data = json.dumps(banks[account["bankname"]].downloadaccount(account),default=str)
+    if os.getenv("DATAFILE"):
+        data = open(os.getenv("DATAFILE")).read()
+    else:
+        data = json.dumps(banks[account["bankname"]].downloadaccount(account),default=str)
     api.callapi("newtransactions", {"data": data})
 
 api.callapi("logout")
