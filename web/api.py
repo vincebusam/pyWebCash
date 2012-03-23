@@ -90,6 +90,14 @@ elif action == "logout":
     print
     print json.dumps(True)
     sys.exit(0)
+elif action == "newtransactions":
+    try:
+        data = json.loads(form.getfirst("data"))
+    except Exception, e:
+        exit_error(400, "Bad transactions: %s %s" % (e, form.getfirst("data")[:20]))
+    print "Content-type: application/json"
+    print
+    print json.dumps(mydb.newtransactions(data), indent=2)
 
 print "Content-type: application/json"
 print

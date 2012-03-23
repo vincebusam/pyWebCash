@@ -9,18 +9,23 @@ sys.path.append("../")
 
 import config
 
+def parse_amount(amount):
+    if type(amount) == int:
+        return amount
+    if "." not in amount:
+        amount += ".00"
+    return int(amount.replace("$","").replace(",","").replace(".",""))
+
 class DB(object):
     def __init__(self, username, password):
         self.username = username
         self.password = password
         self.db = aesjsonfile.load("%s/%s.json"%(config.dbdir, self.username), self.password)
+        self.db.setdefault("transactions",[])
+        self.db.setdefault("balances",{})
+        self.db.setdefault("accounts",[])
 
     def save(self):
-        for a in self.db.get("balances",{}):
-            for s in self.db["balances"][a]:
-                self.db["balances"][a][s].sort(key=lambda x: x["lastdate"], reverse=True)
-        if self.db.get("transactions"):
-            self.db.transactions.sort(key=lambda x: x["id"], reverse=True)
         aesjsonfile.dump("%s/%s.json"%(config.dbdir, self.username), self.db, self.password)
 
     def accountstodo(self):
@@ -37,14 +42,14 @@ class DB(object):
         for acct in ret:
             acct.pop("password",None)
             acct["subaccounts"] = []
-            for sub in self.db.get("balances",{}).get(acct["name"],{}):
+            for sub in self.db["balances"].get(acct["name"],{}):
                 acct["subaccounts"].append({"name": sub, "amount": self.db["balances"][acct["name"]][sub][0]["amount"],
                                             "date": self.db["balances"][acct["name"]][sub][0]["lastdate"]})
         return ret
 
     def search(self, query={}, startdate="0", enddate = "9999", limit=100):
         ret = []
-        for trans in self.db.get("transactions",[]):
+        for trans in self.db["transactions"]:
             if trans["date"] < startdate or trans["date"] > enddate:
                 continue
             if type(query) in [ str, unicode ]:
@@ -58,6 +63,24 @@ class DB(object):
             if len(trans) >= limit:
                 break
         return ret
+
+    def getallids(self):
+        return [x["id"] for x in self.db["transactions"]]
+
+    def newtransactions(self, data):
+        for trans in data.get("transactions",[]):
+            if trans["id"] not in self.getallids():
+                self.db["transactions"].append(trans)
+        self.db["transactions"].sort(cmp=lambda x,y: cmp(x["date"],y["date"]) or cmp(x["id"],y["id"]), reverse=True)
+        for bal in data.get("balances",[]):
+            amount = parse_amount(bal["balance"])
+            oldbal = self.db["balances"].setdefault(bal["account"],{}).setdefault(bal["subaccount"],[])
+            if oldbal and oldbal[0]["amount"] == amount:
+                oldbal[0]["lastdate"] = bal["date"]
+            else:
+                oldbal.insert(0, {"amount": amount, "firstdate": bal["date"], "lastdate": bal["date"]})
+        self.save()
+        return True
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
