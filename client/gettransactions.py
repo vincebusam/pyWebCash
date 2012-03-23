@@ -25,6 +25,9 @@ for account in todo:
         print "No scraper for %s!" % (account["bankname"])
         continue
     print "Scraping %s..." % (account["bankname"])
-    #data = banks[account["bankname"].downloadaccount(account)
+    data = banks[account["bankname"].downloadaccount(account)
+    for key in data:
+        if data[key]:
+            api.callapi("new"+key, data[key])
 
 api.callapi("logout")
