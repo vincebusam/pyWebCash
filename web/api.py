@@ -7,6 +7,7 @@ import json
 import random
 import string
 import Cookie
+import urlparse
 import datetime
 
 sys.path.append("../db")
@@ -31,6 +32,7 @@ def exit_error(code, message):
     sys.exit(0)
 
 form = cgi.FieldStorage()
+query = urlparse.parse_qs(os.getenv("QUERY_STRING") or "")
 
 action = form.getfirst("action")
 username = form.getfirst("username")
@@ -110,5 +112,14 @@ elif action == "updatetransaction":
     except Exception, e:
         exit_error(400, "Bad transactions: %s %s" % (e, form.getfirst("data")[:20]))
     json_print(mydb.updatetransaction(form.getfirst("id"),data))
+elif action == "image" or query["image"]:
+    img = db.getimage(form.getfirst("id") or query["image"][0])
+    if img:
+        print "Content-type: image/png"
+        print "Content-length: %s" % (len(img))
+        print
+        print img
+    else:
+        exit_error(404, "Image not found")
 else:
     exit_error(404,"Method not found")
