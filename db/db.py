@@ -52,6 +52,12 @@ class DB(object):
                                             "date": self.db["balances"][acct["name"]][sub][0]["lastdate"]})
         return ret
 
+    def matchtrans(self, trans, query):
+        for k in query:
+            if not trans.get(k) or query[k] not in trans[k]:
+                return False
+        return True
+
     def search(self, query={}, startdate="0", enddate = "9999", limit=100):
         ret = []
         for trans in self.db["transactions"]:
@@ -60,10 +66,8 @@ class DB(object):
             if type(query) in [ str, unicode ]:
                 if query not in json.dumps(trans.values()):
                     continue
-            elif query and type(query) == dict:
-                for k in query:
-                    if not trans.get(k) or query[k] not in trans[k]:
-                        continue
+            elif query and not self.matchtrans(trans, query):
+                continue
             ret.append(trans)
             if len(trans) >= limit:
                 break
