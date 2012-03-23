@@ -121,6 +121,12 @@ class DB(object):
         self.save()
         return True
 
+    def getimage(self, id):
+        trans = self.search({"id": id})
+        if trans:
+            return aesjsonfile.dec(open(self.getimgfn(trans[0])).read(), trans[0]["filekey"])
+        return False
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         sys.exit(1)
