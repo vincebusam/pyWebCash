@@ -54,8 +54,26 @@ class DB(object):
 
     def matchtrans(self, trans, query):
         for k in query:
-            if not trans.get(k) or query[k] not in trans[k]:
+            if k not in trans:
                 return False
+            if not query[k].startswith("$") and query[k].lower() not in trans[k].lower():
+                return False
+            if query[k].startswith("$eq:"):
+                if type(trans[k]) != int or int(query[k].split(":")[1]) != trans[k]:
+                    return False
+                continue
+            if query[k].startswith("$abseq:"):
+                if type(trans[k]) != int or int(query[k].split(":")[1]) != abs(trans[k]):
+                    return False
+                continue
+            if query[k].startswith("$lt:"):
+                if type(trans[k]) != int or int(query[k].split(":")[1]) <= trans[k]:
+                    return False
+                continue
+            if query[k].startswith("$gt:"):
+                if type(trans[k]) == int and int(query[k].split(":")[1]) >= trans[k]:
+                    return False
+                continue
         return True
 
     def search(self, query={}, startdate="0", enddate = "9999", limit=100):
@@ -69,7 +87,7 @@ class DB(object):
             elif query and not self.matchtrans(trans, query):
                 continue
             ret.append(trans)
-            if len(trans) >= limit:
+            if len(ret) >= limit:
                 break
         return ret
 
@@ -136,6 +154,13 @@ if __name__ == "__main__":
     print json.dumps(db.accountstodo(), indent=2)
     print "accounts"
     print json.dumps(db.accounts(), indent=2)
-    print json.dumps(db.search(limit=10), indent=2)
     if os.getenv("DATAFILE"):
         print json.dumps(db.newtransactions(json.load(open(os.getenv("DATAFILE")))), indent=2)
+    print "Last 5:"
+    print json.dumps(db.search(limit=5), indent=2)
+    print "Zeroed out:"
+    print json.dumps(db.search(query={"amount":"$eq:0"},limit=2), indent=2)
+    print "Spending:"
+    print json.dumps(db.search(query={"amount":"$lt:0"},limit=2), indent=2)
+    print "Income:"
+    print json.dumps(db.search(query={"amount":"$gt:0"},limit=2), indent=2)
