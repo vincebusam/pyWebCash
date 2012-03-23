@@ -18,6 +18,7 @@ def parse_amount(amount):
         return amount
     if "." not in amount:
         amount += ".00"
+    amount += "0" * (2-len(amount.split(".")[1]))
     return int(amount.replace("$","").replace(",","").replace(".",""))
 
 class DB(object):
