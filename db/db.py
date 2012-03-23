@@ -72,6 +72,8 @@ class DB(object):
             if trans["id"] not in self.getallids():
                 for k,v in trans.iteritems():
                     trans["orig_"+k] = v
+                trans["orig_amount_str"] = trans["amount"]
+                trans["amount"] = parse_amount(trans["amount"])
                 self.db["transactions"].append(trans)
         self.db["transactions"].sort(cmp=lambda x,y: cmp(x["date"],y["date"]) or cmp(x["id"],y["id"]), reverse=True)
         for bal in data.get("balances",[]):
