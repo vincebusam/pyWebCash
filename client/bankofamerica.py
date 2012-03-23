@@ -44,6 +44,7 @@ def downloadaccount(params):
             accounts.append(a.get_attribute("id"))
     newtransactions = []
     balances = []
+    files = {}
     for acct in accounts:
         b.find_element_by_id(acct).click()
         for loop in range(1000):
@@ -85,7 +86,7 @@ def downloadaccount(params):
                         continue
                     b.get(b.find_element_by_xpath("//td[@class='imageborder']/img").get_attribute("src"))
                     checkfn = subtrans["id"] + ".png"
-                    b.save_screenshot(checkfn)
+                    files[checkfn] = b.get_screenshot_as_base64()
                     b.back()
                     subtrans["file"] = checkfn
                     print subtrans
@@ -96,7 +97,7 @@ def downloadaccount(params):
     b.find_element_by_link_text("Sign Off").click()
     time.sleep(2.5)
     b.close()
-    return {"transactions": newtransactions, "balances": balances}
+    return {"transactions": newtransactions, "balances": balances, "files": files}
 
 if __name__ == "__main__":
 
