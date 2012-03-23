@@ -13,15 +13,6 @@ from selenium.webdriver.common.keys import Keys
 def generateid(t):
     return "%s-%s-%s-%s" % (t["date"],t["account"],t["subaccount"],hashlib.sha1(t["desc"]).hexdigest())
 
-def scrolluntilclick(b,e):
-    for retry in range(80):
-        try:
-            e.click()
-            return True
-        except:
-            b.execute_script("document.body.scrollTop=document.body.scrollTop+20;")
-            time.sleep(0.1)
-
 datematch = re.compile("(\d{2})/(\d{2})/(\d{4})")
 
 splitdate = lambda x: map(int,x.split("-"))
@@ -74,7 +65,7 @@ def downloadaccount(params):
             if transaction["id"] in params["seenids"]:
                 print "Already have %s" % (transaction["id"])
                 continue
-            if scrolluntilclick(b,b.find_element_by_id("rtImg%i"%(loop))):
+            if common.scrolluntilclick(b,b.find_element_by_id("rtImg%i"%(loop))):
                 for line in b.find_element_by_id("exptd%s"%(loop)).text.split("\n"):
                     if ":" in line:
                         transaction["attr_" + line.split(":")[0].strip()] = line.split(":")[1].strip()
@@ -89,7 +80,7 @@ def downloadaccount(params):
                     transaction["file"] = checkfn
             newtransactions.append(transaction)
             if b.find_elements_by_id("ViewImages"):
-                scrolluntilclick(b,b.find_element_by_id("ViewImages"))
+                common.scrolluntilclick(b,b.find_element_by_id("ViewImages"))
                 for checkid in range(1,20):
                     if not b.find_elements_by_id("icon%s"%(checkid)):
                         continue
@@ -103,13 +94,13 @@ def downloadaccount(params):
                     if not subtrans["amount"].strip():
                         # Something gets wonky.  In this case, let's re-load the page and continue
                         b.find_element_by_link_text("Account Details").click()
-                        scrolluntilclick(b,b.find_element_by_id("rtImg%i"%(loop)))
-                        scrolluntilclick(b,b.find_element_by_id("ViewImages"))
+                        common.scrolluntilclick(b,b.find_element_by_id("rtImg%i"%(loop)))
+                        common.scrolluntilclick(b,b.find_element_by_id("ViewImages"))
                         subtrans["amount"] = b.find_element_by_id("icon%s"%(checkid)).text
                         if not subtrans["amount"].strip():
                             print "Warning: Empty transaction!"
                             subtrans["amount"] = "$0"
-                    if scrolluntilclick(b,b.find_element_by_xpath("//td[@id='icon%s']/a/img"%(checkid))):
+                    if common.scrolluntilclick(b,b.find_element_by_xpath("//td[@id='icon%s']/a/img"%(checkid))):
                         b.get(b.find_element_by_xpath("//td[@class='imageborder']/img").get_attribute("src"))
                         checkfn = subtrans["id"] + ".png"
                         files[checkfn] = b.get_screenshot_as_base64()
