@@ -88,6 +88,7 @@ if __name__ == "__main__":
     password = getpass.getpass()
     db = DB(sys.argv[1],password)
     print "accountstodo"
-    print json.dumps(db.accountstodo(),indent=2)
+    print json.dumps(db.accountstodo(), indent=2)
     print "accounts"
-    print json.dumps(db.accounts(),indent=2)
+    print json.dumps(db.accounts(), indent=2)
+    print json.dumps(db.search(limit=10), indent=2)
