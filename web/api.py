@@ -96,5 +96,12 @@ print
 
 if action == "accountstodo":
     print json.dumps(mydb.accountstodo(), indent=2)
+elif action == "accounts":
+    print json.dumps(mydb.accounts(), indent=2)
+elif action == "search":
+    print json.dumps(mydb.search(form.getfirst("query") or {},
+                                 form.getfirst("startdate") or "0",
+                                 form.getfirst("enddate") or "9999",
+                                 form.getfirst("limit") or 100), indent=2)
 else:
     exit_error(404,"Method not found")
