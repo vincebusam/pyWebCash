@@ -2,6 +2,7 @@
 import re
 import sys
 import time
+import json
 import hashlib
 import getpass
 import datetime
@@ -29,6 +30,7 @@ def downloadaccount(params):
     params.setdefault("lastcheck",datetime.date(2000,1,1))
     params["lastcheck"] -= datetime.timedelta(days=4)
     params.setdefault("seenids",[])
+    params.setdefault("name","BofA")
     b = webdriver.Chrome()
     b.get("https://www.bankofamerica.com/")
     b.find_element_by_id("id").send_keys(params["username"])
@@ -109,4 +111,5 @@ if __name__ == "__main__":
     params["password"] = getpass.getpass()
     params["lastcheck"] = datetime.date.today()-datetime.timedelta(days=14)
     params["seenids"] = []
-    downloadaccount(params)
+    data = downloadaccount(params)
+    json.dump(data, open("bofa.json","w"), indent=2, default=str)
