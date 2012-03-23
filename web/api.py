@@ -16,6 +16,13 @@ import config
 import db
 import aesjsonfile
 
+def json_print(obj, header=None):
+    print "Content-type: application/json"
+    if header:
+        print header
+    print
+    print json.dumps(obj,indent=2)
+
 def exit_error(code, message):
     print "Status: %s" % (code)
     print "Content-type: application/json"
@@ -71,11 +78,7 @@ if action == "login":
     cookies["sessionkey"] = ''.join(random.choice(string.ascii_letters + string.digits) for x in range(32))
     sessionfn = "%s/%s.json" % (config.sessiondir, cookies["sessionid"].value)
     aesjsonfile.dump(sessionfn, session, cookies["sessionkey"].value)
-    print "Content-type: application/json"
-    print cookies
-    print
-    print json.dumps(True)
-    sys.exit(0)
+    json_print(True, cookies)
 elif action == "logout":
     if sessionfn and os.path.exists(sessionfn):
         os.remove(sessionfn)
@@ -85,31 +88,21 @@ elif action == "logout":
     cookies["sessionid"]["expires"] = expire
     cookies["sessionkey"] = ""
     cookies["sessionkey"]["expires"] = expire
-    print "Content-type: application/json"
-    print cookies
-    print
-    print json.dumps(True)
-    sys.exit(0)
+    json_print(True, cookies)
 elif action == "newtransactions":
     try:
         data = json.loads(form.getfirst("data"))
     except Exception, e:
         exit_error(400, "Bad transactions: %s %s" % (e, form.getfirst("data")[:20]))
-    print "Content-type: application/json"
-    print
-    print json.dumps(mydb.newtransactions(data), indent=2)
-
-print "Content-type: application/json"
-print
-
-if action == "accountstodo":
-    print json.dumps(mydb.accountstodo(), indent=2)
+    json_print(mydb.newtransactions(data))
+elif action == "accountstodo":
+    json_print(mydb.accountstodo())
 elif action == "accounts":
-    print json.dumps(mydb.accounts(), indent=2)
+    json_print(mydb.accounts())
 elif action == "search":
-    print json.dumps(mydb.search(form.getfirst("query") or {},
-                                 form.getfirst("startdate") or "0",
-                                 form.getfirst("enddate") or "9999",
-                                 form.getfirst("limit") or 100), indent=2)
+    json_print(mydb.search(form.getfirst("query") or {},
+                           form.getfirst("startdate") or "0",
+                           form.getfirst("enddate") or "9999",
+                           form.getfirst("limit") or 100))
 else:
     exit_error(404,"Method not found")
