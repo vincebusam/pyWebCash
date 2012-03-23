@@ -31,7 +31,7 @@ class DB(object):
     def accountstodo(self):
         ret = copy.deepcopy(self.db["accounts"])
         for acct in ret:
-            trans = self.search({"account":acct},limit=5)
+            trans = self.search({"account":acct["name"]},limit=5)
             acct["seenids"] = [x["id"] for x in trans]
             if trans:
                 acct["lastcheck"] = trans[0]["date"]
