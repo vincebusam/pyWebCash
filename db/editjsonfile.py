@@ -13,7 +13,7 @@ def editfile(fn, password):
     json.dump(db, f, indent=2)
     f.flush()
     while True:
-        subprocess.call([os.getenv("EDITOR") or "vi", f.name])
+        subprocess.call([os.getenv("EDITOR") or "editor", f.name])
         try:
             f.seek(0)
             db = json.load(f)

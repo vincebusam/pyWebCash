@@ -75,7 +75,7 @@ class DB(object):
         return "%s/%s/%s" % (config.imgdir, self.username, trans.get("file","null"))
 
     def updatetransaction(self, id, new, save=True):
-        for trans in db["transactions"]:
+        for trans in self.db["transactions"]:
             if trans["id"] == id:
                 trans.update(new)
                 if save:
@@ -85,9 +85,8 @@ class DB(object):
 
     def newtransactions(self, data):
         for trans in data.get("transactions",[]):
-            print trans.get("file")
-            if trans.get("file") and data.get("files",{}).get(trans["file"]) and not os.path.exists(self.getimgfn(trans)):
-                print "Got file"
+            if trans.get("file") and data.get("files",{}).get(trans["file"]) and \
+               (not os.path.exists(self.getimgfn(trans)) or trans["id"] not in self.getallids()):
                 trans["filekey"] = ''.join(random.choice(string.ascii_letters + string.digits) for x in range(32))
                 if not os.path.exists(os.path.dirname(self.getimgfn(trans))):
                     os.mkdir(os.path.dirname(self.getimgfn(trans)))
@@ -97,15 +96,15 @@ class DB(object):
                 if trans["id"] in self.getallids():
                     self.updatetransaction(trans["id"], {"filekey": trans["filekey"]}, False)
             if trans["id"] not in self.getallids():
-                for k,v in trans.iteritems():
-                    trans["orig_"+k] = v
+                for k in trans.keys():
+                    trans["orig_"+k] = trans[k]
                 trans["orig_amount_str"] = trans["amount"]
                 trans["amount"] = parse_amount(trans["amount"])
                 self.db["transactions"].append(trans)
                 if trans.get("parent"):
                     p = self.search({"id": trans["parent"]})
                     if p:
-                        self.updatetransaction(trans["parent"], {"amount": p["amount"]-amount}, False)
+                        self.updatetransaction(trans["parent"], {"amount": p[0]["amount"]-trans["amount"]}, False)
         self.db["transactions"].sort(cmp=lambda x,y: cmp(x["date"],y["date"]) or cmp(x["id"],y["id"]), reverse=True)
         for bal in data.get("balances",[]):
             amount = parse_amount(bal["balance"])
