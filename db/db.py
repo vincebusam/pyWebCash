@@ -74,6 +74,14 @@ class DB(object):
     def getimgfn(self, trans):
         return "%s/%s/%s" % (config.imgdir, self.username, trans.get("file","null"))
 
+    def updatetransaction(self, id, new, save=True):
+        for trans in db["transactions"]:
+            if trans["id"] == id:
+                trans.update(new)
+                if save:
+                    self.save()
+                break
+
     def newtransactions(self, data):
         for trans in data.get("transactions",[]):
             print trans.get("file")
@@ -86,8 +94,7 @@ class DB(object):
                 img = aesjsonfile.enc(img, trans["filekey"])
                 open("%s/%s/%s" % (config.imgdir, self.username, trans["file"]), "w").write(img)
                 if trans["id"] in self.getallids():
-                    # Update the key
-                    pass
+                    self.updatetransaction(trans["id"], {"filekey": trans["filekey"]}, False)
             if trans["id"] not in self.getallids():
                 for k,v in trans.iteritems():
                     trans["orig_"+k] = v
