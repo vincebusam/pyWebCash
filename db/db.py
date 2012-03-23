@@ -26,13 +26,10 @@ class DB(object):
     def accountstodo(self):
         ret = copy.deepcopy(self.db["accounts"])
         for acct in ret:
-            acct["seenids"] = []
-            for trans in self.db.get("transactions",[]):
-                if trans["account"] == acct["name"]:
-                    acct["lastcheck"] = trans["date"]
-                    acct["seenids"].append(trans["id"])
-                    if len(acct["seenids"]) >= 10:
-                        break
+            trans = self.search({"account":acct},limit=5)
+            acct["seenids"] = [x["id"] for x in trans]
+            if trans:
+                acct["lastcheck"] = trans[0]["date"]
         return ret
 
     def accounts(self):
@@ -43,6 +40,23 @@ class DB(object):
             for sub in self.db.get("balances",{}).get(acct["name"],{}):
                 acct["subaccounts"].append({"name": sub, "amount": self.db["balances"][acct["name"]][sub][0]["amount"],
                                             "date": self.db["balances"][acct["name"]][sub][0]["lastdate"]})
+        return ret
+
+    def search(self, query={}, startdate="0", enddate = "9999", limit=100):
+        ret = []
+        for trans in self.db.get("transactions",[]):
+            if trans["date"] < startdate or trans["date"] > enddate:
+                continue
+            if type(query) in [ str, unicode ]:
+                if query not in json.dumps(trans.values()):
+                    continue
+            else:
+                for k in query:
+                    if not trans.get(k) or query[k] not in trans[k]:
+                        continue
+            ret.append(trans)
+            if len(trans) >= limit:
+                break
         return ret
 
 if __name__ == "__main__":
