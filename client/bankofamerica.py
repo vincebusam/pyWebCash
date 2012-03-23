@@ -36,6 +36,8 @@ def downloadaccount(params):
     params["lastcheck"] -= datetime.timedelta(days=4)
     params.setdefault("seenids",[])
     params.setdefault("name","BofA")
+    if not params.get("password"):
+        params["password"] = getpass.getpass("Password for %s: " % (params["name"]))
     b = webdriver.Chrome()
     b.get("https://www.bankofamerica.com/")
     b.find_element_by_id("id").send_keys(params["username"])
@@ -123,7 +125,6 @@ if __name__ == "__main__":
 
     params = { "state": "CA" }
     params["username"] = sys.argv[1]
-    params["password"] = getpass.getpass()
     params["lastcheck"] = datetime.date.today()-datetime.timedelta(days=14)
     params["seenids"] = []
     data = downloadaccount(params)
