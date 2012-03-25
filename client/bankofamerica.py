@@ -3,6 +3,7 @@ import re
 import sys
 import time
 import json
+import common
 import hashlib
 import getpass
 import datetime
@@ -15,15 +16,12 @@ def generateid(t):
 
 datematch = re.compile("(\d{2})/(\d{2})/(\d{4})")
 
-splitdate = lambda x: map(int,x.split("-"))
-parsedate = lambda x: datetime.date(splitdate(x)[0],splitdate(x)[1],splitdate(x)[2])
-
 # Params - dict of name, username, password, state, date, seenids
 def downloadaccount(params):
     # By default, we'll get all transactions since 2000!
     params.setdefault("lastcheck",datetime.date(2000,1,1))
     if type(params["lastcheck"]) in [ str, unicode ]:
-        params["lastcheck"] = parsedate(params["lastcheck"])
+        params["lastcheck"] = common.parsedate(params["lastcheck"])
     params["lastcheck"] -= datetime.timedelta(days=4)
     params.setdefault("seenids",[])
     params.setdefault("name","BofA")
