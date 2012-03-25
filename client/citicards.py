@@ -22,7 +22,7 @@ def cardname(card):
 
 def parsetransaction(trans, lines):
     date = lines[0].split()[0].split("/")
-    trans["date"] = "%s-%s-%s" % (date[2],date[0],date[1])
+    trans["date"] = datetime.date(date[2],date[0],date[1])
     trans["dispamount"] = lines[0].split()[-1]
     trans["desc"] = " ".join(lines[0].split()[1:-1])
     trans["amount"] = int(trans["dispamount"].replace("$","").replace(".","").replace(",",""))
@@ -40,6 +40,11 @@ def downloadaccount(params):
     if "password" not in params:
         params["password"] = getpass.getpass("Citi Credit Cards Password for %s: " % (params["username"]))
     params.setdefault("name", "citicards")
+    params.setdefault("seenids",[])
+    params.setdefault("lastcheck",datetime.date(2000,1,1))
+    if type(params["lastcheck"]) in [ str, unicode ]:
+        params["lastcheck"] = common.parsedate(params["lastcheck"])
+    params["lastcheck"] -= datetime.timedelta(days=4)
     b = webdriver.Chrome()
     b.get("https://creditcards.citi.com/")
     b.find_element_by_id("id").send_keys(params["username"])
@@ -61,24 +66,28 @@ def downloadaccount(params):
         if balance == "$0.00":
             b.back()
             continue
-        balances.append({"account": params["name"], "subaccount": cardname(card), "balance": -int(balance.replace("$","").replace(".","").replace(",","")), "date": datetime.date.today()})        
-        [x.click() for x in b.find_elements_by_class_name("activator")]
-        for entry in b.find_elements_by_xpath("//table[@id='transaction-details-detail']//tbody"):
-            if not entry.text:
-                continue
-            trans = {"account": params["name"], "subaccount": cardname(card)}
-            parsetransaction(trans, entry.text.split("\n"))
-            transactions.append(trans)
-        Select(b.find_element_by_id("date-select")).select_by_value("1")
-        b.find_elements_by_xpath("//table[@id='transaction-details-search']//input")[-1].click()
-        time.sleep(4)
-        [x.click() for x in b.find_elements_by_class_name("activator")]
-        for entry in b.find_elements_by_xpath("//table[@id='transaction-details-detail']//tbody"):
-            if not entry.text:
-                continue
-            trans = {"account": params["name"], "subaccount": cardname(card)}
-            parsetransaction(trans, entry.text.split("\n"))
-            transactions.append(trans)
+        balances.append({"account": params["name"], "subaccount": cardname(card), "balance": -int(balance.replace("$","").replace(".","").replace(",","")), "date": datetime.date.today()})
+        for page in range(3):
+            if page:
+                Select(b.find_element_by_id("date-select")).select_by_value(str(page))
+                b.find_elements_by_xpath("//table[@id='transaction-details-search']//input")[-1].click()
+                time.sleep(4)
+            [x.click() for x in b.find_elements_by_class_name("activator")]
+            skipped = 0
+            for entry in b.find_elements_by_xpath("//table[@id='transaction-details-detail']//tbody"):
+                if not entry.text:
+                    continue
+                trans = {"account": params["name"], "subaccount": cardname(card)}
+                parsetransaction(trans, entry.text.split("\n"))
+                if trans["date"] < params["lastdate"]:
+                    skipped += 1
+                    continue
+                if trans["id"] in params["seenids"]:
+                    skipped += 1
+                    continue
+                transactions.append(trans)
+            if skipped > 3:
+                break
         b.back()
         time.sleep(1)
     b.find_element_by_xpath("//img[@alt='logout']").click()
