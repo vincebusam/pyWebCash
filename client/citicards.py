@@ -30,7 +30,7 @@ def parsetransaction(trans, lines):
     for line in lines[1:]:
         if ":" in line:
             l = line.split(":",1)
-            trans["attr_"+l[0]] = l[1]
+            trans["attr_"+l[0]] = l[1].strip()
     trans["id"] = "%s-%s-%s-%s" % (trans["date"], trans["account"], trans["subaccount"], trans.get("attr_Reference Number",hashlib.sha1(trans["desc"]).hexdigest()))
     return trans
 
