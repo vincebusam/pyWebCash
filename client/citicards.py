@@ -28,6 +28,7 @@ def downloadaccount(params):
         if balance == "$0.00":
             b.back()
             continue
+        [x.click() for x in b.find_elements_by_class_name("activator")]
         for entry in b.find_elements_by_xpath("//table[@id='transaction-details-detail']//tbody"):
             print entry.text
         Select(b.find_element_by_id("date-select")).select_by_value("1")
