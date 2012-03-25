@@ -95,6 +95,8 @@ elif action == "logout":
     cookies["sessionkey"] = ""
     cookies["sessionkey"]["expires"] = expire
     json_print(True, cookies)
+elif action == "checklogin":
+    json_print(True)
 elif action == "newtransactions":
     try:
         data = json.loads(form.getfirst("data"))
