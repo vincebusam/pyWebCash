@@ -20,6 +20,10 @@ def downloadaccount(params):
     b.find_element_by_class_name("login-submit").click()
     cards = [x.text for x in b.find_elements_by_class_name("card_info")]
     for card in cards:
+        for loop in range(5):
+            if b.find_elements_by_link_text(card):
+                break
+            time.sleep(1)
         b.find_element_by_link_text(card).click()
         if not b.find_elements_by_class_name("curr_balance"):
             b.back()
@@ -38,6 +42,7 @@ def downloadaccount(params):
         for entry in b.find_elements_by_xpath("//table[@id='transaction-details-detail']//tbody"):
             print entry.text
         b.back()
+        time.sleep(1)
 
 if __name__ == "__main__":
 
