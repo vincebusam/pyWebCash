@@ -46,15 +46,19 @@ if os.getenv("HTTP_COOKIE"):
         if os.path.exists(sessionfn) and os.path.getmtime(sessionfn) < (time.time()-config.sessiontimeout):
             os.remove(sessionfn)
         if not os.path.exists(sessionfn):
-            exit_error(403, "Session Expired")
-        try:
-            session = aesjsonfile.load(sessionfn, cookies["sessionkey"].value)
-        except:
-            exit_error(403,"Bad Session Token: %s" (e))
-        if not username:
-            username = session["username"]
-        if not password:
-            password = session["password"]
+            if (not username or not password):
+                exit_error(403, "Session Expired")
+            else:
+                sessionfn = None
+        else:
+            try:
+                session = aesjsonfile.load(sessionfn, cookies["sessionkey"].value)
+            except:
+                exit_error(403,"Bad Session Token: %s" (e))
+            if not username:
+                username = session["username"]
+            if not password:
+                password = session["password"]
     except (Cookie.CookieError, KeyError):
         pass
 
