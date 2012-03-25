@@ -24,9 +24,11 @@ def parsetransaction(trans, lines):
     date = lines[0].split()[0].split("/")
     trans["date"] = "%s-%s-%s" % (date[2],date[0],date[1])
     trans["dispamount"] = lines[0].split()[-1]
-    # Need to negate amount!
-    trans["amount"] = -int(trans["dispamount"].replace("$","").replace(".","").replace(",",""))
     trans["desc"] = " ".join(lines[0].split()[1:-1])
+    trans["amount"] = int(trans["dispamount"].replace("$","").replace(".","").replace(",",""))
+    # Need to negate amount if not AUTOPAY!
+    if not trans["desc"].startswith("AUTOPAY"):
+        trans["amount"] = -int(trans["amount"])
     for line in lines[1:]:
         if ":" in line:
             l = line.split(":",1)
