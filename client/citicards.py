@@ -36,7 +36,7 @@ def parsetransaction(trans, lines):
 
 def downloadaccount(params):
     if "password" not in params:
-        params["password"] = getpass.getpass("Citi Credit Cards Password for %s: " % (params["username"])
+        params["password"] = getpass.getpass("Citi Credit Cards Password for %s: " % (params["username"]))
     params.setdefault("name", "citicards")
     b = webdriver.Chrome()
     b.get("https://creditcards.citi.com/")
