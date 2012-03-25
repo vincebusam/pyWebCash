@@ -43,6 +43,9 @@ def downloadaccount(params):
             print entry.text
         b.back()
         time.sleep(1)
+    b.find_element_by_xpath("//img[@alt='logout']").click()
+    time.sleep(2)
+    b.close()
 
 if __name__ == "__main__":
 
