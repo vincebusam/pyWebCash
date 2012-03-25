@@ -25,10 +25,8 @@ def parsetransaction(trans, lines):
     trans["date"] = datetime.date(date[2],date[0],date[1])
     trans["dispamount"] = lines[0].split()[-1]
     trans["desc"] = " ".join(lines[0].split()[1:-1])
-    trans["amount"] = int(trans["dispamount"].replace("$","").replace(".","").replace(",",""))
-    # Need to negate amount if not AUTOPAY!
-    if not trans["desc"].startswith("AUTOPAY"):
-        trans["amount"] = -int(trans["amount"])
+    # Need to negate amount!
+    trans["amount"] = -int(trans["dispamount"].replace("$","").replace(".","").replace(",",""))
     for line in lines[1:]:
         if ":" in line:
             l = line.split(":",1)
