@@ -21,7 +21,7 @@ def cardname(card):
         return "AmEx"
 
 def parsetransaction(trans, lines):
-    date = lines[0].split()[0].split("/")
+    date = map(int,lines[0].split()[0].split("/"))
     trans["date"] = datetime.date(date[2],date[0],date[1])
     trans["dispamount"] = lines[0].split()[-1]
     trans["desc"] = " ".join(lines[0].split()[1:-1])
@@ -79,7 +79,7 @@ def downloadaccount(params):
                     continue
                 trans = {"account": params["name"], "subaccount": cardname(card)}
                 parsetransaction(trans, entry.text.split("\n"))
-                if trans["date"] < params["lastdate"]:
+                if trans["date"] < params["lastcheck"]:
                     skipped += 1
                     continue
                 if trans["id"] in params["seenids"]:
