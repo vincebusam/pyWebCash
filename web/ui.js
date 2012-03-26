@@ -23,6 +23,7 @@ function loadtransactions() {
 $(document).ready(function () {
   $("#login").hide();
   $("#transactions").hide();
+
   $.ajax({
     type: "POST",
     url: apiurl,
@@ -39,6 +40,7 @@ $(document).ready(function () {
       $("#login").show();
     }
   });
+
   $("#loginsubmit").click(function () {
     $.ajax({
       type: "POST",
@@ -58,4 +60,5 @@ $(document).ready(function () {
       }
     });
   });
+
 });
