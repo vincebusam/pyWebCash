@@ -2,6 +2,35 @@ apiurl = "api.py";
 loadedtransactions = [];
 showing = -1;
 
+function decoratedollar() {
+  if ($(this).html().substring(0,1) == "$")
+    return;
+  amount = parseInt($(this).html());
+  if (amount > 0)
+    $(this).addClass("posnum");
+  $(this).html("$"+Math.abs(amount/100).toFixed(2));
+}
+
+function loadaccounts() {
+  $.ajax({
+    type: "POST",
+    url: apiurl,
+    data: { "action": "accounts" },
+    success: function(data) {
+      for (i in data) {
+        for (j in data[i]["subaccounts"]) {
+          $("#accountstablebody").append("<tr><td>"+data[i]["name"]+"</td><td>"+data[i]["subaccounts"][j]["name"]+"</td><td class='dollar'>"+data[i]["subaccounts"][j]["amount"]+"</td><td>"+data[i]["subaccounts"][j]["date"]+"</td></tr>");
+        }
+      }
+      $(".dollar").each(decoratedollar);
+      $("#accounts").show();
+    },
+    error: function() {
+      alert("Error loading accounts");
+    }
+  });
+}
+
 function showtransaction(t) {
   if (showing == t) {
     $("#transactiondetail").hide();
@@ -33,15 +62,11 @@ function loadtransactions() {
         total += data[t]["amount"];
       }
       $("#transactionsum").html(total);
-      $(".dollar").each(function() {
-        amount = parseInt($(this).html());
-        if (amount > 0)
-          $(this).addClass("posnum");
-        $(this).html("$"+Math.abs(amount/100).toFixed(2));
-      });
+      $(".dollar").each(decoratedollar);
       $(".transaction").click(function() {
         showtransaction(parseInt($(this).attr("id").substring(5)));
       });
+      $("#transactions").show();
     },
     error: function() {
       alert("Transaction loading error");
@@ -53,6 +78,7 @@ $(document).ready(function () {
   $("#login").hide();
   $("#transactions").hide();
   $("#transactiondetail").hide();
+  $("#accounts").hide();
 
   $.ajax({
     type: "POST",
@@ -60,7 +86,7 @@ $(document).ready(function () {
     data: { "action": "checklogin" },
     success: function(data) {
       if (data) {
-        $("#transactions").show();
+        loadaccounts();
         loadtransactions();
       } else {
         $("#login").show();
@@ -79,7 +105,7 @@ $(document).ready(function () {
       success: function(data) {
         if (data) {
           $("#login").hide();
-          $("#transactions").show();
+          loadaccounts();
           loadtransactions();
         } else {
           alert("Login Failed");
