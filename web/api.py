@@ -127,7 +127,5 @@ elif action == "image" or query.get("image"):
         print img
     else:
         exit_error(404, "Image not found")
-elif action == "gettransactions":
-    json_print(mydb.search())
 else:
     exit_error(404,"Method not found")
