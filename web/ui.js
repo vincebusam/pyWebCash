@@ -32,6 +32,31 @@ function loadaccounts() {
   });
 }
 
+function savetransaction() {
+  if (editedfields.length > 0) {
+    //alert("Save " + editedfields.join() + " for " + loadedtransactions[showing]["id"]);
+    updatejson = new Object();
+    for (f in editedfields)
+      updatejson[editedfields[f]] = $("#transactiondetail > #"+editedfields[f]).html();
+    $.ajax({
+      type: "POST",
+      url: apiurl,
+      data: { "action": "updatetransaction", "id": loadedtransactions[showing]["id"], "data" : JSON.stringify(updatejson) },
+      success: function(data) {
+        if (data) {
+          showtransaction(showing);
+          loadtransactions();
+        } else {
+          alert("Error saving transaction");
+        }
+      },
+      error: function() {
+        alert("HTTP Error saving transaction");
+      }
+    });
+  }
+}
+
 function showtransaction(t) {
   if (showing == t) {
     $("#transactiondetail").hide();
@@ -101,6 +126,8 @@ $(document).ready(function () {
     }
     return $this;
   });
+
+  $("#transactiondetail > #save").click(savetransaction);
 
   $.ajax({
     type: "POST",

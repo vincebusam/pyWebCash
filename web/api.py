@@ -114,10 +114,12 @@ elif action == "search":
                            int(form.getfirst("limit") or 100)))
 elif action == "updatetransaction":
     try:
-        data = json.loads(form.getfirst("data"))
+        data = json.loads(form.getfirst("data") or "{}")
+        if not data:
+            exit_error(400, "Bad transactions: no data")
     except Exception, e:
         exit_error(400, "Bad transactions: %s %s" % (e, form.getfirst("data")[:20]))
-    json_print(mydb.updatetransaction(form.getfirst("id"),data))
+    json_print(mydb.updatetransaction(form.getfirst("id"), data, save=True))
 elif action == "image" or query.get("image"):
     img = mydb.getimage(form.getfirst("id") or query["image"][0])
     if img:
