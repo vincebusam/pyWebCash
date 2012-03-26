@@ -62,6 +62,10 @@ class DB(object):
                 if type(trans[k]) != int or int(query[k].split(":")[1]) != trans[k]:
                     return False
                 continue
+            if query[k].startswith("$ne:"):
+                if type(trans[k]) != int or int(query[k].split(":")[1]) == trans[k]:
+                    return False
+                continue
             if query[k].startswith("$abseq:"):
                 if type(trans[k]) != int or int(query[k].split(":")[1]) != abs(trans[k]):
                     return False
