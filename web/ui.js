@@ -1,6 +1,7 @@
 apiurl = "api.py";
 loadedtransactions = [];
 showing = -1;
+editedfields = []
 
 function decoratedollar() {
   if ($(this).html().substring(0,1) == "$")
@@ -38,14 +39,20 @@ function showtransaction(t) {
     return;
   }
   showing = t;
-  $("#transactiondetail").show();
-  newhtml = "Transaction Detail<br>\n";
-  newhtml += loadedtransactions[t]["desc"] + "<br>\n";
+  editedfields = [];
+  $("#transactiondetail > #file").hide();
+  $("#transactiondetail > div").each(function () {
+    name = $(this).attr("id");
+    $("#transactiondetail > #"+name).html();
+    if (loadedtransactions[t][name] != undefined)
+      $("#transactiondetail > #"+name).html(loadedtransactions[t][name]);
+  });
+  //$("#transactiondetail > #desc").html(loadedtransactions[t]["desc"]);
   if (loadedtransactions[t]["file"] != undefined) {
-    newhtml += loadedtransactions[t]["file"] + "<br>\n";
-    newhtml += "<img src='"+apiurl+"?image="+loadedtransactions[t]["id"]+"'><br>\n";
+    $("#transactiondetail > #file").attr("src",apiurl+"?image="+loadedtransactions[t]["id"]);
+    $("#transactiondetail > #file").show();
   }
-  $("#transactiondetail").html(newhtml);
+  $("#transactiondetail").show();
 }
 
 function loadtransactions() {
@@ -79,6 +86,20 @@ $(document).ready(function () {
   $("#transactions").hide();
   $("#transactiondetail").hide();
   $("#accounts").hide();
+
+  $('[contenteditable]').live('focus', function() {
+    var $this = $(this);
+    $this.data('before', $this.html());
+      return $this;
+  }).live('blur keyup paste', function() {
+    var $this = $(this);
+    if ($this.data('before') !== $this.html()) {
+      $this.data('before', $this.html());
+      if (editedfields.indexOf($(this).attr("id")) == -1)
+        editedfields.push($(this).attr("id"));
+    }
+    return $this;
+  });
 
   $.ajax({
     type: "POST",
