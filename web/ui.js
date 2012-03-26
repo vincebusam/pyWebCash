@@ -9,7 +9,7 @@ function loadtransactions() {
     success: function(data) {
       total = 0;
       for (t=0; t<data.length; t++) {
-        $("#transtablebody").append("<tr><td>"+data[t]["date"]+"</td><td>"+data[t]["desc"]+"</td><td class='dollar'>"+data[t]["amount"]+"</td></tr>\n");
+        $("#transtablebody").append("<tr><td class='date'>"+data[t]["date"]+"</td><td class='description'>"+data[t]["desc"]+"</td><td class='dollar'>"+data[t]["amount"]+"</td></tr>\n");
         total += data[t]["amount"];
       }
       $("#transactionsum").html(total);
