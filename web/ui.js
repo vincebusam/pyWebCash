@@ -52,6 +52,7 @@ function showtransaction(t) {
     $("#transactiondetail > #file").attr("src",apiurl+"?image="+loadedtransactions[t]["id"]);
     $("#transactiondetail > #file").show();
   }
+  $(".dollar").each(decoratedollar);
   $("#transactiondetail").show();
 }
 
