@@ -119,7 +119,7 @@ elif action == "updatetransaction":
         exit_error(400, "Bad transactions: %s %s" % (e, form.getfirst("data")[:20]))
     json_print(mydb.updatetransaction(form.getfirst("id"),data))
 elif action == "image" or query.get("image"):
-    img = db.getimage(form.getfirst("id") or query["image"][0])
+    img = mydb.getimage(form.getfirst("id") or query["image"][0])
     if img:
         print "Content-type: image/png"
         print "Content-length: %s" % (len(img))
