@@ -9,10 +9,16 @@ function loadtransactions() {
     success: function(data) {
       total = 0;
       for (t=0; t<data.length; t++) {
-        $("#transtablebody").append("<tr><td>"+data[t]["date"]+"</td><td>"+data[t]["desc"]+"</td><td>"+data[t]["amount"]+"</td></tr>\n");
+        $("#transtablebody").append("<tr><td>"+data[t]["date"]+"</td><td>"+data[t]["desc"]+"</td><td class='dollar'>"+data[t]["amount"]+"</td></tr>\n");
         total += data[t]["amount"];
       }
       $("#transactionsum").html(total);
+      $(".dollar").each(function() {
+        amount = parseInt($(this).html());
+        if (amount > 0)
+          $(this).addClass("posnum");
+        $(this).html("$"+Math.abs(amount/100).toFixed(2));
+      });
     },
     error: function() {
       alert("Transaction loading error");
