@@ -6,8 +6,9 @@ function loadtransactions() {
     url: apiurl,
     data: { "action": "gettransactions" },
     success: function(data) {
+      $("#transtablebody").html("");
       for (t=0; t<data.length; t++) {
-        $("#transactions").html($("#transactions").html() + data[t]["desc"] + "<br>\n");
+        $("#transtablebody").append("<tr><td>"+data[t]["date"]+"</td><td>"+data[t]["desc"]+"</td><td>"+data[t]["amount"]+"</td></tr>\n");
       }
     },
     error: function() {
