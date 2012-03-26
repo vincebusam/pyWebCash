@@ -5,7 +5,7 @@ function loadtransactions() {
   $.ajax({
     type: "POST",
     url: apiurl,
-    data: { "action": "gettransactions" },
+    data: { "action": "search", "limit": 25, "query": '{"amount": "$ne:0" }' },
     success: function(data) {
       total = 0;
       for (t=0; t<data.length; t++) {
