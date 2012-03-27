@@ -3,13 +3,16 @@ import os
 import sys
 import copy
 import json
+import numpy
 import shutil
 import base64
 import string
 import random
 import getpass
 import datetime
+import StringIO
 import aesjsonfile
+from PIL import Image
 
 sys.path.append("../")
 
@@ -20,6 +23,20 @@ try:
     prctl.prctl(prctl.DUMPABLE, 0)
 except ImportError:
     pass
+
+def imgtrim(img):
+    # This will trim any whitespace around the image
+    # http://stackoverflow.com/questions/9396312/use-python-pil-or-similar-to-shrink-whitespace
+    im = Image.open(StringIO.StringIO(img))
+    pix = numpy.asarray(im)
+    pix = pix[:,:,0:3]
+    idx = numpy.where(pix-255)[0:2]
+    box = map(min,idx)[::-1] + map(max,idx)[::-1]
+    region = im.crop(box)
+    outio = StringIO.StringIO()
+    region.save(outio, "png")
+    outio.seek(0)
+    return outio.read()
 
 def parse_amount(amount):
     if type(amount) == int:
@@ -129,7 +146,7 @@ class DB(object):
                 trans["filekey"] = ''.join(random.choice(string.ascii_letters + string.digits) for x in range(32))
                 if not os.path.exists(os.path.dirname(self.getimgfn(trans))):
                     os.mkdir(os.path.dirname(self.getimgfn(trans)))
-                img = base64.b64decode(data["files"][trans["file"]])
+                img = imgtrim(base64.b64decode(data["files"][trans["file"]]))
                 img = aesjsonfile.enc(img, trans["filekey"])
                 open("%s/%s/%s" % (config.imgdir, self.username, trans["file"]), "w").write(img)
                 if trans["id"] in self.getallids():
