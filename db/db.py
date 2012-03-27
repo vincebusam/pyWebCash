@@ -65,11 +65,11 @@ class DB(object):
             if not query[k].startswith("$") and query[k].lower() not in trans[k].lower():
                 return False
             if query[k].startswith("$eq:"):
-                if type(trans[k]) != int or int(query[k].split(":")[1]) != trans[k]:
+                if query[k].split(":")[1].lower() != str(trans[k]).lower():
                     return False
                 continue
             if query[k].startswith("$ne:"):
-                if type(trans[k]) != int or int(query[k].split(":")[1]) == trans[k]:
+                if query[k].split(":")[1].lower() == trans[k].lower():
                     return False
                 continue
             if query[k].startswith("$abseq:"):
