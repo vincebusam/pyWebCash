@@ -3,6 +3,37 @@ loadedtransactions = [];
 showing = -1;
 editedfields = []
 
+function loginsuccess() {
+  $("#login").hide();
+  $("#bottomlinks").show();
+  loadaccounts();
+  loadtransactions();
+}
+
+function clearpage() {
+  $("#login").show();
+  $("#transactions").hide();
+  $("#transactiondetail").hide();
+  $("#accounts").hide();
+  $("#bottomlinks").hide();
+
+  $.ajax({
+    type: "POST",
+    url: apiurl,
+    data: { "action": "checklogin" },
+    success: function(data) {
+      if (data) {
+        loginsuccess();
+      } else {
+        $("#login").show();
+      }
+    },
+    error: function() {
+      $("#login").show();
+    }
+  });
+}
+
 function decoratedollar() {
   if ($(this).text().substring(0,1) == "$")
     return;
@@ -107,11 +138,6 @@ function loadtransactions() {
 }
 
 $(document).ready(function () {
-  $("#login").hide();
-  $("#transactions").hide();
-  $("#transactiondetail").hide();
-  $("#accounts").hide();
-
   $('[contenteditable]').live('focus', function() {
     var $this = $(this);
     $this.data('before', $this.text());
@@ -139,21 +165,18 @@ $(document).ready(function () {
     $("#transactiondetail > #dateselect").datepicker("show");
   });
 
-  $.ajax({
-    type: "POST",
-    url: apiurl,
-    data: { "action": "checklogin" },
-    success: function(data) {
-      if (data) {
-        loadaccounts();
-        loadtransactions();
-      } else {
-        $("#login").show();
+  $("#logout").click(function(event) {
+    $.ajax({
+      type: "POST",
+      url: apiurl,
+      data: { "action": "logout" },
+      success: function() {
+        clearpage();
+      },
+      error: function() {
+        clearpage();
       }
-    },
-    error: function() {
-      $("#login").show();
-    }
+    });
   });
 
   $("#loginsubmit").click(function () {
@@ -163,9 +186,7 @@ $(document).ready(function () {
       data: { "action": "login", "username": $("#username").val(), "password": $("#password").val() },
       success: function(data) {
         if (data) {
-          $("#login").hide();
-          loadaccounts();
-          loadtransactions();
+          loginsuccess();
         } else {
           alert("Login Failed");
         }
@@ -175,5 +196,7 @@ $(document).ready(function () {
       }
     });
   });
+
+  clearpage();
 
 });
