@@ -3,10 +3,12 @@ import os
 import sys
 import copy
 import json
+import shutil
 import base64
 import string
 import random
 import getpass
+import datetime
 import aesjsonfile
 
 sys.path.append("../")
@@ -37,7 +39,11 @@ class DB(object):
         self.db.setdefault("accounts",[])
 
     def save(self):
-        aesjsonfile.dump("%s/%s.json"%(config.dbdir, self.username), self.db, self.password)
+        aesjsonfile.dump("%s/%s.json" % (config.dbdir, self.username), self.db, self.password)
+
+    def backup(self):
+        shutil.copyfile("%s/%s.json" % (config.dbdir, self.username),
+                        "%s/%s.json-backup-%s" % (config.dbdir, self.username, str(datetime.datetime.now().replace(microsecond=0)).replace(" ","_")))
 
     def accountstodo(self):
         ret = copy.deepcopy(self.db["accounts"])
