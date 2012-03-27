@@ -3,6 +3,11 @@ loadedtransactions = [];
 showing = -1;
 editedfields = []
 
+function showerror(err) {
+  $("#errormsg").text(err);
+  $("#errormsg").dialog("open");
+}
+
 function loginsuccess() {
   $("#login").hide();
   $("#bottomlinks").show();
@@ -16,6 +21,7 @@ function clearpage() {
   $("#transactiondetail").dialog("close");
   $("#accounts").hide();
   $("#bottomlinks").hide();
+  $("#errormsg").hide();
 
   $.ajax({
     type: "POST",
@@ -64,7 +70,7 @@ function loadaccounts() {
       $("#accounts").show();
     },
     error: function() {
-      alert("Error loading accounts");
+      showerror("Error loading accounts");
     }
   });
 }
@@ -79,7 +85,7 @@ function savetransaction() {
       if (newamount.indexOf(".") == -1) {
         newamount += ".00";
       } else if (newamount.indexOf(".") != (newamount.length-3)) {
-        alert("Bad amount");
+        showerror("Bad amount");
         return;
       }
       newamount = newamount.replace(".","");
@@ -97,11 +103,11 @@ function savetransaction() {
           showtransaction(showing);
           loadtransactions();
         } else {
-          alert("Error saving transaction");
+          showerror("Error saving transaction");
         }
       },
       error: function() {
-        alert("HTTP Error saving transaction");
+        showerror("HTTP Error saving transaction");
       }
     });
   }
@@ -152,7 +158,7 @@ function loadtransactions() {
       $("#transactions").show();
     },
     error: function() {
-      alert("Transaction loading error");
+      showerror("Transaction loading error");
     }
   });
 }
@@ -195,6 +201,12 @@ $(document).ready(function () {
     title: "Edit Transaction"
   });
 
+  $("#errormsg").dialog({
+    modal: true,
+    autoOpen: false,
+    title: "Error"
+  });
+
   $("#logout").click(function(event) {
     $.ajax({
       type: "POST",
@@ -218,11 +230,11 @@ $(document).ready(function () {
         if (data) {
           loginsuccess();
         } else {
-          alert("Login Failed");
+          showerror("Login Failed");
         }
       },
       error: function() {
-        alert("Login Error");
+        showerror("Login Error");
       }
     });
   });
