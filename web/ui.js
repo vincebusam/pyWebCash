@@ -4,12 +4,12 @@ showing = -1;
 editedfields = []
 
 function decoratedollar() {
-  if ($(this).html().substring(0,1) == "$")
+  if ($(this).text().substring(0,1) == "$")
     return;
-  amount = parseInt($(this).html());
+  amount = parseInt($(this).text());
   if (amount > 0)
     $(this).addClass("posnum");
-  $(this).html("$"+Math.abs(amount/100).toFixed(2));
+  $(this).text("$"+Math.abs(amount/100).toFixed(2));
 }
 
 function loadaccounts() {
@@ -37,7 +37,7 @@ function savetransaction() {
     //alert("Save " + editedfields.join() + " for " + loadedtransactions[showing]["id"]);
     updatejson = new Object();
     for (f in editedfields)
-      updatejson[editedfields[f]] = $("#transactiondetail > #"+editedfields[f]).html();
+      updatejson[editedfields[f]] = $("#transactiondetail > #"+editedfields[f]).text();
     $.ajax({
       type: "POST",
       url: apiurl,
@@ -68,11 +68,10 @@ function showtransaction(t) {
   $("#transactiondetail > #file").hide();
   $("#transactiondetail > div").each(function () {
     name = $(this).attr("id");
-    $("#transactiondetail > #"+name).html();
+    $("#transactiondetail > #"+name).text();
     if (loadedtransactions[t][name] != undefined)
-      $("#transactiondetail > #"+name).html(loadedtransactions[t][name]);
+      $("#transactiondetail > #"+name).text(loadedtransactions[t][name]);
   });
-  //$("#transactiondetail > #desc").html(loadedtransactions[t]["desc"]);
   if (loadedtransactions[t]["file"] != undefined) {
     $("#transactiondetail > #file").attr("src",apiurl+"?image="+loadedtransactions[t]["id"]);
     $("#transactiondetail > #file").show();
@@ -94,7 +93,7 @@ function loadtransactions() {
         $("#transtablebody").append("<tr class='transaction' id='trans"+t+"'><td class='date'>"+data[t]["date"]+"</td><td class='description'>"+data[t]["desc"]+"</td><td class='dollar'>"+data[t]["amount"]+"</td></tr>\n");
         total += data[t]["amount"];
       }
-      $("#transactionsum").html(total);
+      $("#transactionsum").text(total);
       $(".dollar").each(decoratedollar);
       $(".transaction").click(function() {
         showtransaction(parseInt($(this).attr("id").substring(5)));
@@ -115,12 +114,12 @@ $(document).ready(function () {
 
   $('[contenteditable]').live('focus', function() {
     var $this = $(this);
-    $this.data('before', $this.html());
+    $this.data('before', $this.text());
       return $this;
   }).live('blur keyup paste', function() {
     var $this = $(this);
-    if ($this.data('before') !== $this.html()) {
-      $this.data('before', $this.html());
+    if ($this.data('before') !== $this.text()) {
+      $this.data('before', $this.text());
       if (editedfields.indexOf($(this).attr("id")) == -1)
         editedfields.push($(this).attr("id"));
     }
