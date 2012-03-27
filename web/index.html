@@ -3,8 +3,10 @@
   <head>
     <meta charset="utf-8">
     <title>Finance Tracking</title>
-    <link rel="stylesheet" href="style.css">
+    <link type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/themes/ui-lightness/jquery-ui.css" rel="Stylesheet" />
+    <link type="text/css" rel="stylesheet" href="style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.js"></script>
     <script src="ui.js"></script>
   </head>
   <body>
@@ -37,9 +39,10 @@
 
     <div id="transactiondetail">
       Transaction Detail
+      <input id="dateselect" type="hidden" />
       <div id="amount" contenteditable=true class="dollar"></div>
       <div id="desc" contenteditable=true></div>
-      <div id="date" contenteditable=true></div>
+      <div id="date"></div>
       <button type="button" id="save">Save</button>
       <img id="file">
     </div>

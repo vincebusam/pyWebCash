@@ -128,6 +128,17 @@ $(document).ready(function () {
   });
 
   $("#transactiondetail > #save").click(savetransaction);
+  $("#transactiondetail > #dateselect").datepicker({
+    dateFormat: "yy-mm-dd",
+    altField: "#transactiondetail > #date",
+    onSelect: function(dateText, inst) {
+      $("#transactiondetail > #date").text(dateText);
+      editedfields.push("date");
+    }
+  });
+  $("#transactiondetail > #date").click(function() {
+    $("#transactiondetail > #dateselect").datepicker("show");
+  });
 
   $.ajax({
     type: "POST",
