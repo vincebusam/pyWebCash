@@ -180,3 +180,7 @@ if __name__ == "__main__":
     print json.dumps(db.search(query={"amount":"$lt:0"},limit=2), indent=2)
     print "Income:"
     print json.dumps(db.search(query={"amount":"$gt:0"},limit=2), indent=2)
+    print "Target:"
+    print json.dumps(db.search(query={"desc":"$eq:Target"},limit=2), indent=2)
+    print "Backup:"
+    db.backup()
