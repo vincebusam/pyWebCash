@@ -1,6 +1,12 @@
 import time
 import datetime
 
+try:
+    import prctl
+    prctl.prctl(prctl.DUMPABLE, 0)
+except ImportError:
+    pass
+
 def scrolluntilclick(b,e):
     for retry in range(80):
         try:
