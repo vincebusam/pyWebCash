@@ -11,7 +11,7 @@ function loginsuccess() {
 }
 
 function clearpage() {
-  $("#login").show();
+  $("#login").hide();
   $("#transactions").hide();
   $("#transactiondetail").hide();
   $("#accounts").hide();
