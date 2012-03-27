@@ -123,12 +123,18 @@ function showtransaction(t) {
   editedfields = [];
   $("#transactiondetail > #save").hide();
   $("#transactiondetail > #file").hide();
-  $("#transactiondetail > div").each(function () {
+  $("#transactiondetail .transdata").each(function () {
     name = $(this).attr("id");
-    $("#transactiondetail > #"+name).text();
+    $(this).text();
     if (loadedtransactions[t][name] != undefined)
-      $("#transactiondetail > #"+name).text(loadedtransactions[t][name]);
+      $(this).text(loadedtransactions[t][name]);
   });
+  $("#transactiondetail > #attr").html();
+  for (key in loadedtransactions[t]) {
+    if (key.indexOf("attr_") == 0) {
+      $("#transactiondetail > #attr").append(key.substr(5) + ": " + loadedtransactions[t][key] + "<br>");
+    }
+  }
   if (loadedtransactions[t]["file"] != undefined) {
     $("#transactiondetail > #file").attr("src",apiurl+"?image="+loadedtransactions[t]["id"]);
     $("#transactiondetail > #file").show();

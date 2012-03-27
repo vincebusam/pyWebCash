@@ -35,11 +35,18 @@
 
     <div id="transactiondetail">
       <input id="dateselect" type="hidden" />
-      <div id="date"></div>
-      <div id="amount" contenteditable=true class="dollar"></div>
-      <div id="desc" contenteditable=true></div>
-      <button type="button" id="save">Save</button>
+      <div id="date" class="transdata"></div>
+      <div id="amount" contenteditable=true class="dollar transdata"></div>
+      <div id="desc" contenteditable=true class="transdata"></div>
+      <div id="static">
+      Original Description: <span id="orig_desc" class="transdata"></span><br>
+      ID: <span id="id" class="transdata"></span><br>
+      Account: <span id="account" class="transdata"></span>/<span id="subaccount" class="transdata"></span><br>
+      Shown Amount: <span id="dispamount" class="transdata"></span><br>
+      </div>
+      <div id="attr"></div>
       <img id="file">
+      <button type="button" id="save">Save</button>
     </div>
 
     <div id="bottomlinks">
