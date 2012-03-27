@@ -85,7 +85,7 @@ function loadtransactions() {
   $.ajax({
     type: "POST",
     url: apiurl,
-    data: { "action": "search", "limit": 25, "query": '{"amount": "$ne:0" }' },
+    data: { "action": "search", "limit": 25, "query": JSON.stringify({"amount": "$ne:0" }) },
     success: function(data) {
       total = 0;
       loadedtransactions = data;
