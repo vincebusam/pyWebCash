@@ -51,7 +51,7 @@ function loadaccounts() {
     success: function(data) {
       for (i in data) {
         for (j in data[i]["subaccounts"]) {
-          $("#accountstablebody").append("<tr><td>"+data[i]["name"]+"</td><td>"+data[i]["subaccounts"][j]["name"]+"</td><td class='dollar'>"+data[i]["subaccounts"][j]["amount"]+"</td><td>"+data[i]["subaccounts"][j]["date"]+"</td></tr>");
+          $("#accounts").append("<div class='account'><div class='accountname'>"+data[i]["name"]+"</div><div class='subname'>"+data[i]["subaccounts"][j]["name"]+"</div><div class='dollar accountbalance'>"+data[i]["subaccounts"][j]["amount"]+"</div><div class='accountupdate'>"+data[i]["subaccounts"][j]["date"]+"</div></div>");
         }
       }
       $(".dollar").each(decoratedollar);
