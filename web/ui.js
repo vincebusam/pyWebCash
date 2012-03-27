@@ -158,7 +158,8 @@ $(document).ready(function () {
     altField: "#transactiondetail > #date",
     onSelect: function(dateText, inst) {
       $("#transactiondetail > #date").text(dateText);
-      editedfields.push("date");
+      if (editedfields.indexOf("date") == -1)
+        editedfields.push("date");
     }
   });
   $("#transactiondetail > #date").click(function() {
