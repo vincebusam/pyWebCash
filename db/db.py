@@ -13,6 +13,12 @@ sys.path.append("../")
 
 import config
 
+try:
+    import prctl
+    prctl.prctl(prctl.DUMPABLE, 0)
+except ImportError:
+    pass
+
 def parse_amount(amount):
     if type(amount) == int:
         return amount
