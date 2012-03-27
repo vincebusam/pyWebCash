@@ -75,7 +75,7 @@ class DB(object):
                     return False
                 continue
             if query[k].startswith("$ne:"):
-                if query[k].split(":")[1].lower() == trans[k].lower():
+                if query[k].split(":")[1].lower() == str(trans[k]).lower():
                     return False
                 continue
             if query[k].startswith("$abseq:"):
