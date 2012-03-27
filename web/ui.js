@@ -198,13 +198,15 @@ $(document).ready(function () {
   $("#transactiondetail").dialog({
     modal: true,
     autoOpen: false,
-    title: "Edit Transaction"
+    title: "Edit Transaction",
+    minWidth: 600
   });
 
   $("#errormsg").dialog({
     modal: true,
     autoOpen: false,
-    title: "Error"
+    title: "Error",
+    minWidth: 250
   });
 
   $("#logout").click(function(event) {
