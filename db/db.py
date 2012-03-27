@@ -152,7 +152,7 @@ class DB(object):
                 if trans["id"] in self.getallids():
                     self.updatetransaction(trans["id"], {"filekey": trans["filekey"]}, False)
             if trans["id"] not in self.getallids():
-                for k in trans.keys():
+                for k in [x for x in trans.keys() if not x.startswith("attr_") and x != "id"]:
                     trans["orig_"+k] = trans[k]
                 trans["orig_amount_str"] = trans["amount"]
                 trans["amount"] = parse_amount(trans["amount"])
