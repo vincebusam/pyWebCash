@@ -89,6 +89,7 @@ if action == "login":
     sessionfn = "%s/%s.json" % (config.sessiondir, cookies["sessionid"].value)
     aesjsonfile.dump(sessionfn, session, cookies["sessionkey"].value)
     json_print(True, cookies)
+    mydb.backup()
 elif action == "logout":
     if sessionfn and os.path.exists(sessionfn):
         os.remove(sessionfn)
@@ -101,6 +102,7 @@ elif action == "logout":
     cookies["sessionkey"]["expires"] = expire
     cookies["sessionid"]["path"] = os.path.dirname(os.getenv("REQUEST_URI") or "/")
     json_print(True, cookies)
+    mydb.backup()
 elif action == "checklogin":
     json_print(True)
 elif action == "newtransactions":
