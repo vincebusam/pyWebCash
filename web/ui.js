@@ -65,10 +65,23 @@ function loadaccounts() {
 
 function savetransaction() {
   if (editedfields.length > 0) {
-    //alert("Save " + editedfields.join() + " for " + loadedtransactions[showing]["id"]);
     updatejson = new Object();
     for (f in editedfields)
       updatejson[editedfields[f]] = $("#transactiondetail > #"+editedfields[f]).text();
+    if (editedfields.indexOf("amount") != -1) {
+      newamount = $("#transactiondetail > #amount").text().replace("$","").replace(",","");
+      if (newamount.indexOf(".") == -1) {
+        newamount += ".00";
+      } else if (newamount.indexOf(".") != (newamount.length-3)) {
+        alert("Bad amount");
+        return;
+      }
+      newamount = newamount.replace(".","");
+      if (loadedtransactions[showing]["amount"] > 0)
+        updatejson["amount"] = parseInt(newamount);
+      else
+        updatejson["amount"] = -parseInt(newamount);
+    }
     $.ajax({
       type: "POST",
       url: apiurl,
