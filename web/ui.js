@@ -13,7 +13,7 @@ function loginsuccess() {
 function clearpage() {
   $("#login").hide();
   $("#transactions").hide();
-  $("#transactiondetail").hide();
+  $("#transactiondetail").dialog("close");
   $("#accounts").hide();
   $("#bottomlinks").hide();
 
@@ -103,12 +103,13 @@ function savetransaction() {
 
 function showtransaction(t) {
   if (showing == t) {
-    $("#transactiondetail").hide();
+    $("#transactiondetail").dialog("close");
     showing = -1;
     return;
   }
   showing = t;
   editedfields = [];
+  $("#transactiondetail > #save").hide();
   $("#transactiondetail > #file").hide();
   $("#transactiondetail > div").each(function () {
     name = $(this).attr("id");
@@ -121,7 +122,7 @@ function showtransaction(t) {
     $("#transactiondetail > #file").show();
   }
   $(".dollar").each(decoratedollar);
-  $("#transactiondetail").show();
+  $("#transactiondetail").dialog("open");
 }
 
 function loadtransactions() {
@@ -159,8 +160,10 @@ $(document).ready(function () {
     var $this = $(this);
     if ($this.data('before') !== $this.text()) {
       $this.data('before', $this.text());
-      if (editedfields.indexOf($(this).attr("id")) == -1)
+      if (editedfields.indexOf($(this).attr("id")) == -1) {
         editedfields.push($(this).attr("id"));
+        $("#transactiondetail > #save").show();
+      }
     }
     return $this;
   });
@@ -171,12 +174,19 @@ $(document).ready(function () {
     altField: "#transactiondetail > #date",
     onSelect: function(dateText, inst) {
       $("#transactiondetail > #date").text(dateText);
-      if (editedfields.indexOf("date") == -1)
+      if (editedfields.indexOf("date") == -1) {
         editedfields.push("date");
+        $("#transactiondetail > #save").show();
+      }
     }
   });
   $("#transactiondetail > #date").click(function() {
     $("#transactiondetail > #dateselect").datepicker("show");
+  });
+  $("#transactiondetail").dialog({
+    modal: true,
+    autoOpen: false,
+    title: "Edit Transaction"
   });
 
   $("#logout").click(function(event) {
