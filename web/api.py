@@ -81,7 +81,11 @@ if action == "login":
     cookies = Cookie.SimpleCookie()
     session = { "username": username, "password": password }
     cookies["sessionid"] = ''.join(random.choice(string.ascii_letters + string.digits) for x in range(32))
+    cookies["sessionid"]["secure"] = True
+    cookies["sessionid"]["path"] = os.path.dirname(os.getenv("REQUEST_URI") or "/")
     cookies["sessionkey"] = ''.join(random.choice(string.ascii_letters + string.digits) for x in range(32))
+    cookies["sessionkey"]["secure"] = True
+    cookies["sessionid"]["path"] = os.path.dirname(os.getenv("REQUEST_URI") or "/")
     sessionfn = "%s/%s.json" % (config.sessiondir, cookies["sessionid"].value)
     aesjsonfile.dump(sessionfn, session, cookies["sessionkey"].value)
     json_print(True, cookies)
@@ -92,8 +96,10 @@ elif action == "logout":
     cookies = Cookie.SimpleCookie()
     cookies["sessionid"] = ""
     cookies["sessionid"]["expires"] = expire
+    cookies["sessionid"]["path"] = os.path.dirname(os.getenv("REQUEST_URI") or "/")
     cookies["sessionkey"] = ""
     cookies["sessionkey"]["expires"] = expire
+    cookies["sessionid"]["path"] = os.path.dirname(os.getenv("REQUEST_URI") or "/")
     json_print(True, cookies)
 elif action == "checklogin":
     json_print(True)
