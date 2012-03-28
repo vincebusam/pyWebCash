@@ -1,0 +1,150 @@
+{
+  "Auto & Transport": [
+    "Auto & Transport", 
+    "Auto Insurance", 
+    "Auto Payment", 
+    "Gas & Fuel", 
+    "Parking", 
+    "Public Transportation", 
+    "Service & Parts"
+  ], 
+  "Bills & Utilities": [
+    "Bills & Utilities", 
+    "Home Phone", 
+    "Internet", 
+    "Mobile Phone", 
+    "Television", 
+    "Utilities"
+  ], 
+  "Business Services": [
+    "Business Services", 
+    "Advertising", 
+    "Legal", 
+    "Office Supplies", 
+    "Printing", 
+    "Shipping"
+  ], 
+  "Education": [
+    "Education", 
+    "Books & Supplies", 
+    "Student Loan", 
+    "Tuition"
+  ], 
+  "Entertainment": [
+    "Entertainment", 
+    "Amusement", 
+    "Arts", 
+    "Movies & DVDs", 
+    "Music", 
+    "Newspapers & Magazines"
+  ], 
+  "Fees & Charges": [
+    "Fees & Charges", 
+    "ATM Fee", 
+    "Bank Fee", 
+    "Finance Charge", 
+    "Late Fee", 
+    "Service Fee", 
+    "Trade Commissions"
+  ], 
+  "Financial": [
+    "Financial", 
+    "Financial Advisor", 
+    "Life Insurance"
+  ], 
+  "Food & Dining": [
+    "Food & Dining", 
+    "Alcohol & Bars", 
+    "Coffee Shops", 
+    "Fast Food", 
+    "Groceries", 
+    "Restaurants"
+  ], 
+  "Gifts & Donations": [
+    "Gifts & Donations", 
+    "Charity", 
+    "Gift"
+  ], 
+  "Health & Fitness": [
+    "Health & Fitness", 
+    "Dentist", 
+    "Doctor", 
+    "Eyecare", 
+    "Gym", 
+    "Health Insurance", 
+    "Pharmacy"
+  ], 
+  "Home": [
+    "Home", 
+    "Furnishings", 
+    "Home Improvement", 
+    "Home Insurance", 
+    "Home Services", 
+    "Home Supplies", 
+    "Lawn & Garden", 
+    "Mortgage & Rent"
+  ], 
+  "Income": [
+    "Income", 
+    "Bonus", 
+    "Interest Income", 
+    "Paycheck", 
+    "Reimbursement", 
+    "Rental Income", 
+    "Returned Purchase"
+  ], 
+  "Kids": [
+    "Kids", 
+    "Allowance", 
+    "Baby Supplies", 
+    "Babysitter & Daycare", 
+    "Child Support", 
+    "Kids Activities", 
+    "Toys"
+  ], 
+  "Personal Care": [
+    "Personal Care", 
+    "Hair", 
+    "Laundry", 
+    "Spa & Massage"
+  ], 
+  "Pets": [
+    "Pets", 
+    "Pet Food & Supplies", 
+    "Pet Grooming", 
+    "Veterinary"
+  ], 
+  "Shopping": [
+    "Shopping", 
+    "Books", 
+    "Clothing", 
+    "Electronics & Software", 
+    "Hobbies", 
+    "Sporting Goods"
+  ], 
+  "Taxes": [
+    "Taxes", 
+    "Federal Tax", 
+    "Local Tax", 
+    "Property Tax", 
+    "Sales Tax", 
+    "State Tax"
+  ], 
+  "Transfer": [
+    "Transfer", 
+    "Credit Card Payment", 
+    "Transfer for Cash Spending"
+  ], 
+  "Travel": [
+    "Travel", 
+    "Air Travel", 
+    "Hotel", 
+    "Rental Car & Taxi", 
+    "Vacation"
+  ], 
+  "Uncategorized": [
+    "Uncategorized", 
+    "Cash & ATM", 
+    "Check"
+  ]
+}
