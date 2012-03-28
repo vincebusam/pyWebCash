@@ -46,6 +46,13 @@ def parse_amount(amount):
     amount += "0" * (2-len(amount.split(".")[1]))
     return int(amount.replace("$","").replace(",","").replace(".",""))
 
+def create_db(username, password):
+    fn = "%s/%s.json" % (config.dbdir, username)
+    if os.path.exists(fn):
+        return False
+    aesjsonfile.dump(fn, {}, password)
+    return True
+
 class DB(object):
     def __init__(self, username, password):
         self.username = username

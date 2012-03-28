@@ -310,6 +310,24 @@ $(document).ready(function () {
     });
   });
 
+  $("#newuser").click(function () {
+    $.ajax({
+      type: "POST",
+      url: apiurl,
+      data: { "action": "newuser", "username": $("#username").val(), "password": $("#password").val() },
+      success: function(data) {
+        if (data) {
+          $("#loginsubmit").click();
+        } else {
+          showerror("Username already exists");
+        }
+      },
+      error: function() {
+        showerror("Error making new user");
+      }
+    });
+  });
+
   clearpage();
 
 });

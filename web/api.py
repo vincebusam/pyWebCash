@@ -37,6 +37,16 @@ query = urlparse.parse_qs(os.getenv("QUERY_STRING") or "")
 action = form.getfirst("action")
 username = form.getfirst("username")
 password = form.getfirst("password")
+
+if action == "newuser":
+    try:
+        if username and password:
+            json_print(db.create_db(username, password));
+            sys.exit(0)
+        else:
+            exit_error(400, "Incomplete username/password")
+    except Exception, e:
+        exit_error(500, "Couldn't create new user " + e)
 sessionfn = None
 if os.getenv("HTTP_COOKIE"):
     try:
