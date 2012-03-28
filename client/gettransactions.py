@@ -5,10 +5,15 @@ import api
 import json
 import getpass
 
+sys.path.append("../")
+
+import config
+
 # Banks
 banks = {}
-import bankofamerica
-banks["bankofamerica"] = bankofamerica
+for bank in config.banks:
+    exec "import %s" % (bank)
+    banks[bank] = eval(bank)
 
 print "Login"
 print "Username: ",
