@@ -94,7 +94,7 @@ class DB(object):
 
     def matchtrans(self, trans, query):
         for k in query:
-            if k not in trans:
+            if k not in trans and not query[k].startswith("$ne:"):
                 return False
             if not query[k].startswith("$") and query[k].lower() not in trans[k].lower():
                 return False
@@ -103,7 +103,7 @@ class DB(object):
                     return False
                 continue
             if query[k].startswith("$ne:"):
-                if query[k].split(":")[1].lower() == str(trans[k]).lower():
+                if query[k].split(":")[1].lower() == str(trans.get(k)).lower():
                     return False
                 continue
             if query[k].startswith("$abseq:"):
