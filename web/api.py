@@ -47,6 +47,10 @@ if action == "newuser":
             exit_error(400, "Incomplete username/password")
     except Exception, e:
         exit_error(500, "Couldn't create new user " + e)
+elif action == "getbanks":
+    json_print(config.banks)
+    sys.exit(0)
+
 sessionfn = None
 if os.getenv("HTTP_COOKIE"):
     try:
