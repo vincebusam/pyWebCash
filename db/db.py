@@ -57,7 +57,11 @@ class DB(object):
     def __init__(self, username, password):
         self.username = username
         self.password = password
-        self.db = aesjsonfile.load("%s/%s.json"%(config.dbdir, self.username), self.password)
+        fn = "%s/%s.json" % (config.dbdir, self.username)
+        # Make a symlink to alias another username (e.g. email address) to account
+        if os.path.islink(fn):
+            self.username = os.readlink(fn).rstrip(".json")
+        self.db = aesjsonfile.load("%s/%s.json" % (config.dbdir, self.username), self.password)
         self.db.setdefault("transactions",[])
         self.db.setdefault("balances",{})
         self.db.setdefault("accounts",[])
