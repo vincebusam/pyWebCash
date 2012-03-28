@@ -20,6 +20,15 @@
 
     <div id="accounts">
     Accounts
+      <div class="account">
+        All Open
+      </div>
+      <div class="account">
+        All Transactions
+      </div>
+      <div class="account">
+        All Transactions (Including ignored)
+      </div>
     </div>
 
     <div id="transactions">
@@ -30,7 +39,24 @@
       <tbody id="transtablebody">
       </tbody>
     </table>
+    <div>
+    <div id="nav">
+    Show:
+          <a href="#" class="page">&lt;&lt;</a>
+          <a href="#" class="limit">25</a>
+          <a href="#" class="limit">50</a>
+          <a href="#" class="limit">100</a>
+          <a href="#" class="limit">all</a>
+          <a href="#" class="page">&gt;&gt;</a>
+    </div>
     Total: <span id="transactionsum" class="dollar">$0</span>
+    </div>
+    </div>
+    
+    <div id="searchoptions">
+      From: <input id="startdate" class="date">
+      To: <input id="enddate" class="date">
+      <br>
     </div>
 
     <div id="transactiondetail">

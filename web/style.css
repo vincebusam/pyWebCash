@@ -1,15 +1,18 @@
 #transactions { position: absolute; top: 5px; left: 300px; }
+#transactions #nav { float: right; }
 .transaction { cursor: pointer; }
 
 #accounts { max-width: 280px; }
-.account { margin-bottom: 10px; }
+.account { margin-bottom: 10px; cursor: pointer; }
 
-.description { max-width: 350px; overflow: hidden; white-space: nowrap; text-overflow:ellipsis; }
 #transactiondetail { position: relative; }
 #transactiondetail > #file { max-width: 400px; }
 #transactiondetail > #date { float: left; margin-right: 10px;}
 #transactiondetail > #amount { float: right; }
 #transactiondetail > #save { position: absolute; right: 9px; bottom: 3px; }
+.description { max-width: 350px; overflow: hidden; white-space: nowrap; text-overflow:ellipsis; }
+
+#searchoptions { position: absolute; top: 5px; right: 5px; }
 
 .dollar { text-align: right; padding-left: 5px; }
 .posnum { color: green; }

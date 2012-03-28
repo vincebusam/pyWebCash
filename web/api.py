@@ -118,8 +118,9 @@ elif action == "accounts":
 elif action == "search":
     json_print(mydb.search(json.loads(form.getfirst("query") or "{}"),
                            form.getfirst("startdate") or "0",
-                           form.getfirst("enddate") or "9999",
-                           int(form.getfirst("limit") or 100)))
+                           form.getfirst("enddate") or "9",
+                           int(form.getfirst("limit") or 100),
+                           int(form.getfirst("skip") or 0)))
 elif action == "updatetransaction":
     try:
         data = json.loads(form.getfirst("data") or "{}")

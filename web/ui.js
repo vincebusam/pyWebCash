@@ -1,7 +1,11 @@
-apiurl = "api.py";
-loadedtransactions = [];
-showing = -1;
-editedfields = []
+var apiurl = "api.py";
+var loadedtransactions = [];
+var accountsearches = [ {"status": "$ne:closed" }, {"amount": "$ne:0"}, {} ];
+var showing = -1;
+var editedfields = []
+var limit = 25;
+var skip = 0;
+var query = accountsearches[0];
 
 function showerror(err) {
   $("#errormsg").text(err);
@@ -11,6 +15,13 @@ function showerror(err) {
 function loginsuccess() {
   $("#login").hide();
   $("#bottomlinks").show();
+  $("#searchoptions").show();
+  loadedtransactions = [];
+  accountsearches = accountsearches.slice(0,3);
+  showing = -1;
+  limit = 25;
+  skip = 0;
+  $("#accounts > .useraccount").remove();
   loadaccounts();
   loadtransactions();
 }
@@ -22,6 +33,7 @@ function clearpage() {
   $("#accounts").hide();
   $("#bottomlinks").hide();
   $("#errormsg").hide();
+  $("#searchoptions").hide();
 
   $.ajax({
     type: "POST",
@@ -57,16 +69,26 @@ function loadaccounts() {
     success: function(data) {
       for (i in data) {
         for (j in data[i]["subaccounts"]) {
-          newaccount = "<div class='account'>";
+          newaccount = "<div class='account useraccount'>";
           newaccount += "<div class='accountname'>"+data[i]["name"]+"</div>";
           newaccount += "<div class='subname'>"+data[i]["subaccounts"][j]["name"]+"</div>";
           newaccount += "<div class='dollar accountbalance'>"+data[i]["subaccounts"][j]["amount"]+"</div>";
           newaccount += "<div class='accountupdate'>"+data[i]["subaccounts"][j]["date"]+"</div>";
           newaccount += "</div>";
           $("#accounts").append(newaccount);
+          accountsearches.push({"account":data[i]["name"], "subaccount": data[i]["subaccounts"][j]["name"]});
         }
       }
       $(".dollar").each(decoratedollar);
+      $(".account").click(function() {
+        for (i=0; i < $(this).parent().children(".account").length; i++) {
+          if ($(this).text() == $(this).parent().children(".account").eq(i).text()) {
+            query = accountsearches[i];
+            loadtransactions();
+            return;
+          }
+        }
+      });
       $("#accounts").show();
     },
     error: function() {
@@ -148,7 +170,14 @@ function loadtransactions() {
   $.ajax({
     type: "POST",
     url: apiurl,
-    data: { "action": "search", "limit": 25, "query": JSON.stringify({"amount": "$ne:0" }) },
+    data: {
+      "action": "search",
+      "limit": limit,
+      "skip": skip,
+      "startdate": $("#startdate").val(),
+      "enddate": $("#enddate").val(),
+      "query": JSON.stringify(query)
+    },
     success: function(data) {
       total = 0;
       loadedtransactions = data;
@@ -208,11 +237,44 @@ $(document).ready(function () {
     minWidth: 600
   });
 
+  $("#searchoptions .date").datepicker({
+    dateFormat: "yy-mm-dd",
+    onClose: function(dateText, inst) {
+      loadtransactions();
+    }
+  });
+
   $("#errormsg").dialog({
     modal: true,
     autoOpen: false,
     title: "Error",
     minWidth: 250
+  });
+
+  $(".limit").click(function(event) {
+    event.preventDefault();
+    if ($(this).text() == "all")
+      limit = Number.MAX_VALUE;
+    else
+      limit = parseInt($(this).text());
+    loadtransactions();
+  });
+  
+  $(".page").click(function(event) {
+    event.preventDefault();
+    if ($(this).html() == "&lt;&lt;") {
+      if (skip == 0)
+        return;
+      skip -= limit;
+      if (skip < 0)
+        skip = 0;
+      loadtransactions();
+    } else {
+      if (loadedtransactions.length < limit)
+        return;
+      skip += limit;
+      loadtransactions();
+    }
   });
 
   $("#logout").click(function(event) {

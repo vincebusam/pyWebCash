@@ -109,7 +109,7 @@ class DB(object):
                 continue
         return True
 
-    def search(self, query={}, startdate="0", enddate = "9999", limit=100):
+    def search(self, query={}, startdate="0", enddate = "9", limit=100, skip=0):
         ret = []
         for trans in self.db["transactions"]:
             if trans["date"] < startdate or trans["date"] > enddate:
@@ -118,6 +118,9 @@ class DB(object):
                 if query not in json.dumps(trans.values()):
                     continue
             elif query and not self.matchtrans(trans, query):
+                continue
+            if skip:
+                skip -= 1
                 continue
             ret.append(trans)
             if len(ret) >= limit:
