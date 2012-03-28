@@ -88,6 +88,10 @@ except Exception, e:
         os.remove(sessionfn)
     exit_error(403,"Bad password: %s" % (e))
 
+if action == "checklogin":
+    json_print(True)
+    sys.exit(0)
+
 if sessionfn:
     os.utime(sessionfn, None)
 
@@ -117,8 +121,6 @@ elif action == "logout":
     cookies["sessionid"]["path"] = os.path.dirname(os.getenv("REQUEST_URI") or "/")
     json_print(True, cookies)
     mydb.backup()
-elif action == "checklogin":
-    json_print(True)
 elif action == "newtransactions":
     try:
         data = json.loads(form.getfirst("data"))

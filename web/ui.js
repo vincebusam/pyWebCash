@@ -6,6 +6,7 @@ var editedfields = []
 var limit = 25;
 var skip = 0;
 var query = accountsearches[0];
+var sessioncheckinterval = null;
 
 function showerror(err) {
   $("#errormsg").text(err);
@@ -24,6 +25,9 @@ function loginsuccess() {
   $("#accounts > .useraccount").remove();
   loadaccounts();
   loadtransactions();
+
+  if (!sessioncheckinterval)
+    sessioncheckinterval = setInterval(checksession, 60000);
 }
 
 function clearpage() {
@@ -34,6 +38,11 @@ function clearpage() {
   $("#bottomlinks").hide();
   $("#errormsg").hide();
   $("#searchoptions").hide();
+  $("#newaccount").hide();
+  $("#username").val("");
+  $("#password").val("");
+  if (sessioncheckinterval)
+    clearInterval(sessioncheckinterval);
 
   $.ajax({
     type: "POST",
@@ -48,6 +57,23 @@ function clearpage() {
     },
     error: function() {
       $("#login").show();
+    }
+  });
+}
+
+function checksession() {
+  $.ajax({
+    type: "POST",
+    url: apiurl,
+    data: { "action": "checklogin" },
+    success: function(data) {
+      if (data) {
+      } else {
+        clearpage();
+      }
+    },
+    error: function() {
+      clearpage();
     }
   });
 }
