@@ -1,4 +1,4 @@
 Requires: prctl, selenium, Crypto, PIL, numpy
 
 Add to cron to clean dead session files:
-*/5 * * * * root find /usr/local/finance/session/ -type f -mtime +20 -exec rm \{} \;
+*/5 * * * * root find /usr/local/finance/session/ -type f -mmin +20 -exec rm \{} \;
