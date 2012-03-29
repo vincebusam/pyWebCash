@@ -31,18 +31,27 @@ function loginsuccess() {
     data: { "action": "getcategories" },
     success: function (data) {
       categories = data;
+      keys = Object.keys(categories);
+      keys.sort();
       $("#transactiondetail #category").autocomplete({
-        source: Object.keys(categories),
+        source: keys,
         delay: 50,
+        minLength: 0,
         select: function(event, ui) {
-          editedfields.push("category");
-          $("#transactiondetail #subcategory").autocomplete({
-            source: categories[ui.item.value],
-            delay: 50,
-            select: function(event, ui) {
-              editedfields.push("subcategory");
-            }
-          });
+          $("#transactiondetail > #save").button("enable");
+          if (editedfields.indexOf("category") == -1)
+            editedfields.push("category");
+          $("#transactiondetail #subcategory").autocomplete("option", "source", categories[ui.item.value]);
+        }
+      });
+      $("#transactiondetail #subcategory").autocomplete({
+        source: [],
+        delay: 50,
+        minLength: 0,
+        select: function(event, ui) {
+          if (editedfields.indexOf("subcategory") == -1)
+            editedfields.push("subcategory");
+          $("#transactiondetail > #save").button("enable");
         }
       });
     },
@@ -152,10 +161,14 @@ function loadaccounts() {
 function savetransaction() {
   if (editedfields.length > 0) {
     updatejson = new Object();
-    for (f in editedfields)
-      updatejson[editedfields[f]] = $("#transactiondetail > #"+editedfields[f]).text();
+    for (f in editedfields) {
+      newval = $("#transactiondetail #"+editedfields[f]).text();
+      if (newval == "")
+        newval = $("#transactiondetail #"+editedfields[f]).val();
+        updatejson[editedfields[f]] = newval;
+    }
     if (editedfields.indexOf("amount") != -1) {
-      newamount = $("#transactiondetail > #amount").text().replace("$","").replace(",","");
+      newamount = $("#transactiondetail #amount").text().replace("$","").replace(",","");
       if (newamount.indexOf(".") == -1) {
         newamount += ".00";
       } else if (newamount.indexOf(".") != (newamount.length-3)) {
@@ -220,6 +233,8 @@ function showtransaction(t) {
     $("#transactiondetail > #file").show();
   }
   $(".dollar").each(decoratedollar);
+  if (categories[loadedtransactions[t]["category"]] != undefined)
+    $("#transactiondetail #subcategory").autocomplete("option", "source", categories[loadedtransactions[t]["category"]]);
   $("#transactiondetail").dialog("open");
 }
 
