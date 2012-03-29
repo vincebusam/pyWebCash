@@ -174,9 +174,15 @@ function showtransaction(t) {
   $("#transactiondetail > #file").hide();
   $("#transactiondetail .transdata").each(function () {
     name = $(this).attr("id");
-    $(this).text();
+    $(this).text("");
     if (loadedtransactions[t][name] != undefined)
       $(this).text(loadedtransactions[t][name]);
+  });
+  $("#transactiondetail .transdataval").each(function () {
+    name = $(this).attr("id");
+    $(this).val("");
+    if (loadedtransactions[t][name] != undefined)
+      $(this).val(loadedtransactions[t][name]);
   });
   $("#transactiondetail > #attr").html();
   for (key in loadedtransactions[t]) {
@@ -193,7 +199,6 @@ function showtransaction(t) {
 }
 
 function loadtransactions() {
-  $("#transtablebody").html("");
   $.ajax({
     type: "POST",
     url: apiurl,
@@ -209,14 +214,21 @@ function loadtransactions() {
       total = 0;
       loadedtransactions = data;
       for (t=0; t<data.length; t++) {
-        $("#transtablebody").append("<tr class='transaction' id='trans"+t+"'><td class='date'>"+data[t]["date"]+"</td><td class='description'>"+data[t]["desc"]+"</td><td class='dollar'>"+data[t]["amount"]+"</td></tr>\n");
+        if ($("#transtablebody > #trans"+t).length == 0) {
+          $("#transtablebody").append("<tr class='transaction' id='trans"+t+"'><td class='date'></td><td class='description'></td><td class='dollar'></td></tr>");
+          $("#trans"+t).click(function() {
+            showtransaction(parseInt($(this).attr("id").substring(5)));
+          });
+        }
+        $("#transtablebody > #trans"+t+" .date").text(data[t]["date"]);
+        $("#transtablebody > #trans"+t+" .description").text(data[t]["desc"]);
+        $("#transtablebody > #trans"+t+" .dollar").text(data[t]["amount"]);
         total += data[t]["amount"];
       }
+      for (t=data.length; t<$("#transtablebody tr").length; t++)
+        $("#transtablebody > #trans"+t).remove();
       $("#transactionsum").text(total);
       $(".dollar").each(decoratedollar);
-      $(".transaction").click(function() {
-        showtransaction(parseInt($(this).attr("id").substring(5)));
-      });
       $("#transactions").show();
     },
     error: function() {
