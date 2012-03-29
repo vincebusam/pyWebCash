@@ -22,7 +22,7 @@ def load(fn, passwd):
 def dump(fn, obj, passwd):
     if len(passwd) > BLOCK_SIZE:
         raise Exception("Password too long")
-    data = base64.b64encode(AES.new(pad(passwd)).encrypt(pad(json.dumps(obj,default=str))))
+    data = base64.b64encode(AES.new(pad(passwd)).encrypt(pad(json.dumps(obj,default=str,sort_keys=True))))
     f = open(fn, "w")
     f.write(data)
     f.close()
