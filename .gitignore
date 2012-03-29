@@ -4,3 +4,4 @@ chromedriver.log
 *.pyc
 .#*
 /TODO
+.*DS_Store
