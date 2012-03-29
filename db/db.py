@@ -71,7 +71,7 @@ class DB(object):
 
     def backup(self):
         shutil.copyfile("%s/%s.json" % (config.dbdir, self.username),
-                        "%s/%s.json-backup-%s" % (config.dbdir, self.username, str(datetime.datetime.now().replace(microsecond=0)).replace(" ","_")))
+                        "%s/backup/%s.json-backup-%s" % (config.dbdir, self.username, str(datetime.datetime.now().replace(microsecond=0)).replace(" ","_")))
 
     def accountstodo(self):
         ret = copy.deepcopy(self.db["accounts"])
