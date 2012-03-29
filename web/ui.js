@@ -7,6 +7,7 @@ var limit = 25;
 var skip = 0;
 var query = accountsearches[0];
 var sessioncheckinterval = null;
+var categories = {};
 
 function showerror(err) {
   $("#errormsg").text(err);
@@ -22,9 +23,33 @@ function loginsuccess() {
   showing = -1;
   limit = 25;
   skip = 0;
-  $("#accounts > .useraccount").remove();
   loadaccounts();
   loadtransactions();
+  $.ajax({
+    type: "POST",
+    url: apiurl,
+    data: { "action": "getcategories" },
+    success: function (data) {
+      categories = data;
+      $("#transactiondetail #category").autocomplete({
+        source: Object.keys(categories),
+        delay: 50,
+        select: function(event, ui) {
+          editedfields.push("category");
+          $("#transactiondetail #subcategory").autocomplete({
+            source: categories[ui.item.value],
+            delay: 50,
+            select: function(event, ui) {
+              editedfields.push("subcategory");
+            }
+          });
+        }
+      });
+    },
+    error: function () {
+      showerr("Error loading categories!");
+    }
+  });
 
   if (!sessioncheckinterval)
     sessioncheckinterval = setInterval(checksession, 60000);
