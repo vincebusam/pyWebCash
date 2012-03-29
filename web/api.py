@@ -164,9 +164,7 @@ elif action == "editaccount":
         exit_error(400, "Bad account %s" % (e))
 elif action == "getcategories":
     try:
-        # Auth, JSON load this in case we want to add user-specific categories later...
-        cats = json.load(open("../categories.json"))
-        json_print(cats)
+        json_print(mydb.getcategories())
     except Exception, e:
         exit_error(500, "Error %s" % (e))
 else:

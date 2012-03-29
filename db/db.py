@@ -201,6 +201,12 @@ class DB(object):
             return aesjsonfile.dec(open(self.getimgfn(trans[0])).read(), trans[0]["filekey"])
         return False
 
+    def getcategories(self):
+        cats = json.load(open(os.path.dirname(__file__) + "/../categories.json"))
+        for cat in self.db.get("categories",[]):
+            cats.setdefault(cat,[]).extend(self.db["categories"][cat])
+        return cats
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         sys.exit(1)
