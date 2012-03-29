@@ -170,7 +170,7 @@ function showtransaction(t) {
   }
   showing = t;
   editedfields = [];
-  $("#transactiondetail > #save").hide();
+  $("#transactiondetail > #save").button("disable");
   $("#transactiondetail > #file").hide();
   $("#transactiondetail .transdata").each(function () {
     name = $(this).attr("id");
@@ -248,12 +248,13 @@ $(document).ready(function () {
       $this.data('before', $this.text());
       if (editedfields.indexOf($(this).attr("id")) == -1) {
         editedfields.push($(this).attr("id"));
-        $("#transactiondetail > #save").show();
+        $("#transactiondetail > #save").button("enable");
       }
     }
     return $this;
   });
 
+  $("#transactiondetail > #save").button();
   $("#transactiondetail > #save").click(savetransaction);
   $("#transactiondetail > #dateselect").datepicker({
     dateFormat: "yy-mm-dd",
@@ -262,7 +263,7 @@ $(document).ready(function () {
       $("#transactiondetail > #date").text(dateText);
       if (editedfields.indexOf("date") == -1) {
         editedfields.push("date");
-        $("#transactiondetail > #save").show();
+        $("#transactiondetail > #save").button("enable");
       }
     }
   });
