@@ -154,5 +154,10 @@ elif action == "image" or query.get("image"):
         print img
     else:
         exit_error(404, "Image not found")
+elif action == "editaccount":
+    try:
+        json_print(mydb.editaccount(json.loads(form.getfirst("account"))))
+    except Exception, e:
+        exit_error(400, "Bad account %s" % (e))
 else:
     exit_error(404,"Method not found")

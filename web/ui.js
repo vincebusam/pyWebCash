@@ -93,6 +93,7 @@ function loadaccounts() {
     url: apiurl,
     data: { "action": "accounts" },
     success: function(data) {
+      $("#accounts > .useraccount").remove();
       for (i in data) {
         for (j in data[i]["subaccounts"]) {
           newaccount = "<div class='account useraccount'>";
@@ -350,6 +351,66 @@ $(document).ready(function () {
       },
       error: function() {
         showerror("Error making new user");
+      }
+    });
+  });
+
+  $("#newaccount").dialog({
+    modal: true,
+    autoOpen: false,
+    title: "Add/Edit Account"
+  });
+
+  $("#addaccount").click(function (event) {
+    event.preventDefault();
+    $.ajax({
+      type: "POST",
+      url: apiurl,
+      data: { "action": "getbanks" },
+      success: function(data) {
+        newhtml = "<option value=''>Select a bank</option>";
+        for (i=0; i<data.length; i++)
+          newhtml += "<option value='"+data[i]+"'>"+data[i]+"</option>";
+        $("#newaccount #bank").html(newhtml);
+      }
+    });
+    $("#newaccount > #createaccount").button("disable");
+    $("#newaccount input").each(function() {
+      $(this).val("");
+    });
+    $("#newaccount").dialog("open");
+  });
+  
+  $("#newaccount .required").keyup(function () {
+    ready = true;
+    for (var i=0; i<$("#newaccount .required").length; i++) {
+      if ($("#newaccount .required").eq(i).val() == "")
+        ready = false;
+    }
+    if (ready)
+      $("#newaccount > #createaccount").button("enable");
+  });
+  
+  $("#newaccount > #createaccount").button();
+  $("#newaccount > #createaccount").click(function () {
+    account = new Object();
+    $("#newaccount input,select").each(function() {
+      account[$(this).attr("id")] = $(this).val();
+    });
+    $.ajax({
+      type: "POST",
+      url: apiurl,
+      data: { "action": "editaccount", "account": JSON.stringify(account) },
+      success: function(data) {
+        if (data) {
+          $("#newaccount").dialog("close");
+          loadaccounts();
+        } else {
+          showerror("Could not add/edit account");
+        }
+      },
+      error: function() {
+        showerror("HTTP Error editing account");
       }
     });
   });

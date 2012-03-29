@@ -82,6 +82,15 @@ class DB(object):
                 acct["lastcheck"] = trans[0]["date"]
         return ret
 
+    def editaccount(self, account):
+        curaccts = [x["name"] for x in self.db["accounts"]]
+        if account["name"] in curaccts:
+            self.db["accounts"][curaccts.index(account["name"])] = account
+        else:
+            self.db["accounts"].append(account)
+        self.save()
+        return True
+
     def accounts(self):
         ret = copy.deepcopy(self.db["accounts"])
         for acct in ret:
