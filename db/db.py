@@ -169,6 +169,8 @@ class DB(object):
     def updatetransaction(self, id, new, save=True):
         for trans in self.db["transactions"]:
             if trans["id"] == id:
+                for k in new:
+                    trans.setdefault("orig_"+k,trans[k])
                 trans.update(new)
                 if save:
                     self.save()
@@ -191,10 +193,9 @@ class DB(object):
 
             # Check if dup, then store transaction
             if trans["id"] not in self.getallids():
-                for k in [x for x in trans.keys() if not x.startswith("attr_") and x != "id"]:
-                    trans.setdefault("orig_"+k,trans[k])
                 trans["orig_amount_str"] = trans["amount"]
                 trans["amount"] = parse_amount(trans["amount"])
+                trans["orig_amount"] = trans["amount"]
                 self.db["transactions"].append(trans)
                 if trans.get("parent"):
                     p = self.search({"id": trans["parent"]})
@@ -219,12 +220,15 @@ class DB(object):
                             matched = False
                             break
                     if matched:
+                        for k in rule[1]:
+                            trans.setdefault("orig_"+k,trans[k])
                         trans.update(rule[1])
                         trans["autoprocessed"] = True
                         break
                 if not trans.get("autoprocessed"):
                     # Re-capitalize desc
                     if trans["desc"].isupper() or trans["desc"].islower():
+                        trans.setdefault("orig_desc",trans["desc"])
                         trans["desc"] = trans["desc"].title()
                 trans["autoprocessed"] = True
             
@@ -236,8 +240,6 @@ class DB(object):
                            parsedate(self.db["transactions"][i]["date"]) - parsedate(self.db["transactions"][j]["date"]) <= datetime.timedelta(days=4):
                             self.db["transactions"][i]["child"] = self.db["transactions"][j]["id"]
                             self.db["transactions"][j]["parent"] = self.db["transactions"][i]["id"]
-                            self.db["transactions"][i]["orig_amount"] = self.db["transactions"][i]["amount"]
-                            self.db["transactions"][j]["orig_amount"] = self.db["transactions"][j]["amount"]
                             self.db["transactions"][i]["amount"] = 0
                             self.db["transactions"][j]["amount"] = 0
 
