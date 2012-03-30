@@ -33,7 +33,7 @@ def downloadaccount(params):
     Select(b.find_element_by_id("stateselect")).select_by_value(params["state"])
     b.find_element_by_id("top-button").click()
     while not b.find_elements_by_id("tlpvt-passcode-input"):
-        time.sleep(5)
+        time.sleep(2)
     b.find_element_by_id("tlpvt-passcode-input").send_keys(params["password"])
     b.find_element_by_name("confirm-sitekey-submit").click()
     accounts = []
