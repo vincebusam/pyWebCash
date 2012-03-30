@@ -194,6 +194,7 @@ class DB(object):
 
             # Check if dup, then store transaction
             if trans["id"] not in self.getallids():
+                trans.setdefault("state", "open")
                 trans["orig_amount_str"] = trans["amount"]
                 trans["amount"] = parse_amount(trans["amount"])
                 trans["orig_amount"] = trans["amount"]
