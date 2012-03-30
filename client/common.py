@@ -16,6 +16,4 @@ def scrolluntilclick(b,e):
             b.execute_script("document.body.scrollTop=document.body.scrollTop+20;")
             time.sleep(0.1)
 
-splitdate = lambda x: map(int,x.split("-"))
-parsedate = lambda x: datetime.date(splitdate(x)[0],splitdate(x)[1],splitdate(x)[2])
-
+parsedate = lambda x: datetime.datetime.strptime(x,"%Y-%m-%d").date()
