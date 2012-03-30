@@ -2,6 +2,7 @@ var apiurl = "api.py";
 var loadedtransactions = [];
 var accountsearches = [ {"status": "$ne:closed" }, {"amount": "$ne:0"}, {} ];
 var showing = -1;
+var showtrans = {};
 var editedfields = []
 var limit = 25;
 var skip = 0;
@@ -176,7 +177,7 @@ function savetransaction() {
         return;
       }
       newamount = newamount.replace(".","");
-      if (loadedtransactions[showing]["amount"] > 0)
+      if (showtrans["amount"] > 0)
         updatejson["amount"] = parseInt(newamount);
       else
         updatejson["amount"] = -parseInt(newamount);
@@ -184,7 +185,7 @@ function savetransaction() {
     $.ajax({
       type: "POST",
       url: apiurl,
-      data: { "action": "updatetransaction", "id": loadedtransactions[showing]["id"], "data" : JSON.stringify(updatejson) },
+      data: { "action": "updatetransaction", "id": showtrans["id"], "data" : JSON.stringify(updatejson) },
       success: function(data) {
         if (data) {
           showtransaction(showing);
@@ -201,40 +202,45 @@ function savetransaction() {
 }
 
 function showtransaction(t) {
-  if (showing == t) {
-    $("#transactiondetail").dialog("close");
-    showing = -1;
-    return;
+  if (typeof(t) == "number") {
+    if (showing == t) {
+      $("#transactiondetail").dialog("close");
+      showing = -1;
+      return;
+    }
+    showing = t;
+    showtrans = loadedtransactions[t];
+  } else {
+    showtrans = t;
   }
-  showing = t;
   editedfields = [];
   $("#transactiondetail > #save").button("disable");
   $("#transactiondetail > #file").hide();
   $("#transactiondetail .transdata").each(function () {
     name = $(this).attr("id");
     $(this).text("");
-    if (loadedtransactions[t][name] != undefined)
-      $(this).text(loadedtransactions[t][name]);
+    if (showtrans[name] != undefined)
+      $(this).text(showtrans[name]);
   });
   $("#transactiondetail .transdataval").each(function () {
     name = $(this).attr("id");
     $(this).val("");
-    if (loadedtransactions[t][name] != undefined)
-      $(this).val(loadedtransactions[t][name]);
+    if (showtrans[name] != undefined)
+      $(this).val(showtrans[name]);
   });
   $("#transactiondetail > #attr").html();
-  for (key in loadedtransactions[t]) {
+  for (key in showtrans) {
     if (key.indexOf("attr_") == 0) {
-      $("#transactiondetail > #attr").append(key.substr(5) + ": " + loadedtransactions[t][key] + "<br>");
+      $("#transactiondetail > #attr").append(key.substr(5) + ": " + showtrans[key] + "<br>");
     }
   }
-  if (loadedtransactions[t]["file"] != undefined) {
-    $("#transactiondetail > #file").attr("src",apiurl+"?image="+loadedtransactions[t]["id"]);
+  if (showtrans["file"] != undefined) {
+    $("#transactiondetail > #file").attr("src",apiurl+"?image="+showtrans["id"]);
     $("#transactiondetail > #file").show();
   }
   $(".dollar").each(decoratedollar);
-  if (categories[loadedtransactions[t]["category"]] != undefined)
-    $("#transactiondetail #subcategory").autocomplete("option", "source", categories[loadedtransactions[t]["category"]]);
+  if (categories[showtrans["category"]] != undefined)
+    $("#transactiondetail #subcategory").autocomplete("option", "source", categories[showtrans["category"]]);
   $("#transactiondetail").dialog("open");
 }
 
