@@ -119,6 +119,8 @@ function decoratedollar() {
   amount = parseInt($(this).text());
   if (amount > 0)
     $(this).addClass("posnum");
+  else
+    $(this).removeClass("posnum");
   $(this).text("$"+Math.abs(amount/100).toFixed(2));
 }
 
