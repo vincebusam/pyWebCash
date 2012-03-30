@@ -23,12 +23,11 @@ def editfile(fn, password):
             print "Error in json"
             print e
             print "Try again (y/n)? ",
-            input = sys.stdin.readline()
+            input = raw_input()
             if not input.lower().startswith("y"):
                 break
     f.seek(0,2)
     len = f.tell()
-    print len
     f.seek(0)
     f.write(" " * len)
     f.flush()
