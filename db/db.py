@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import os
+import re
 import sys
 import copy
 import json
@@ -23,6 +24,8 @@ try:
     prctl.prctl(prctl.DUMPABLE, 0)
 except ImportError:
     pass
+
+parsedate = lambda x: datetime.datetime.strptime(x,"%Y-%m-%d").date()
 
 def imgtrim(img):
     # This will trim any whitespace around the image
@@ -53,6 +56,14 @@ def create_db(username, password):
     aesjsonfile.dump(fn, {}, password)
     return True
 
+def isopentransfer(trans):
+    return trans.get("state") != "closed" and \
+           not trans.get("parent") and \
+           not trans.get("child") and \
+           trans.get("amount") != 0 and \
+           trans.get("category") == "Transfer" and \
+           not "Cash" in trans.get("subcategory")
+
 class DB(object):
     def __init__(self, username, password):
         self.username = username
@@ -65,6 +76,8 @@ class DB(object):
         self.db.setdefault("transactions",[])
         self.db.setdefault("balances",{})
         self.db.setdefault("accounts",[])
+        self.rules = copy.deepcopy(self.db.setdefault("rules",[]))
+        self.rules.extend(json.load(open(os.path.dirname(__file__) + "/../rules.json")))
 
     def save(self):
         aesjsonfile.dump("%s/%s.json" % (config.dbdir, self.username), self.db, self.password)
@@ -162,8 +175,9 @@ class DB(object):
                 return True
         return False
 
-    def newtransactions(self, data):
+    def newtransactions(self, data, autoprocess=True):
         for trans in data.get("transactions",[]):
+            # Trim, encrypt, and store any images associated with the transaction
             if trans.get("file") and data.get("files",{}).get(trans["file"]) and \
                (not os.path.exists(self.getimgfn(trans)) or trans["id"] not in self.getallids()):
                 trans["filekey"] = ''.join(random.choice(string.ascii_letters + string.digits) for x in range(32))
@@ -174,6 +188,8 @@ class DB(object):
                 open("%s/%s/%s" % (config.imgdir, self.username, trans["file"]), "w").write(img)
                 if trans["id"] in self.getallids():
                     self.updatetransaction(trans["id"], {"filekey": trans["filekey"]}, False)
+
+            # Check if dup, then store transaction
             if trans["id"] not in self.getallids():
                 for k in [x for x in trans.keys() if not x.startswith("attr_") and x != "id"]:
                     trans.setdefault("orig_"+k,trans[k])
@@ -184,7 +200,49 @@ class DB(object):
                     p = self.search({"id": trans["parent"]})
                     if p:
                         self.updatetransaction(trans["parent"], {"amount": p[0]["amount"]-trans["amount"]}, False)
+
+        # Auto re-name, categorize, then match up transfers
+        if autoprocess:
+            for trans in self.db["transactions"]:
+                if trans.get("autoprocessed") or trans.get("state", "open") != "open":
+                    continue
+                for rule in self.rules:
+                    matched = True
+                    for match, val in rule[0].iteritems():
+                        if match == "amount" and trans["amount"] != val:
+                            matched = False
+                            break
+                        elif match == "absamount" and abs(trans["amount"]) != val:
+                            matched = False
+                            break
+                        elif val and not re.search(val, trans.get(match), re.I):
+                            matched = False
+                            break
+                    if matched:
+                        trans.update(rule[1])
+                        trans["autoprocessed"] = True
+                        break
+                if not trans.get("autoprocessed"):
+                    # Re-capitalize desc
+                    if trans["desc"].isupper() or trans["desc"].islower():
+                        trans["desc"] = trans["desc"].title()
+                trans["autoprocessed"] = True
+            
+            for i in range(len(self.db["transactions"])):
+                if isopentransfer(self.db["transactions"][i]):
+                    for j in range(i+1,len(self.db["transactions"])):
+                        if isopentransfer(self.db["transactions"][j]) and \
+                           self.db["transactions"][i]["amount"] == -self.db["transactions"][j]["amount"] and \
+                           parsedate(self.db["transactions"][i]["date"]) - parsedate(self.db["transactions"][j]["date"]) <= datetime.timedelta(days=4):
+                            self.db["transactions"][i]["child"] = self.db["transactions"][j]["id"]
+                            self.db["transactions"][j]["parent"] = self.db["transactions"][i]["id"]
+                            self.db["transactions"][i]["orig_amount"] = self.db["transactions"][i]["amount"]
+                            self.db["transactions"][j]["orig_amount"] = self.db["transactions"][j]["amount"]
+                            self.db["transactions"][i]["amount"] = 0
+                            self.db["transactions"][j]["amount"] = 0
+
         self.db["transactions"].sort(cmp=lambda x,y: cmp(x["date"],y["date"]) or cmp(x["id"],y["id"]), reverse=True)
+
         for bal in data.get("balances",[]):
             amount = parse_amount(bal["balance"])
             oldbal = self.db["balances"].setdefault(bal["account"],{}).setdefault(bal["subaccount"],[])
@@ -193,6 +251,7 @@ class DB(object):
             else:
                 oldbal.insert(0, {"amount": amount, "firstdate": bal["date"], "lastdate": bal["date"]})
         self.save()
+
         return True
 
     def getimage(self, id):
