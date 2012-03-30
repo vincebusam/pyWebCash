@@ -170,7 +170,8 @@ class DB(object):
         for trans in self.db["transactions"]:
             if trans["id"] == id:
                 for k in new:
-                    trans.setdefault("orig_"+k,trans[k])
+                    if k in trans:
+                        trans.setdefault("orig_"+k,trans[k])
                 trans.update(new)
                 if save:
                     self.save()
