@@ -17,7 +17,7 @@ for bank in config.banks:
 
 print "Login"
 print "Username: ",
-username = sys.stdin.readline().strip()
+username = raw_input("Username: ")
 password = getpass.getpass()
 
 if not api.callapi("login",{"username": username, "password": password}):
