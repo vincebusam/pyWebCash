@@ -12,7 +12,7 @@ system that can:
    store your password in the database.
 
 The back-end is written in python, exposing an API over HTTP.  There is an
-html/javascript front-end for viewing editing transactions.  Loading
+html/javascript front-end for viewing and editing transactions.  Loading
 transactions is done by python with selenium.
 
 Installation:
@@ -20,13 +20,16 @@ Installation:
 Requires: python (tested with 2.6 and 2.7)
           selenium (for the scraper)
           Crypto, PIL and numpy on the back-end
-          prtcl is optional, and enhances security.
+          prctl is optional, and enhances security.
+          You can find these with pip, easy_install, apt, yum, etc...
 
 Backend:
 Setup the web/ directory to be web viewable.
 (apache) Alias /myfinances/ /usr/local/my/finance/web
-Create the database, image, session directories specified in config.py,
-make them ownable by the http user (www-data?)
+Update config.py to point to this url.
+
+Edit/create the database, image, session directories specified in config.py,
+make them writable by the http user (www-data?)
 If you don't use https, edit api.js to remove the secure cookies setting.
 
 Create a cron file to clean dead session files:
@@ -36,7 +39,7 @@ Scraper:
 I've tested this on a Mac, should also work on Linux.  By default it uses
 Chrome, so you'll need to install the chrome webdriver binary or change it
 to use your browser of choice.
-easy_install selenium
+
 Run ./gettransactions.py in the client directory.  Enter your login username
 and password, and it will get a list of accounts to check.  If you don't set
 the account's password in the account settings, it will interactively ask
