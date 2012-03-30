@@ -33,7 +33,7 @@ def downloadaccount(params):
     Select(b.find_element_by_id("stateselect")).select_by_value(params["state"])
     b.find_element_by_id("top-button").click()
     while not b.find_elements_by_id("tlpvt-passcode-input"):
-        time.sleep(5)
+        time.sleep(2)
     b.find_element_by_id("tlpvt-passcode-input").send_keys(params["password"])
     b.find_element_by_name("confirm-sitekey-submit").click()
     accounts = []
@@ -69,7 +69,7 @@ def downloadaccount(params):
                         transaction["attr_" + line.split(":")[0].strip()] = line.split(":")[1].strip()
             if b.find_elements_by_id("ViewImgFront"):
                 b.find_element_by_id("ViewImgFront").click()
-                image = [x for x in b.find_elements_by_xpath("//tr[@id='exp0']//img") if "/cgi-bin" in x.get_attribute("src")]
+                image = [x for x in b.find_elements_by_xpath("//tr[@id='exp%s']//img"%(loop)) if "/cgi-bin" in x.get_attribute("src")]
                 if image:
                     b.get(image[0].get_attribute("src"))
                     checkfn = transaction["id"] + ".png"
