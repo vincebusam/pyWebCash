@@ -281,15 +281,5 @@ if __name__ == "__main__":
     print json.dumps(db.accounts(), indent=2)
     if os.getenv("DATAFILE"):
         print json.dumps(db.newtransactions(json.load(open(os.getenv("DATAFILE")))), indent=2)
-    print "Last 5:"
-    print json.dumps(db.search(limit=5), indent=2)
-    print "Zeroed out:"
-    print json.dumps(db.search(query={"amount":"$eq:0"},limit=2), indent=2)
-    print "Spending:"
-    print json.dumps(db.search(query={"amount":"$lt:0"},limit=2), indent=2)
-    print "Income:"
-    print json.dumps(db.search(query={"amount":"$gt:0"},limit=2), indent=2)
-    print "Target:"
-    print json.dumps(db.search(query={"desc":"$eq:Target"},limit=2), indent=2)
-    print "Backup:"
-    db.backup()
+    if len(sys.argv) > 2:
+        print json.dumps(db.search(query=json.loads(sys.argv[2]),limit=5), indent=2)
