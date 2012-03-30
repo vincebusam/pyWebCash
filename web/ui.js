@@ -444,7 +444,7 @@ $(document).ready(function () {
         newhtml = "<option value=''>Select a bank</option>";
         for (i=0; i<data.length; i++)
           newhtml += "<option value='"+data[i]+"'>"+data[i]+"</option>";
-        $("#newaccount #bank").html(newhtml);
+        $("#newaccount #bankname").html(newhtml);
       }
     });
     $("#newaccount > #createaccount").button("disable");
