@@ -275,6 +275,15 @@ function loadtransactions() {
         $("#transtablebody > #trans"+t).remove();
       $("#transactionsum").text(total);
       $(".dollar").each(decoratedollar);
+      $("#transtablebody td").addClass("ui-widget-content");
+      $("#transtablebody tr").hover(
+        function() {
+          $(this).children("td").addClass("ui-state-hover");
+        },
+        function() {
+          $(this).children("td").removeClass("ui-state-hover");
+        }
+      );
       $("#transactions").show();
     },
     error: function() {
@@ -480,5 +489,7 @@ $(document).ready(function () {
   });
 
   clearpage();
+  
+  $("th").addClass("ui-state-default");
 
 });
