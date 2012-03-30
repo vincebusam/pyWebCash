@@ -328,7 +328,12 @@ $(document).ready(function () {
     modal: true,
     autoOpen: false,
     title: "Error",
-    minWidth: 250
+    minWidth: 250,
+    buttons: {
+      Ok: function() {
+        $(this).dialog("close");
+      }
+    }
   });
 
   $(".limit").click(function(event) {
