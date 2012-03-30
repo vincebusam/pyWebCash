@@ -4,6 +4,7 @@ import sys
 import api
 import json
 import getpass
+import traceback
 
 sys.path.append("../")
 
@@ -16,7 +17,6 @@ for bank in config.banks:
     banks[bank] = eval(bank)
 
 print "Login"
-print "Username: ",
 username = raw_input("Username: ")
 password = getpass.getpass()
 
@@ -31,10 +31,16 @@ for account in todo:
         print "No scraper for %s!" % (account["bankname"])
         continue
     print "Scraping %s..." % (account["bankname"])
-    if os.getenv("DATAFILE"):
-        data = open(os.getenv("DATAFILE")).read()
-    else:
-        data = json.dumps(banks[account["bankname"]].downloadaccount(account),default=str)
-    api.callapi("newtransactions", {"data": data})
+    try:
+        if os.getenv("DATAFILE") and os.path.exists(account["bankname"]+".json"):
+            data = open(account["bankname"]+".json").read()
+        else:
+            data = json.dumps(banks[account["bankname"]].downloadaccount(account),default=str)
+            if os.getenv("DATAFILE"):
+                open(account["bankname"]+".json","w").write(data)
+        api.callapi("newtransactions", {"data": data})
+    except Exception, e:
+        print e
+        traceback.print_exc()
 
 api.callapi("logout")
