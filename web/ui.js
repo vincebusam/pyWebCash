@@ -273,7 +273,7 @@ function loadtransactions() {
         $("#transtablebody > #trans"+t+" .dollar").text(data[t]["amount"]);
         total += data[t]["amount"];
       }
-      for (t=data.length; t<$("#transtablebody tr").length; t++)
+      for (t=data.length; $("#transtablebody > #trans"+t).length > 0; t++)
         $("#transtablebody > #trans"+t).remove();
       $("#transactionsum").text(total);
       $(".dollar").each(decoratedollar);
