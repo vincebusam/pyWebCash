@@ -263,7 +263,7 @@ function loadtransactions() {
       loadedtransactions = data;
       for (t=0; t<data.length; t++) {
         if ($("#transtablebody > #trans"+t).length == 0) {
-          $("#transtablebody").append("<tr class='transaction' id='trans"+t+"'><td class='date'></td><td class='description'></td><td class='dollar'></td></tr>");
+          $("#transtablebody").append("<tr class='transaction' id='trans"+t+"'><td class='date'></td><td class='description'></td><td class='category'></td><td class='dollar'></td></tr>");
           $("#trans"+t).click(function() {
             showtransaction(parseInt($(this).attr("id").substring(5)));
           });
@@ -271,6 +271,11 @@ function loadtransactions() {
         $("#transtablebody > #trans"+t+" .date").text(data[t]["date"]);
         $("#transtablebody > #trans"+t+" .description").text(data[t]["desc"]);
         $("#transtablebody > #trans"+t+" .dollar").text(data[t]["amount"]);
+        $("#transtablebody > #trans"+t+" .category").text("");
+        if (data[t]["subcategory"] != undefined)
+          $("#transtablebody > #trans"+t+" .category").text(data[t]["subcategory"]);
+        else if (data[t]["category"] != undefined)
+          $("#transtablebody > #trans"+t+" .category").text(data[t]["category"]);
         total += data[t]["amount"];
       }
       for (t=data.length; $("#transtablebody > #trans"+t).length > 0; t++)
