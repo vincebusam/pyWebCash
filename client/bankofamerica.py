@@ -54,7 +54,7 @@ def downloadaccount(params):
             m = datematch.match(date)
             if not m:
                 continue
-            transaction["date"] = datetime.date(int(m.group(3)),int(m.group(1)),int(m.group(2)))
+            transaction["date"] = datetime.datetime.strptime(date,"%m/%d/%Y").date()
             if transaction["date"] < params["lastcheck"]:
                 break
             transaction["desc"] = b.find_element_by_xpath("//tr[@id='row%s']/td[4]" % (loop)).text.replace("\n","")

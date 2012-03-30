@@ -21,8 +21,7 @@ def cardname(card):
         return "AmEx"
 
 def parsetransaction(trans, lines):
-    date = map(int,lines[0].split()[0].split("/"))
-    trans["date"] = datetime.date(date[2],date[0],date[1])
+    trans["date"] = datetime.datetime.strptime(lines[0].split()[0],"%m/%d/%Y").date()
     trans["dispamount"] = lines[0].split()[-1]
     trans["desc"] = " ".join(lines[0].split()[1:-1])
     # Need to negate amount!
