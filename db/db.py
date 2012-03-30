@@ -12,7 +12,7 @@ import random
 import getpass
 import datetime
 import StringIO
-import aesjsonfile
+import aespckfile
 from PIL import Image
 
 sys.path.append("../")
@@ -50,10 +50,10 @@ def parse_amount(amount):
     return int(amount.replace("$","").replace(",","").replace(".",""))
 
 def create_db(username, password):
-    fn = "%s/%s.json" % (config.dbdir, username)
+    fn = "%s/%s.pck" % (config.dbdir, username)
     if os.path.exists(fn):
         return False
-    aesjsonfile.dump(fn, {}, password)
+    aespckfile.dump(fn, {}, password)
     return True
 
 def isopentransfer(trans):
@@ -68,11 +68,11 @@ class DB(object):
     def __init__(self, username, password):
         self.username = username
         self.password = password
-        fn = "%s/%s.json" % (config.dbdir, self.username)
+        fn = "%s/%s.pck" % (config.dbdir, self.username)
         # Make a symlink to alias another username (e.g. email address) to account
         if os.path.islink(fn):
-            self.username = os.readlink(fn).rstrip(".json")
-        self.db = aesjsonfile.load("%s/%s.json" % (config.dbdir, self.username), self.password)
+            self.username = os.readlink(fn).rstrip(".pck")
+        self.db = aespckfile.load("%s/%s.pck" % (config.dbdir, self.username), self.password)
         self.db.setdefault("transactions",[])
         self.db.setdefault("balances",{})
         self.db.setdefault("accounts",[])
@@ -80,11 +80,11 @@ class DB(object):
         self.rules.extend(json.load(open(os.path.dirname(__file__) + "/../rules.json")))
 
     def save(self):
-        aesjsonfile.dump("%s/%s.json" % (config.dbdir, self.username), self.db, self.password)
+        aespckfile.dump("%s/%s.pck" % (config.dbdir, self.username), self.db, self.password)
 
     def backup(self):
-        shutil.copyfile("%s/%s.json" % (config.dbdir, self.username),
-                        "%s/backup/%s.json-backup-%s" % (config.dbdir, self.username, str(datetime.datetime.now().replace(microsecond=0)).replace(" ","_")))
+        shutil.copyfile("%s/%s.pck" % (config.dbdir, self.username),
+                        "%s/backup/%s.pck-backup-%s" % (config.dbdir, self.username, str(datetime.datetime.now().replace(microsecond=0)).replace(" ","_")))
 
     def accountstodo(self):
         ret = copy.deepcopy(self.db["accounts"])
@@ -184,7 +184,7 @@ class DB(object):
                 if not os.path.exists(os.path.dirname(self.getimgfn(trans))):
                     os.mkdir(os.path.dirname(self.getimgfn(trans)))
                 img = imgtrim(base64.b64decode(data["files"][trans["file"]]))
-                img = aesjsonfile.enc(img, trans["filekey"])
+                img = aespckfile.enc(img, trans["filekey"])
                 open("%s/%s/%s" % (config.imgdir, self.username, trans["file"]), "w").write(img)
                 if trans["id"] in self.getallids():
                     self.updatetransaction(trans["id"], {"filekey": trans["filekey"]}, False)
@@ -257,7 +257,7 @@ class DB(object):
     def getimage(self, id):
         trans = self.search({"id": id})
         if trans:
-            return aesjsonfile.dec(open(self.getimgfn(trans[0])).read(), trans[0]["filekey"])
+            return aespckfile.dec(open(self.getimgfn(trans[0])).read(), trans[0]["filekey"])
         return False
 
     def getcategories(self):

@@ -5,10 +5,14 @@ import json
 import getpass
 import tempfile
 import subprocess
+import aespckfile
 import aesjsonfile
 
 def editfile(fn, password):
-    db = aesjsonfile.load(fn, password)
+    filetype = aespckfile
+    if ".json" in fn:
+        filetype = aesjsonfile
+    db = filetype.load(fn, password)
     f = tempfile.NamedTemporaryFile()
     json.dump(db, f, indent=2)
     f.flush()
@@ -17,7 +21,7 @@ def editfile(fn, password):
         try:
             f.seek(0)
             db = json.load(f)
-            aesjsonfile.dump(fn, db, password)
+            filetype.dump(fn, db, password)
             break
         except Exception, e:
             print "Error in json"
