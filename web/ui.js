@@ -1,6 +1,6 @@
 var apiurl = "api.py";
 var loadedtransactions = [];
-var accountsearches = [ {"status": "$ne:closed" }, {"amount": "$ne:0"}, {} ];
+var accountsearches = [ {"state": "$ne:closed" }, {"amount": "$ne:0"}, {} ];
 var showing = -1;
 var showtrans = {};
 var editedfields = []
