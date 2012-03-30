@@ -26,7 +26,7 @@ def downloadaccount(params):
     params.setdefault("seenids",[])
     params.setdefault("name","BofA")
     if not params.get("password"):
-        params["password"] = getpass.getpass("BofA Password for %s: " % (params["name"]))
+        params["password"] = getpass.getpass("BofA Password for %s: " % (params["username"]))
     b = webdriver.Chrome()
     b.get("https://www.bankofamerica.com/")
     b.find_element_by_id("id").send_keys(params["username"])
