@@ -263,9 +263,34 @@ function loadtransactions() {
       loadedtransactions = data;
       for (t=0; t<data.length; t++) {
         if ($("#transtablebody > #trans"+t).length == 0) {
-          $("#transtablebody").append("<tr class='transaction' id='trans"+t+"'><td class='date'></td><td class='description'></td><td class='category'></td><td class='dollar'></td></tr>");
+          $("#transtablebody").append("<tr class='transaction' id='trans"+t+"'>"+
+                                      "<td class='date'></td>"+
+                                      "<td class='description'></td>"+
+                                      "<td class='category'></td>"+
+                                      "<td class='dollar'></td>"+
+                                      "<td><button class='close'>Close</button></tr>");
           $("#trans"+t).click(function() {
             showtransaction(parseInt($(this).attr("id").substring(5)));
+          });
+          $("#trans"+t+" .close").button();
+          $("#trans"+t+" .close").click(function() {
+            transid = parseInt($(this).parent().parent().attr("id").substring(5));
+            $.ajax({
+              type: "POST",
+              url: apiurl,
+              data: { "action": "updatetransaction", "id": loadedtransactions[transid]["id"], "data" : JSON.stringify({"state": "closed"}) },
+              context: this,
+              success: function(data) {
+                if (data)
+                  $(this).button("disable");
+                else
+                  showerror("Error closing transaction");
+              },
+              error: function(data) {
+                showerror("HTTP error closing transaction");
+              }
+            });
+            return false;
           });
         }
         $("#transtablebody > #trans"+t+" .date").text(data[t]["date"]);
@@ -276,6 +301,10 @@ function loadtransactions() {
           $("#transtablebody > #trans"+t+" .category").text(data[t]["subcategory"]);
         else if (data[t]["category"] != undefined)
           $("#transtablebody > #trans"+t+" .category").text(data[t]["category"]);
+        if (data[t]["state"] != "closed")
+          $("#trans"+t+" .close").button("enable");
+        else
+          $("#trans"+t+" .close").button("disable");
         total += data[t]["amount"];
       }
       for (t=data.length; $("#transtablebody > #trans"+t).length > 0; t++)
