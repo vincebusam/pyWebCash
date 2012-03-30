@@ -228,9 +228,9 @@ function showtransaction(t) {
     if (showtrans[name] != undefined)
       $(this).val(showtrans[name]);
   });
-  $("#transactiondetail > #attr").html();
+  $("#transactiondetail > #attr").html("");
   for (key in showtrans) {
-    if (key.indexOf("attr_") == 0) {
+    if ((key.indexOf("attr_") == 0) && (showtrans[key] != "")) {
       $("#transactiondetail > #attr").append(key.substr(5) + ": " + showtrans[key] + "<br>");
     }
   }
