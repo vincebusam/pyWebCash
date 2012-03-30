@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import os
 import db
 import sys
 import csv
@@ -78,6 +79,7 @@ for row in csv.reader(open(sys.argv[1])):
                                     trans.get("subaccount"),
                                     hashlib.sha1(trans["desc"]).hexdigest())).replace(" ","")
     trans["state"] = "closed"
+    trans["attr_Imported From"] = os.path.basename(sys.argv[1])
     transactions.append(trans)
 
 # Squash transfers - match up with transfer to other account, set both of their amounts to 0
