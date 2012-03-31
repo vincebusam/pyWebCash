@@ -21,8 +21,11 @@ def json_print(obj, header=None):
     print "Content-type: application/json"
     if header:
         print header
+    outstr = json.dumps(obj, indent=2)
+    print "Content-length: %s" % (len(outstr)+1)
     print
-    print json.dumps(obj,indent=2)
+    print outstr
+    sys.stdout.close()
 
 def exit_error(code, message):
     print "Status: %s" % (code)
