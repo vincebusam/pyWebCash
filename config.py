@@ -4,4 +4,4 @@ apiurl = "https://sixpak.org/finance/api.py"
 sessiondir = "/usr/local/finance/session"
 sessiontimeout = (60*15) # 15 minutes
 
-banks = [ "bankofamerica", "citicards", "csvurl" ]
+banks = [ "bankofamerica", "citicards", "wellsfargo", "chase", "csvurl" ]
