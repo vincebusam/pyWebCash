@@ -5,3 +5,4 @@ chromedriver.log
 .#*
 /TODO
 .*DS_Store
+*.csv
