@@ -9,7 +9,6 @@ import getpass
 import datetime
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
-from selenium.webdriver.common.keys import Keys
 
 def cardname(card):
     if "mastercard" in card.lower():

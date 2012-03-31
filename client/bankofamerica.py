@@ -9,7 +9,6 @@ import getpass
 import datetime
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
-from selenium.webdriver.common.keys import Keys
 
 def generateid(t):
     return "%s-%s-%s-%s" % (t["date"],t["account"],t["subaccount"],hashlib.sha1(t["desc"]).hexdigest())
