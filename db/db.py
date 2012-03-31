@@ -286,9 +286,9 @@ class DB(object):
                    not trans.get("parent"):
                     for target in self.db["transactions"]:
                         if target.get("subcategory") == "Cash & ATM" and \
-                           target["amount"] < trans["amount"]:
+                           target["amount"] < trans["amount"] and \
+                           target["date"] <= trans["date"]:
                             target["amount"] -= trans["amount"]
-                            trans["amount"] = 0
                             trans["parent"] = target["id"]
                             target.setdefault("children",[]).append(trans["id"])
                             break
