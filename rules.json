@@ -18,5 +18,6 @@
   [ {"attr_Merchant Category": "BEAUTY SHOPS / BARBER SHOPS"}, {"category": "Personal Care", "subcategory": "Hair"} ],
   [ {"attr_Merchant Category": "CABLE,SATELLITE,PAY TV/RADIO SERVICES"}, {"category": "Bills & Utilities", "subcategory": "Television"} ],
   [ {"attr_Merchant Category": "MISC HOUSE FURNISHING SPECIALTY SHOP"}, {"category": "Home", "subcategory": "Furnishings"} ],
-  [ {"attr_Merchant Category": "CARPET / UPHOLSTERY CLEANING"}, {"category": "Home", "subcategory": "Home Services"} ]
+  [ {"attr_Merchant Category": "CARPET / UPHOLSTERY CLEANING"}, {"category": "Home", "subcategory": "Home Services"} ],
+  [ {"attr_Merchant Category": "DRUG STORES,PHARMACIES"}, {"category": "Health & Fitness", "subcategory": "Pharmacy" } ]
 ]
