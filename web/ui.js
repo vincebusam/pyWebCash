@@ -182,10 +182,10 @@ function savetransaction() {
   if (editedfields.length > 0) {
     updatejson = new Object();
     for (f in editedfields) {
-      newval = $("#transactiondetail #"+editedfields[f]).text();
+      newval = $("#transactiondetail #"+editedfields[f]).val();
       if (newval == "")
-        newval = $("#transactiondetail #"+editedfields[f]).val();
-        updatejson[editedfields[f]] = newval;
+        newval = $("#transactiondetail #"+editedfields[f]).text();
+      updatejson[editedfields[f]] = newval;
     }
     if (editedfields.indexOf("amount") != -1) {
       newamount = $("#transactiondetail #amount").text().replace("$","").replace(",","");
