@@ -1,13 +1,5 @@
 [
-  [
-    {
-      "desc": "^target.."
-    }, 
-    {
-      "category": "Shopping", 
-      "desc": "Target"
-    }
-  ],
+  [ {"desc": "^target.."}, {"category": "Shopping", "desc": "Target"} ],
   [ {"desc": "autopay"}, {"category": "Transfer"} ],
   [ {"desc": "online banking transfer"}, {"category": "Transfer"} ],
   [ {"desc": "CITI CARD ONLINE DES PAYMENT"}, {"category": "Transfer"} ],
@@ -26,5 +18,5 @@
   [ {"attr_Merchant Category": "BEAUTY SHOPS / BARBER SHOPS"}, {"category": "Personal Care", "subcategory": "Hair"} ],
   [ {"attr_Merchant Category": "CABLE,SATELLITE,PAY TV/RADIO SERVICES"}, {"category": "Bills & Utilities", "subcategory": "Television"} ],
   [ {"attr_Merchant Category": "MISC HOUSE FURNISHING SPECIALTY SHOP"}, {"category": "Home", "subcategory": "Furnishings"} ],
-  [ {"attr_Merchant Category": "CARPET / UPHOLSTERY CLEANING"}, {"category": "Home", "subcategory": "Home Services"} ],
+  [ {"attr_Merchant Category": "CARPET / UPHOLSTERY CLEANING"}, {"category": "Home", "subcategory": "Home Services"} ]
 ]
