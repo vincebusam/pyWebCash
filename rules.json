@@ -5,6 +5,8 @@
   [ {"desc": "CITI CARD ONLINE DES PAYMENT"}, {"category": "Transfer"} ],
   [ {"desc": "AUTOMATIC PAYMENT"}, {"category": "Transfer"} ],
   [ {"desc": "ATM WITHDRWL"}, {"category": "Uncategorized", "subcategory": "Cash & ATM"} ],
+  [ {"desc": "Parking"}, {"category": "Auto & Transport", "subcategory": "Parking"} ],
+  [ {"desc": "^THE GAS COMPANY"}, {"category": "Bills & Utilities", "subcategory": "Utilities"} ],
   [ {"attr_Merchant Category": "GROCERY STORE,SUPERMARKET"}, {"category": "Food & Dining", "subcategory": "Groceries"} ],
   [ {"attr_Merchant Category": "FAST FOOD RESTAURANTS"}, {"category": "Food & Dining", "subcategory": "Fast Food"} ],
   [ {"attr_Merchant Category": "EATING PLACE,RESTAURANT"}, {"category": "Food & Dining", "subcategory": "Restaurants"} ],
@@ -19,5 +21,6 @@
   [ {"attr_Merchant Category": "CABLE,SATELLITE,PAY TV/RADIO SERVICES"}, {"category": "Bills & Utilities", "subcategory": "Television"} ],
   [ {"attr_Merchant Category": "MISC HOUSE FURNISHING SPECIALTY SHOP"}, {"category": "Home", "subcategory": "Furnishings"} ],
   [ {"attr_Merchant Category": "CARPET / UPHOLSTERY CLEANING"}, {"category": "Home", "subcategory": "Home Services"} ],
-  [ {"attr_Merchant Category": "DRUG STORES,PHARMACIES"}, {"category": "Health & Fitness", "subcategory": "Pharmacy" } ]
+  [ {"attr_Merchant Category": "DRUG STORES,PHARMACIES"}, {"category": "Health & Fitness", "subcategory": "Pharmacy" } ],
+  [ {"attr_Merchant Category": "POSTAL SERVICES - GOVERNMENT ONLY"}, {"category": "Business Services", "subcategory": "Shipping"}]
 ]
