@@ -2,6 +2,7 @@
 import os
 import re
 import sys
+import time
 import copy
 import json
 import numpy
@@ -72,7 +73,13 @@ class DB(object):
         # Make a symlink to alias another username (e.g. email address) to account
         if os.path.islink(fn):
             self.username = os.readlink(fn).rstrip(".pck")
-        self.db = aespckfile.load("%s/%s.pck" % (config.dbdir, self.username), self.password)
+        self.dbfn = "%s/%s.pck" % (config.dbdir, self.username)
+        self.loaddb()
+        self.lockfn = None
+
+    def loaddb(self):
+        self.dbmtime = os.path.getmtime(self.dbfn)
+        self.db = aespckfile.load(self.dbfn, self.password)
         self.db.setdefault("transactions",[])
         self.db.setdefault("balances",{})
         self.db.setdefault("accounts",[])
@@ -82,10 +89,29 @@ class DB(object):
 
     def save(self):
         aespckfile.dump("%s/%s.pck" % (config.dbdir, self.username), self.db, self.password)
+        if self.lockfn:
+            os.unlink(self.lockfn)
 
     def backup(self):
         shutil.copyfile("%s/%s.pck" % (config.dbdir, self.username),
                         "%s/backup/%s.pck-backup-%s" % (config.dbdir, self.username, str(datetime.datetime.now().replace(microsecond=0)).replace(" ","_")))
+
+    def getlock(self):
+        if self.lockfn:
+            return True
+        for loop in range(10):
+            try:
+                fn = "%s/.%s.lck" % (config.dbdir, self.username)
+                os.link(self.dbfn, fn)
+                if os.path.getmtime(self.dbfn) > self.dbmtime:
+                    self.loaddb()
+                self.lockfn = fn
+                return True
+            except OSError:
+                print "Couldn't get lock"
+                pass
+            time.sleep(1)
+        return False
 
     def accountstodo(self):
         ret = copy.deepcopy(self.db["accounts"])
@@ -97,6 +123,8 @@ class DB(object):
         return ret
 
     def editaccount(self, account):
+        if not self.getlock():
+            return False
         curaccts = [x["name"] for x in self.db["accounts"]]
         if account["name"] in curaccts:
             self.db["accounts"][curaccts.index(account["name"])] = account
@@ -168,6 +196,8 @@ class DB(object):
         return "%s/%s/%s" % (config.imgdir, self.username, trans.get("file","null"))
 
     def updatetransaction(self, id, new, save=True):
+        if not self.getlock():
+            return False
         for trans in self.db["transactions"]:
             if trans["id"] == id:
                 for k in new:
@@ -180,6 +210,8 @@ class DB(object):
         return False
 
     def newtransactions(self, data, autoprocess=True):
+        if not self.getlock():
+            return False
         for trans in data.get("transactions",[]):
             # Trim, encrypt, and store any images associated with the transaction
             if trans.get("file") and data.get("files",{}).get(trans["file"]) and \
