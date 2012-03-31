@@ -1,44 +1,69 @@
-This is a web-based personal finance management program.  My goal is a
+# pyWebCash
+
+## Summary
+
+This is a web-based personal finance management program.  The goal is a
 system that can:
 
- - Import _all_ data from institions, including all transaction attributes
+ * Import _all_ data from institutions, including all transaction attributes
    and check images.
- - Import transactions more reliabily than the market leaders.
- - Allow for more advanced queries and summaries of transactions.
- - More easily separate business and personal transactions.
- - Bettar automate categorizing and filing transactions.
- - Encrypted database - file is useless if it falls into the wrong hands
- - Scraping can be run automatically or interactively based on if you want to
+ * Import transactions more reliabily than the market leaders.
+ * Import/edit data from anywhere via API.
+ * Allow for more advanced (arbitrary) queries and summaries of transactions.
+ * More easily separate business and personal transactions.
+ * Bettar automate categorizing and filing transactions.
+ * Encrypted database - file is useless if it falls into the wrong hands.
+ * Scraping can be run automatically or interactively based on if you want to
    store your password in the database.
+
+ ---
+
+## Architecture
 
 The back-end is written in python, exposing an API over HTTP.  There is an
 html/javascript front-end for viewing and editing transactions.  Loading
-transactions is done by python with selenium.
+transactions is done client-side (interactively or scripted) by python with
+selenium.
 
-Installation:
+ ---
 
-Requires: python (tested with 2.6 and 2.7)
-          selenium (for the scraper)
-          Crypto, PIL and numpy on the back-end
-          prctl is optional, and enhances security.
-          You can find these with pip, easy_install, apt, yum, etc...
+## Installation
 
-Backend:
+### Requiremets
+
+ * python (tested with 2.6 and 2.7)
+ * selenium (for the scraper)
+ * Crypto, PIL and numpy on the back-end
+ * prctl is optional, and enhances security.
+ * You can find these with pip, easy_install, apt, yum, etc...
+ * __You'll probably be writing your own scraper until more bank support is  contributed__
+
+### Backend
+
 Setup the web/ directory to be web viewable.
 (apache) Alias /myfinances/ /usr/local/my/finance/web
 Update config.py to point to this url.
 
 Edit/create the database, image, session directories specified in config.py,
 make them writable by the http user (www-data?)
-If you don't use https, edit api.js to remove the secure cookies setting.
+If you don't use https, edit api.py to remove the secure cookies setting.
 
-Create a cron file to clean dead session files:
-*/5 * * * * root find /usr/local/finance/session/ -type f -mmin +20 -exec rm \{} \;
+Create a cron file to clean dead session files:  
+`*/5 * * * * root find /usr/local/finance/session/ -type f -mmin +20 -exec rm \{} \;`
 
-Scraper:
+### Scraper (client)
+
 I've tested this on a Mac, should also work on Linux.  By default it uses
-Chrome, so you'll need to install the chrome webdriver binary or change it
-to use your browser of choice.
+Chrome, so you'll need to install the chrome webdriver binary or change the
+code to use your browser of choice.
+
+ ---
+
+## Usage
+
+Create a new user from the web interface (do not forget that password,
+without it, your data is lost).  Add all your applicable accounts
+(password is optional if you run the scraper interactively).
 
 Run ./gettransactions.py in the client directory.  Enter your login username
 and password, and it will get a list of accounts to check.  If you don't set
