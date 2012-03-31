@@ -10,7 +10,7 @@ import urllib2
 
 cols = ["date", "desc", "amount", "center"]
 
-def downloadaccount(params):
+def downloadaccount(b, params):
     params["lastcheck"] = common.parsedate(params.get("lastcheck", "2000-01-01"))
     params.setdefault("seenids", [])
     params.setdefault("name", "Cash")
@@ -37,5 +37,5 @@ def downloadaccount(params):
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         sys.exit(1)
-    data = downloadaccount({"url": sys.argv[1]})
+    data = downloadaccount(None, {"url": sys.argv[1]})
     json.dump(data, open("csvurl.json", "w"), indent=2, default=str)

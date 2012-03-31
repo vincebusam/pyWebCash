@@ -10,7 +10,7 @@ import datetime
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 
-def downloadaccount(params):
+def downloadaccount(b, params):
     if "password" not in params:
         params["password"] = getpass.getpass("Wells Fargo Password for %s: " % (params["username"]))
     params.setdefault("name", "WellsFargo")
@@ -19,7 +19,6 @@ def downloadaccount(params):
     if type(params["lastcheck"]) in [ str, unicode ]:
         params["lastcheck"] = common.parsedate(params["lastcheck"])
     params["lastcheck"] -= datetime.timedelta(days=4)
-    b = webdriver.Chrome()
     b.get("https://www.wellsfargo.com/")
     b.find_element_by_id("userid").send_keys(params["username"])
     b.find_element_by_id("password").send_keys(params["password"])
@@ -50,7 +49,6 @@ def downloadaccount(params):
             transactions.append(trans)
         b.find_element_by_link_text("Account Summary").click()
     b.find_element_by_link_text("Sign Off").click()
-    b.close()
     return {"transactions": transactions, "balances": balances}
 
 if __name__ == "__main__":
@@ -62,5 +60,7 @@ if __name__ == "__main__":
     params["username"] = sys.argv[1]
     params["lastcheck"] = datetime.date.today()-datetime.timedelta(days=14)
     params["seenids"] = []
-    data = downloadaccount(params)
+    b = webdriver.Chrome()
+    data = downloadaccount(b, params)
+    b.close()
     json.dump(data, open("wellsfargo.json","w"), indent=2, default=str)

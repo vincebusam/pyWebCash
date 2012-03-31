@@ -5,6 +5,7 @@ import api
 import json
 import getpass
 import traceback
+from selenium import webdriver
 
 sys.path.append("../")
 
@@ -26,6 +27,8 @@ if not api.callapi("login",{"username": username, "password": password}):
 
 todo = api.callapi("accountstodo")
 
+b = webdriver.Chrome()
+
 for account in todo:
     if account["bankname"] not in banks:
         print "No scraper for %s!" % (account["bankname"])
@@ -35,12 +38,14 @@ for account in todo:
         if os.getenv("DATAFILE") and os.path.exists(account["bankname"]+".json"):
             data = open(account["bankname"]+".json").read()
         else:
-            data = json.dumps(banks[account["bankname"]].downloadaccount(account),default=str)
+            data = json.dumps(banks[account["bankname"]].downloadaccount(b, account),default=str)
             if os.getenv("DATAFILE"):
                 open(account["bankname"]+".json","w").write(data)
         api.callapi("newtransactions", {"data": data})
     except Exception, e:
         print e
         traceback.print_exc()
+
+b.close()
 
 api.callapi("logout")

@@ -10,7 +10,7 @@ import datetime
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 
-def downloadaccount(params):
+def downloadaccount(b, params):
     if "password" not in params:
         params["password"] = getpass.getpass("Chase Password for %s: " % (params["username"]))
     params.setdefault("name", "Chase")
@@ -19,7 +19,6 @@ def downloadaccount(params):
     if type(params["lastcheck"]) in [ str, unicode ]:
         params["lastcheck"] = common.parsedate(params["lastcheck"])
     params["lastcheck"] -= datetime.timedelta(days=4)
-    b = webdriver.Chrome()
     b.get("https://www.chase.com/")
     b.find_element_by_id("usr_name").send_keys(params["username"])
     b.find_element_by_id("usr_password").send_keys(params["password"])
@@ -41,7 +40,6 @@ def downloadaccount(params):
     [x.click() for x in b.find_elements_by_class_name("expander") if "closed" in x.get_attribute("class")]
     alltext += b.find_element_by_id("Posted").text + "\n"
     b.find_element_by_partial_link_text("LOG OFF").click()
-    b.close()
     
     transactions = []
     trans = {}
@@ -84,5 +82,7 @@ if __name__ == "__main__":
     params["username"] = sys.argv[1]
     params["lastcheck"] = datetime.date.today()-datetime.timedelta(days=14)
     params["seenids"] = []
-    data = downloadaccount(params)
+    b = webdriver.Chrome()
+    data = downloadaccount(b, params)
+    b.close()
     json.dump(data, open("chase.json","w"), indent=2, default=str)
