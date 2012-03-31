@@ -108,7 +108,6 @@ class DB(object):
                 self.lockfn = fn
                 return True
             except OSError:
-                print "Couldn't get lock"
                 pass
             time.sleep(1)
         return False
