@@ -28,6 +28,8 @@ except ImportError:
 
 parsedate = lambda x: datetime.datetime.strptime(x,"%Y-%m-%d").date()
 
+digitre = re.compile("^#?\d{2,}$")
+
 def imgtrim(img):
     # This will trim any whitespace around the image
     # http://stackoverflow.com/questions/9396312/use-python-pil-or-similar-to-shrink-whitespace
@@ -60,7 +62,7 @@ def create_db(username, password):
 def isopentransfer(trans):
     return trans.get("state") != "closed" and \
            not trans.get("parent") and \
-           not trans.get("child") and \
+           not trans.get("children") and \
            trans.get("amount") != 0 and \
            trans.get("category") == "Transfer" and \
            not "Cash" in trans.get("subcategory")
@@ -225,21 +227,20 @@ class DB(object):
                     self.updatetransaction(trans["id"], {"filekey": trans["filekey"]}, False)
 
             # Check if dup, then store transaction
-            if trans["id"] not in self.getallids():
-                trans.setdefault("state", "open")
-                trans.setdefault("center", self.db["centers"][0])
-                trans["orig_amount_str"] = trans["amount"]
-                trans["amount"] = parse_amount(trans["amount"])
-                trans["orig_amount"] = trans["amount"]
-                self.db["transactions"].append(trans)
-                if trans.get("parent"):
-                    p = self.search({"id": trans["parent"]})
-                    if p:
-                        self.updatetransaction(trans["parent"], {"amount": p[0]["amount"]-trans["amount"]}, False)
+            if trans["id"] in self.getallids():
+                continue
+            trans.setdefault("state", "open")
+            trans.setdefault("center", self.db["centers"][0])
+            trans["orig_amount_str"] = trans["amount"]
+            trans["amount"] = parse_amount(trans["amount"])
+            trans["orig_amount"] = trans["amount"]
+            if trans.get("parent"):
+                p = self.search({"id": trans["parent"]})
+                if p:
+                    self.updatetransaction(trans["parent"], {"amount": p[0]["amount"]-trans["amount"]}, False)
 
-        # Auto re-name, categorize, then match up transfers
-        if autoprocess:
-            for trans in self.db["transactions"]:
+            # Auto re-name, categorize, then match up transfers
+            if autoprocess:
                 if trans.get("autoprocessed") or trans.get("state", "open") != "open":
                     continue
                 for rule in self.rules:
@@ -251,32 +252,48 @@ class DB(object):
                         elif match == "absamount" and abs(trans["amount"]) != val:
                             matched = False
                             break
-                        elif val and not re.search(val, trans.get(match), re.I):
+                        elif val and not re.search(val, trans.get(match,""), re.I):
                             matched = False
                             break
                     if matched:
                         for k in rule[1]:
-                            trans.setdefault("orig_"+k,trans[k])
+                            if k in trans:
+                                trans.setdefault("orig_"+k,trans[k])
                         trans.update(rule[1])
                         trans["autoprocessed"] = True
                         break
                 if not trans.get("autoprocessed"):
                     # Re-capitalize desc
                     if trans["desc"].isupper() or trans["desc"].islower():
-                        trans.setdefault("orig_desc",trans["desc"])
-                        trans["desc"] = trans["desc"].title()
+                        trans.setdefault("orig_desc", trans["desc"])
+                        trans["desc"] = " ".join([x[0].upper()+x[1:] if len(x) > 2 else x.upper() for x in trans["desc"].lower().split() if not digitre.match(x)])
+                        for city in self.db.get("cities",[]):
+                            trans["desc"].rstrip(city)
                 trans["autoprocessed"] = True
-            
-            for i in range(len(self.db["transactions"])):
-                if isopentransfer(self.db["transactions"][i]):
-                    for j in range(i+1,len(self.db["transactions"])):
-                        if isopentransfer(self.db["transactions"][j]) and \
-                           self.db["transactions"][i]["amount"] == -self.db["transactions"][j]["amount"] and \
-                           parsedate(self.db["transactions"][i]["date"]) - parsedate(self.db["transactions"][j]["date"]) <= datetime.timedelta(days=4):
-                            self.db["transactions"][i]["child"] = self.db["transactions"][j]["id"]
-                            self.db["transactions"][j]["parent"] = self.db["transactions"][i]["id"]
-                            self.db["transactions"][i]["amount"] = 0
-                            self.db["transactions"][j]["amount"] = 0
+                
+                if isopentransfer(trans):
+                    for target in self.db["transactions"]:
+                        if isopentransfer(target) and \
+                           trans["amount"] == -target["amount"] and \
+                           parsedate(trans["date"]) - parsedate(target["date"]) <= datetime.timedelta(days=4):
+                            trans.setdefault("children").append(target["id"])
+                            target["parent"] = trans["id"]
+                            trans["amount"] = 0
+                            target["amount"] = 0
+                            break
+                if trans["account"].lower() == "cash" and \
+                   trans["state"] == "open" and \
+                   not trans.get("parent"):
+                    for target in self.db["transactions"]:
+                        if target.get("subcategory") == "Cash & ATM" and \
+                           target["amount"] < trans["amount"]:
+                            target["amount"] -= trans["amount"]
+                            trans["amount"] = 0
+                            trans["parent"] = target["id"]
+                            target.setdefault("children",[]).append(trans["id"])
+                            break
+
+            self.db["transactions"].insert(0,trans)
 
         self.db["transactions"].sort(cmp=lambda x,y: cmp(x["date"],y["date"]) or cmp(x["id"],y["id"]), reverse=True)
 
