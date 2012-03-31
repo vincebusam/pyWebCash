@@ -18,10 +18,8 @@ function showerror(err) {
 
 function loginsuccess() {
   $("#login").hide();
-  $("#bottomlinks").show();
   $("#searchoptions").show();
   loadedtransactions = [];
-  accountsearches = accountsearches.slice(0,3);
   showing = -1;
   limit = 25;
   skip = 0;
@@ -89,7 +87,6 @@ function clearpage() {
   $("#transactions").hide();
   $("#transactiondetail").dialog("close");
   $("#accounts").hide();
-  $("#bottomlinks").hide();
   $("#errormsg").hide();
   $("#searchoptions").hide();
   $("#newaccount").hide();
@@ -149,7 +146,8 @@ function loadaccounts() {
     url: apiurl,
     data: { "action": "accounts" },
     success: function(data) {
-      $("#accounts > .useraccount").remove();
+      accountsearches = accountsearches.slice(0,3);
+      $("#accounts > #bankaccounts").html("");
       for (i in data) {
         for (j in data[i]["subaccounts"]) {
           newaccount = "<div class='account useraccount'>";
@@ -158,7 +156,7 @@ function loadaccounts() {
           newaccount += "<div class='dollar accountbalance'>"+data[i]["subaccounts"][j]["amount"]+"</div>";
           newaccount += "<div class='accountupdate'>"+data[i]["subaccounts"][j]["date"]+"</div>";
           newaccount += "</div>";
-          $("#accounts").append(newaccount);
+          $("#accounts > #bankaccounts").append(newaccount);
           accountsearches.push({"account":data[i]["name"], "subaccount": data[i]["subaccounts"][j]["name"]});
         }
       }
