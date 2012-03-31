@@ -36,7 +36,14 @@
     <div id="transactions">
     <table id="transtable">
       <thead>
-        <tr><th>Date</th><th>Description</th><th>Category</th><th>Amount</th><th></th></tr>
+        <tr>
+          <th>Date</th>
+          <th>Description</th>
+          <th>Category</th>
+          <th>Center</th>
+          <th>Amount</th>
+          <th>Action</th>
+        </tr>
       </thead>
       <tbody id="transtablebody">
       </tbody>
@@ -56,9 +63,9 @@
     </div>
     
     <div id="searchoptions">
-      From: <input id="startdate" class="date">
-      To: <input id="enddate" class="date">
-      <br>
+      From: <input id="startdate" class="date searchoption"><br>
+      To: <input id="enddate" class="date searchoption"><br>
+      Cost Center: <select id="center" class="centersel queryoption"></select><br>
     </div>
 
     <div id="transactiondetail">
@@ -67,7 +74,9 @@
       <div id="amount" contenteditable=true class="dollar transdata"></div>
       <div id="desc" contenteditable=true class="transdata"></div>
       <div>
-      Category: <input id="category" class="transdataval"> <input id="subcategory" class="transdataval">
+      Category: <input id="category" class="transdataval">
+                <input id="subcategory" class="transdataval"><br>
+      Cost Center: <select id="center" class="centersel transdataval"></select>
       </div>
       <div id="static">
       Original Description: <span id="orig_desc" class="transdata"></span><br>

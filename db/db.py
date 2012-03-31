@@ -76,6 +76,7 @@ class DB(object):
         self.db.setdefault("transactions",[])
         self.db.setdefault("balances",{})
         self.db.setdefault("accounts",[])
+        self.db.setdefault("centers",["home"])
         self.rules = copy.deepcopy(self.db.setdefault("rules",[]))
         self.rules.extend(json.load(open(os.path.dirname(__file__) + "/../rules.json")))
 
@@ -195,6 +196,7 @@ class DB(object):
             # Check if dup, then store transaction
             if trans["id"] not in self.getallids():
                 trans.setdefault("state", "open")
+                trans.setdefault("center", self.db["centers"][0])
                 trans["orig_amount_str"] = trans["amount"]
                 trans["amount"] = parse_amount(trans["amount"])
                 trans["orig_amount"] = trans["amount"]
@@ -269,6 +271,9 @@ class DB(object):
         for cat in self.db.get("categories",[]):
             cats.setdefault(cat,[]).extend(self.db["categories"][cat])
         return cats
+
+    def getcenters(self):
+        return self.db["centers"]
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

@@ -9,6 +9,7 @@ var skip = 0;
 var query = accountsearches[0];
 var sessioncheckinterval = null;
 var categories = {};
+var centers = []
 
 function showerror(err) {
   $("#errormsg").text(err);
@@ -58,6 +59,24 @@ function loginsuccess() {
     },
     error: function () {
       showerr("Error loading categories!");
+    }
+  });
+  $.ajax({
+    type: "POST",
+    url: apiurl,
+    data: { "action": "getcenters" },
+    success: function(data) {
+      centers = data;
+      $(".centersel").each(function() {
+        $(this).html("");
+        $(this).append("<option value=''>None</option>");
+        for (i = 0; i<centers.length; i++) {
+          $(this).append("<option value='"+centers[i]+"'>"+centers[i]+"</option>");
+        }
+      });
+    },
+    error: function() {
+      showerr("Error loading cost centers!");
     }
   });
 
@@ -247,17 +266,21 @@ function showtransaction(t) {
 }
 
 function loadtransactions() {
+  // hack to duplicate the existing query
+  transquery = JSON.parse(JSON.stringify(query))
+  for (i=0; i<$("#searchoptions .queryoption").length; i++) {
+    if ($("#searchoptions .queryoption").eq(i).val())
+      transquery[$("#searchoptions .queryoption").eq(i).attr("id")] = $("#searchoptions .searchoption").eq(i).val()
+  }
+  postdata = { "action": "search", "limit": limit, "skip": skip, "query": JSON.stringify(transquery) }
+  for (i=0; i<$("#searchoptions .searchoption").length; i++) {
+    if ($("#searchoptions .searchoption").eq(i).val() != "")
+      postdata[$("#searchoptions .searchoption").eq(i).attr("id")] = $("#searchoptions .searchoption").eq(i).val()
+  }
   $.ajax({
     type: "POST",
     url: apiurl,
-    data: {
-      "action": "search",
-      "limit": limit,
-      "skip": skip,
-      "startdate": $("#startdate").val(),
-      "enddate": $("#enddate").val(),
-      "query": JSON.stringify(query)
-    },
+    data: postdata,
     success: function(data) {
       total = 0;
       loadedtransactions = data;
@@ -267,6 +290,7 @@ function loadtransactions() {
                                       "<td class='date'></td>"+
                                       "<td class='description'></td>"+
                                       "<td class='category'></td>"+
+                                      "<td class='centertd'></td>"+
                                       "<td class='dollar'></td>"+
                                       "<td><button class='close'>Close</button></tr>");
           $("#trans"+t).click(function() {
@@ -296,6 +320,7 @@ function loadtransactions() {
         $("#transtablebody > #trans"+t+" .date").text(data[t]["date"]);
         $("#transtablebody > #trans"+t+" .description").text(data[t]["desc"]);
         $("#transtablebody > #trans"+t+" .dollar").text(data[t]["amount"]);
+        $("#transtablebody > #trans"+t+" .centertd").text(data[t]["center"]);
         $("#transtablebody > #trans"+t+" .category").text("");
         if (data[t]["subcategory"] != undefined)
           $("#transtablebody > #trans"+t+" .category").text(data[t]["subcategory"]);
@@ -361,6 +386,12 @@ $(document).ready(function () {
   $("#transactiondetail > #date").click(function() {
     $("#transactiondetail > #dateselect").datepicker("show");
   });
+  $("#transactiondetail select").change(function () {
+    if (editedfields.indexOf($(this).attr("id")) == -1) {
+      editedfields.push($(this).attr("id"));
+      $("#transactiondetail > #save").button("enable");
+    }
+  });
   $("#transactiondetail").dialog({
     modal: true,
     autoOpen: false,
@@ -373,6 +404,10 @@ $(document).ready(function () {
     onClose: function(dateText, inst) {
       loadtransactions();
     }
+  });
+  
+  $("#searchoptions #center").change(function() {
+    loadtransactions();
   });
 
   $("#errormsg").dialog({
