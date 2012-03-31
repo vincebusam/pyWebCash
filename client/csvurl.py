@@ -31,6 +31,7 @@ def downloadaccount(params):
         trans["account"] = params["name"]
         if trans["id"] in params["seenids"]:
             continue
+        transactions.append(trans)
     return {"transactions": transactions}
 
 if __name__ == "__main__":
