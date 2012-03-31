@@ -7,5 +7,24 @@
       "category": "Shopping", 
       "desc": "Target"
     }
-  ]
+  ],
+  [ {"desc": "autopay"}, {"category": "Transfer"} ],
+  [ {"desc": "online banking transfer"}, {"category": "Transfer"} ],
+  [ {"desc": "CITI CARD ONLINE DES PAYMENT"}, {"category": "Transfer"} ],
+  [ {"desc": "AUTOMATIC PAYMENT"}, {"category": "Transfer"} ],
+  [ {"desc": "ATM WITHDRWL"}, {"category": "Uncategorized", "subcategory": "Cash & ATM"} ],
+  [ {"attr_Merchant Category": "GROCERY STORE,SUPERMARKET"}, {"category": "Food & Dining", "subcategory": "Groceries"} ],
+  [ {"attr_Merchant Category": "FAST FOOD RESTAURANTS"}, {"category": "Food & Dining", "subcategory": "Fast Food"} ],
+  [ {"attr_Merchant Category": "EATING PLACE,RESTAURANT"}, {"category": "Food & Dining", "subcategory": "Restaurants"} ],
+  [ {"attr_Merchant Category": "SHOE STORE"}, {"category": "Shopping", "subcategory": "Clothing"} ],
+  [ {"attr_Merchant Category": "WOMENS READY-TO-WEAR STORE"}, {"category": "Shopping", "subcategory": "Clothing"} ],
+  [ {"attr_Merchant Category": "MEMBERSHIP CLUBS-SPORTS,RECREATION"}, {"category": "Health & Fitness", "subcategory": "Gym"} ],
+  [ {"attr_Merchant Category": "AUTO PARKING LOTS / GARAGES"}, {"category": "Auto & Transport", "subcategory": "Parking"} ],
+  [ {"attr_Merchant Category": "AUTOMATED GAS DISPENSER"}, {"category": "Auto & Transport", "subcategory": "Gas & Fuel"} ],
+  [ {"attr_Merchant Category": "DEPARTMENT STORE"}, {"category": "Shopping" } ],
+  [ {"attr_Merchant Category": "MISCELLANEOUS / SPECIALTY RETAIL STORES"}, {"category": "Shopping"} ],
+  [ {"attr_Merchant Category": "BEAUTY SHOPS / BARBER SHOPS"}, {"category": "Personal Care", "subcategory": "Hair"} ],
+  [ {"attr_Merchant Category": "CABLE,SATELLITE,PAY TV/RADIO SERVICES"}, {"category": "Bills & Utilities", "subcategory": "Television"} ],
+  [ {"attr_Merchant Category": "MISC HOUSE FURNISHING SPECIALTY SHOP"}, {"category": "Home", "subcategory": "Furnishings"} ],
+  [ {"attr_Merchant Category": "CARPET / UPHOLSTERY CLEANING"}, {"category": "Home", "subcategory": "Home Services"} ],
 ]
