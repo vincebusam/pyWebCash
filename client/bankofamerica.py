@@ -9,7 +9,6 @@ import getpass
 import datetime
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
-from selenium.webdriver.common.keys import Keys
 
 def generateid(t):
     return "%s-%s-%s-%s" % (t["date"],t["account"],t["subaccount"],hashlib.sha1(t["desc"]).hexdigest())
@@ -17,7 +16,7 @@ def generateid(t):
 datematch = re.compile("(\d{2})/(\d{2})/(\d{4})")
 
 # Params - dict of name, username, password, state, date, seenids
-def downloadaccount(params):
+def downloadaccount(b, params):
     # By default, we'll get all transactions since 2000!
     params.setdefault("lastcheck",datetime.date(2000,1,1))
     if type(params["lastcheck"]) in [ str, unicode ]:
@@ -27,7 +26,6 @@ def downloadaccount(params):
     params.setdefault("name","BofA")
     if not params.get("password"):
         params["password"] = getpass.getpass("BofA Password for %s: " % (params["username"]))
-    b = webdriver.Chrome()
     b.get("https://www.bankofamerica.com/")
     b.find_element_by_id("id").send_keys(params["username"])
     Select(b.find_element_by_id("stateselect")).select_by_value(params["state"])
@@ -112,7 +110,6 @@ def downloadaccount(params):
         b.find_element_by_link_text("Accounts Overview").click()
     b.find_element_by_link_text("Sign Off").click()
     time.sleep(2.5)
-    b.close()
     return {"transactions": newtransactions, "balances": balances, "files": files}
 
 if __name__ == "__main__":
@@ -124,5 +121,7 @@ if __name__ == "__main__":
     params["username"] = sys.argv[1]
     params["lastcheck"] = datetime.date.today()-datetime.timedelta(days=14)
     params["seenids"] = []
-    data = downloadaccount(params)
+    b = webdriver.Chrome()
+    data = downloadaccount(b, params)
+    b.close()
     json.dump(data, open("bofa.json","w"), indent=2, default=str)
