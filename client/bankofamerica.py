@@ -76,7 +76,6 @@ def downloadaccount(params):
                     files[checkfn] = b.get_screenshot_as_base64()
                     b.back()
                     transaction["file"] = checkfn
-            newtransactions.append(transaction)
             if b.find_elements_by_id("ViewImages"):
                 common.scrolluntilclick(b,b.find_element_by_id("ViewImages"))
                 for checkid in range(1,20):
@@ -105,6 +104,8 @@ def downloadaccount(params):
                         b.back()
                         subtrans["file"] = checkfn
                     newtransactions.append(subtrans)
+                    transaction.setdefault("children",[]).append(subtrans["id"])
+            newtransactions.append(transaction)
         balance = b.find_element_by_class_name("module1bkgd13").text
         print "Balance %s %s" % (acct, balance)
         balances.append({"account": params["name"], "subaccount": acct, "balance": balance, "date": datetime.date.today()})
