@@ -66,7 +66,7 @@ def downloadaccount(b, params):
                     if ":" in line:
                         transaction["attr_" + line.split(":")[0].strip()] = line.split(":")[1].strip()
             if b.find_elements_by_id("ViewImgFront"):
-                b.find_element_by_id("ViewImgFront").click()
+                common.scrolluntilclick(b,b.find_element_by_id("ViewImgFront"))
                 image = [x for x in b.find_elements_by_xpath("//tr[@id='exp%s']//img"%(loop)) if "/cgi-bin" in x.get_attribute("src")]
                 if image:
                     b.get(image[0].get_attribute("src"))
