@@ -71,7 +71,7 @@ def isopentransfer(trans):
            not trans.get("children") and \
            trans.get("amount") != 0 and \
            trans.get("category") == "Transfer" and \
-           not "Cash" in trans.get("subcategory")
+           not "Cash" in trans.get("subcategory","")
 
 class DB(object):
     def __init__(self, username, password):
@@ -128,7 +128,7 @@ class DB(object):
         """Return list of accounts that need new data"""
         ret = copy.deepcopy(self.db["accounts"])
         for acct in ret:
-            trans = self.search({"account":acct["name"]},limit=5)
+            trans = self.search({"account":acct.get("name")},limit=5)
             acct["seenids"] = [x["id"] for x in trans]
             if trans:
                 acct["lastcheck"] = trans[0]["date"]
