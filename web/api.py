@@ -17,7 +17,16 @@ import config
 import db
 import aesjsonfile
 
+r"""
+HTTP API
+Runs as a CGI program.
+Maps database calls to HTTP requests.
+JSON output.
+"""
+
 def json_print(obj, header=None):
+    """CGI-format JSON output.
+    Set Content-length and close stdout so client won't wait for further processing"""
     print "Content-type: application/json"
     if header:
         print header
@@ -28,6 +37,7 @@ def json_print(obj, header=None):
     sys.stdout.close()
 
 def exit_error(code, message):
+    """CGI-format error message and exit"""
     print "Status: %s" % (code)
     print "Content-type: application/json"
     print
@@ -41,6 +51,7 @@ action = form.getfirst("action")
 username = form.getfirst("username")
 password = form.getfirst("password")
 
+# Unathenticated actions - create a new user, and get list of supported banks
 if action == "newuser":
     try:
         if username and password:
@@ -54,12 +65,15 @@ elif action == "getbanks":
     json_print(config.banks)
     sys.exit(0)
 
+# Get user's session from cookies if we can.
+# If so, decrypt and load the session file, and pull out username/password
 sessionfn = None
 if os.getenv("HTTP_COOKIE"):
     try:
         cookies = Cookie.SimpleCookie()
         cookies.load(os.getenv("HTTP_COOKIE"))
         sessionfn = "%s/%s.json" % (config.sessiondir, cookies["sessionid"].value)
+        # Time-out session after inactivity
         if os.path.exists(sessionfn) and os.path.getmtime(sessionfn) < (time.time()-config.sessiontimeout):
             os.remove(sessionfn)
         if not os.path.exists(sessionfn):
@@ -84,6 +98,7 @@ if not username or not password:
         os.remove(sessionfn)
     exit_error(400,"incomplete username/password")
 
+# Attempt to load the database with the given username/password
 try:
     mydb = db.DB(username, password)
 except Exception, e:
@@ -91,13 +106,16 @@ except Exception, e:
         os.remove(sessionfn)
     exit_error(403,"Bad password: %s" % (e))
 
+# Just check if our session is still good without updating the access time
 if action == "checklogin":
     json_print(True)
     sys.exit(0)
 
+# Touch the session file to show activity
 if sessionfn:
     os.utime(sessionfn, None)
 
+# On login, create session file and set cookies.
 if action == "login":
     cookies = Cookie.SimpleCookie()
     session = { "username": username, "password": password }
@@ -111,6 +129,7 @@ if action == "login":
     aesjsonfile.dump(sessionfn, session, cookies["sessionkey"].value)
     json_print(True, cookies)
     mydb.backup()
+# Clear session file, cookies on logout.
 elif action == "logout":
     if sessionfn and os.path.exists(sessionfn):
         os.remove(sessionfn)
@@ -124,6 +143,7 @@ elif action == "logout":
     cookies["sessionid"]["path"] = os.path.dirname(os.getenv("REQUEST_URI") or "/")
     json_print(True, cookies)
     mydb.backup()
+# The rest of the functions map to db calls
 elif action == "newtransactions":
     try:
         data = json.loads(form.getfirst("data"))
