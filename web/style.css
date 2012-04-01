@@ -13,7 +13,7 @@
 #transactiondetail > #save { position: absolute; right: 9px; bottom: 3px; }
 .description { max-width: 350px; overflow: hidden; white-space: nowrap; text-overflow:ellipsis; }
 
-#searchoptions { position: absolute; top: 5px; right: 5px; }
+#searchoptions { position: absolute; top: 5px; right: 5px; text-align: right; }
 
 .dollar { text-align: right; padding-left: 5px; }
 .posnum { color: green; }

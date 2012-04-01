@@ -71,7 +71,11 @@
     <div id="searchoptions">
       From: <input id="startdate" class="date searchoption"><br>
       To: <input id="enddate" class="date searchoption"><br>
+      All fields: <input id="all" class="queryoption"><br>
+      Category: <input id="category" class="queryoption category"><br>
+      Subcategory: <input id="subcategory" class="queryoption subcategory"><br>
       Cost Center: <select id="center" class="centersel queryoption"></select><br>
+      <button id="executesearch">Search</button><br>
     </div>
 
     <div id="transactiondetail">
@@ -80,8 +84,8 @@
       <div id="amount" contenteditable=true class="dollar transdata"></div>
       <div id="desc" contenteditable=true class="transdata"></div>
       <div>
-      Category: <input id="category" class="transdataval">
-                <input id="subcategory" class="transdataval"><br>
+      Category: <input id="category" class="transdataval category">
+                <input id="subcategory" class="transdataval subcategory"><br>
       Cost Center: <select id="center" class="centersel transdataval"></select>
       State: <select id="state" class="transdataval">
         <option value="open">Open</option>

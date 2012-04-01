@@ -36,25 +36,29 @@ function loginsuccess() {
       categories = data;
       keys = Object.keys(categories);
       keys.sort();
-      $("#transactiondetail #category").autocomplete({
+      $(".category").autocomplete({
         source: keys,
         delay: 50,
         minLength: 0,
         select: function(event, ui) {
-          $("#transactiondetail > #save").button("enable");
-          if (editedfields.indexOf("category") == -1)
-            editedfields.push("category");
-          $("#transactiondetail #subcategory").autocomplete("option", "source", categories[ui.item.value]);
+          if ($(this).hasClass("transdataval")) {
+            $("#transactiondetail > #save").button("enable");
+            if (editedfields.indexOf("category") == -1)
+              editedfields.push("category");
+          }
+          $(this).parent().children(".subcategory").autocomplete("option", "source", categories[ui.item.value]);
         }
       });
-      $("#transactiondetail #subcategory").autocomplete({
+      $(".subcategory").autocomplete({
         source: [],
         delay: 50,
         minLength: 0,
         select: function(event, ui) {
-          if (editedfields.indexOf("subcategory") == -1)
-            editedfields.push("subcategory");
-          $("#transactiondetail > #save").button("enable");
+          if ($(this).hasClass("transdataval")) {
+            if (editedfields.indexOf("subcategory") == -1)
+              editedfields.push("subcategory");
+            $("#transactiondetail > #save").button("enable");
+          }
         }
       });
     },
@@ -280,7 +284,7 @@ function loadtransactions() {
   transquery = JSON.parse(JSON.stringify(query))
   for (i=0; i<$("#searchoptions .queryoption").length; i++) {
     if ($("#searchoptions .queryoption").eq(i).val())
-      transquery[$("#searchoptions .queryoption").eq(i).attr("id")] = $("#searchoptions .searchoption").eq(i).val()
+      transquery[$("#searchoptions .queryoption").eq(i).attr("id")] = $("#searchoptions .queryoption").eq(i).val()
   }
   postdata = { "action": "search", "limit": limit, "skip": skip, "query": JSON.stringify(transquery) }
   for (i=0; i<$("#searchoptions .searchoption").length; i++) {
@@ -417,6 +421,11 @@ $(document).ready(function () {
   });
   
   $("#searchoptions #center").change(function() {
+    loadtransactions();
+  });
+  
+  $("#searchoptions #executesearch").button();
+  $("#searchoptions #executesearch").click(function () {
     loadtransactions();
   });
 
