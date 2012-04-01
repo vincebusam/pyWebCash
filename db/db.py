@@ -60,6 +60,8 @@ def create_db(username, password):
     if os.path.exists(fn):
         return False
     aespckfile.dump(fn, {}, password)
+    newdb = DB(username, password)
+    newdb.save()
     return True
 
 def isopentransfer(trans):
