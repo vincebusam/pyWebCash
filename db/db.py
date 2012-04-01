@@ -92,6 +92,9 @@ class DB(object):
         self.db.setdefault("balances",{})
         self.db.setdefault("accounts",[])
         self.db.setdefault("centers",["home"])
+        self.db.setdefault("rules",[])
+        self.db.setdefault("cities",[])
+        self.db.setdefault("categories",{})
         self.rules = copy.deepcopy(self.db.setdefault("rules",[]))
         self.rules.extend(json.load(open(os.path.dirname(__file__) + "/../rules.json")))
 
