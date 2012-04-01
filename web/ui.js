@@ -428,6 +428,12 @@ $(document).ready(function () {
   $("#searchoptions #executesearch").click(function () {
     loadtransactions();
   });
+  
+  $("#searchoptions #clearsearch").button();
+  $("#searchoptions #clearsearch").click(function () {
+    $("#searchoptions .searchoption").each(function () { $(this).val(""); });
+    $("#searchoptions .queryoption").each(function () { $(this).val(""); });
+  });
 
   $("#errormsg").dialog({
     modal: true,

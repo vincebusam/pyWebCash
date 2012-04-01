@@ -1,6 +1,6 @@
 #transactions { position: absolute; top: 5px; left: 300px; }
 #transactions #nav { float: right; }
-#transactions .ui-button .ui-button-text { padding: 0px 11px 0px 21px !important; font-size: .72em !important; }
+#transactions .ui-button .ui-button-text { padding: 0px 11px 0px 11px !important; font-size: .72em !important; }
 .transaction { cursor: pointer; }
 
 #accounts { max-width: 280px; }
@@ -14,6 +14,7 @@
 .description { max-width: 350px; overflow: hidden; white-space: nowrap; text-overflow:ellipsis; }
 
 #searchoptions { position: absolute; top: 5px; right: 5px; text-align: right; }
+#searchoptions .ui-button .ui-button-text { padding: 5px 11px 5px 11px !important; font-size: .82em !important; }
 
 .dollar { text-align: right; padding-left: 5px; }
 .posnum { color: green; }
