@@ -11,11 +11,13 @@ var sessioncheckinterval = null;
 var categories = {};
 var centers = []
 
+// "nice" jQueryUI popup message
 function showerror(err) {
   $("#errormsg").text(err);
   $("#errormsg").dialog("open");
 }
 
+// After login, reset everything
 function loginsuccess() {
   $("#login").hide();
   $("#searchoptions").show();
@@ -25,6 +27,7 @@ function loginsuccess() {
   skip = 0;
   loadaccounts();
   loadtransactions();
+  // Get user's categories and configure everywhere
   $.ajax({
     type: "POST",
     url: apiurl,
@@ -59,6 +62,7 @@ function loginsuccess() {
       showerr("Error loading categories!");
     }
   });
+  // Get user's cost centers, load up elements.
   $.ajax({
     type: "POST",
     url: apiurl,
@@ -78,10 +82,12 @@ function loginsuccess() {
     }
   });
 
+  // Every minute, make sure session is still good.  Logout if bad.
   if (!sessioncheckinterval)
     sessioncheckinterval = setInterval(checksession, 60000);
 }
 
+// Clear everything, then check if we have a good session.
 function clearpage() {
   $("#login").hide();
   $("#transactions").hide();
@@ -112,6 +118,7 @@ function clearpage() {
   });
 }
 
+// Clear page if our session is bad.
 function checksession() {
   $.ajax({
     type: "POST",
@@ -129,6 +136,7 @@ function checksession() {
   });
 }
 
+// Convert amount in positive/negative cents to human-readable format
 function decoratedollar() {
   if ($(this).text().substring(0,1) == "$")
     return;
@@ -140,6 +148,7 @@ function decoratedollar() {
   $(this).text("$"+Math.abs(amount/100).toFixed(2));
 }
 
+// Get accounts and balances, load up table and search options
 function loadaccounts() {
   $.ajax({
     type: "POST",
@@ -178,6 +187,7 @@ function loadaccounts() {
   });
 }
 
+// Store our saved fields for this transaction
 function savetransaction() {
   if (editedfields.length > 0) {
     updatejson = new Object();
@@ -220,6 +230,7 @@ function savetransaction() {
   }
 }
 
+// Show transaction detail, either index of loadedtransactions array, or object of a transaction.
 function showtransaction(t) {
   if (typeof(t) == "number") {
     if (showing == t) {
@@ -263,6 +274,7 @@ function showtransaction(t) {
   $("#transactiondetail").dialog("open");
 }
 
+// Search, load transactions to main table
 function loadtransactions() {
   // hack to duplicate the existing query
   transquery = JSON.parse(JSON.stringify(query))
