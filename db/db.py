@@ -155,6 +155,10 @@ class DB(object):
     def matchtrans(self, trans, query):
         """Query function"""
         for k in query:
+            if k == "all":
+                if not [x for x in trans.values() if query[k].lower() in str(x).lower()]:
+                    return False
+                continue
             if k not in trans and not query[k].startswith("$ne:"):
                 return False
             if not query[k].startswith("$") and query[k].lower() not in trans[k].lower():
@@ -186,9 +190,6 @@ class DB(object):
         for trans in self.db["transactions"]:
             if trans["date"] < startdate or trans["date"] > enddate:
                 continue
-            if type(query) in [ str, unicode ]:
-                if query not in json.dumps(trans.values()):
-                    continue
             elif query and not self.matchtrans(trans, query):
                 continue
             if skip:
