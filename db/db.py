@@ -336,7 +336,7 @@ class DB(object):
 
     def getcategories(self):
         cats = json.load(open(os.path.dirname(__file__) + "/../categories.json"))
-        for cat in self.db.get("categories",[]):
+        for cat in self.db.get("categories",{}):
             cats.setdefault(cat,[]).extend(self.db["categories"][cat])
         return cats
 
