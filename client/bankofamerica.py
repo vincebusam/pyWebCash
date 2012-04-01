@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import os
 import re
 import sys
 import time
@@ -66,7 +67,7 @@ def downloadaccount(b, params):
                     if ":" in line:
                         transaction["attr_" + line.split(":")[0].strip()] = line.split(":")[1].strip()
             if b.find_elements_by_id("ViewImgFront"):
-                b.find_element_by_id("ViewImgFront").click()
+                common.scrolluntilclick(b,b.find_element_by_id("ViewImgFront"))
                 image = [x for x in b.find_elements_by_xpath("//tr[@id='exp%s']//img"%(loop)) if "/cgi-bin" in x.get_attribute("src")]
                 if image:
                     b.get(image[0].get_attribute("src"))
@@ -119,7 +120,7 @@ if __name__ == "__main__":
 
     params = { "state": "CA" }
     params["username"] = sys.argv[1]
-    params["lastcheck"] = datetime.date.today()-datetime.timedelta(days=14)
+    params["lastcheck"] = datetime.date.today()-datetime.timedelta(days=int(os.getenv("DAYSBACK") or 14))
     params["seenids"] = []
     b = webdriver.Chrome()
     data = downloadaccount(b, params)
