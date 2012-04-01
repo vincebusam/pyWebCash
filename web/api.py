@@ -15,7 +15,7 @@ sys.path.append("../")
 
 import config
 import db
-import aesjsonfile
+import aespckfile
 
 r"""
 HTTP API
@@ -72,7 +72,7 @@ if os.getenv("HTTP_COOKIE"):
     try:
         cookies = Cookie.SimpleCookie()
         cookies.load(os.getenv("HTTP_COOKIE"))
-        sessionfn = "%s/%s.json" % (config.sessiondir, cookies["sessionid"].value)
+        sessionfn = "%s/%s.pck" % (config.sessiondir, cookies["sessionid"].value)
         # Time-out session after inactivity
         if os.path.exists(sessionfn) and os.path.getmtime(sessionfn) < (time.time()-config.sessiontimeout):
             os.remove(sessionfn)
@@ -83,7 +83,7 @@ if os.getenv("HTTP_COOKIE"):
                 sessionfn = None
         else:
             try:
-                session = aesjsonfile.load(sessionfn, cookies["sessionkey"].value)
+                session = aespckfile.load(sessionfn, cookies["sessionkey"].value)
             except:
                 exit_error(403,"Bad Session Token: %s" (e))
             if not username:
@@ -125,8 +125,8 @@ if action == "login":
     cookies["sessionkey"] = ''.join(random.choice(string.ascii_letters + string.digits) for x in range(32))
     cookies["sessionkey"]["secure"] = True
     cookies["sessionid"]["path"] = os.path.dirname(os.getenv("REQUEST_URI") or "/")
-    sessionfn = "%s/%s.json" % (config.sessiondir, cookies["sessionid"].value)
-    aesjsonfile.dump(sessionfn, session, cookies["sessionkey"].value)
+    sessionfn = "%s/%s.pck" % (config.sessiondir, cookies["sessionid"].value)
+    aespckfile.dump(sessionfn, session, cookies["sessionkey"].value)
     json_print(True, cookies)
     mydb.backup()
 # Clear session file, cookies on logout.
