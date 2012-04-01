@@ -1,5 +1,6 @@
 #transactions { position: absolute; top: 5px; left: 300px; }
 #transactions #nav { float: right; }
+#transactions .ui-button .ui-button-text { padding: 0px 11px 0px 21px !important; font-size: .72em !important; }
 .transaction { cursor: pointer; }
 
 #accounts { max-width: 280px; }
