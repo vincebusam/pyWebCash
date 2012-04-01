@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# Edit an AES encrypted json/pickle file.
 import os
 import sys
 import json

@@ -1,4 +1,6 @@
 #!/usr/bin/python
+# This is the main client-side scraping program.
+# It will download a list of accounts, and run their scrapers.
 import os
 import sys
 import api

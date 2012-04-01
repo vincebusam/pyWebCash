@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# AES encrypt/decrypt JSON files.  Base64 encode to disk.
 import os
 import sys
 import json

@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# Main database.  Stores all transactions, accounts, user-specific configuration
 import os
 import re
 import sys
@@ -31,8 +32,8 @@ parsedate = lambda x: datetime.datetime.strptime(x,"%Y-%m-%d").date()
 digitre = re.compile("^#?\d{2,}$")
 
 def imgtrim(img):
-    # This will trim any whitespace around the image
-    # http://stackoverflow.com/questions/9396312/use-python-pil-or-similar-to-shrink-whitespace
+    """This will trim any whitespace around the image
+    http://stackoverflow.com/questions/9396312/use-python-pil-or-similar-to-shrink-whitespace"""
     im = Image.open(StringIO.StringIO(img))
     pix = numpy.asarray(im)
     pix = pix[:,:,0:3]
@@ -45,6 +46,7 @@ def imgtrim(img):
     return outio.read()
 
 def parse_amount(amount):
+    """Convert string dollar amount into cents."""
     if type(amount) == int:
         return amount
     if "." not in amount:
@@ -53,6 +55,7 @@ def parse_amount(amount):
     return int(amount.replace("$","").replace(",","").replace(".",""))
 
 def create_db(username, password):
+    """Make a new database"""
     fn = "%s/%s.pck" % (config.dbdir, username)
     if os.path.exists(fn):
         return False
@@ -60,6 +63,7 @@ def create_db(username, password):
     return True
 
 def isopentransfer(trans):
+    """All of these must pass to see if this can be matched with another transfer"""
     return trans.get("state") != "closed" and \
            not trans.get("parent") and \
            not trans.get("children") and \
@@ -99,6 +103,7 @@ class DB(object):
                         "%s/backup/%s.pck-backup-%s" % (config.dbdir, self.username, str(datetime.datetime.now().replace(microsecond=0)).replace(" ","_")))
 
     def getlock(self):
+        """Use a hard-link as a lock.  Re-load database file if mtime has changed since load"""
         if self.lockfn:
             return True
         for loop in range(10):
@@ -115,6 +120,7 @@ class DB(object):
         return False
 
     def accountstodo(self):
+        """Return list of accounts that need new data"""
         ret = copy.deepcopy(self.db["accounts"])
         for acct in ret:
             trans = self.search({"account":acct["name"]},limit=5)
@@ -124,6 +130,7 @@ class DB(object):
         return ret
 
     def editaccount(self, account):
+        """Create or edit an account"""
         if not self.getlock():
             return False
         curaccts = [x["name"] for x in self.db["accounts"]]
@@ -135,6 +142,7 @@ class DB(object):
         return True
 
     def accounts(self):
+        """List of accounts, subaccounts with balances, don't need passwords here"""
         ret = copy.deepcopy(self.db["accounts"])
         for acct in ret:
             acct.pop("password",None)
@@ -145,6 +153,7 @@ class DB(object):
         return ret
 
     def matchtrans(self, trans, query):
+        """Query function"""
         for k in query:
             if k not in trans and not query[k].startswith("$ne:"):
                 return False
@@ -243,6 +252,7 @@ class DB(object):
             if autoprocess:
                 if trans.get("autoprocessed") or trans.get("state", "open") != "open":
                     continue
+                # Go through all rename/edit rules
                 for rule in self.rules:
                     matched = True
                     for match, val in rule[0].iteritems():
@@ -262,15 +272,16 @@ class DB(object):
                         trans.update(rule[1])
                         trans["autoprocessed"] = True
                         break
-                if not trans.get("autoprocessed"):
-                    # Re-capitalize desc
-                    if trans["desc"].isupper() or trans["desc"].islower():
-                        trans.setdefault("orig_desc", trans["desc"])
-                        trans["desc"] = " ".join([x[0].upper()+x[1:] if len(x) > 2 else x.upper() for x in trans["desc"].lower().split() if not digitre.match(x)])
-                        for city in self.db.get("cities",[]):
-                            trans["desc"].rstrip(city)
+                # Re-capitalize desc
+                if trans["desc"].isupper() or trans["desc"].islower():
+                    trans.setdefault("orig_desc", trans["desc"])
+                    trans["desc"] = " ".join([x[0].upper()+x[1:] if len(x) > 2 else x.upper() for x in trans["desc"].lower().split() if not digitre.match(x)])
+                    # Remove any local cities from the descriptions
+                    for city in self.db.get("cities",[]):
+                        trans["desc"].rstrip(city)
                 trans["autoprocessed"] = True
                 
+                # See if we can match this transfer with another, and cancel them out.
                 if isopentransfer(trans):
                     for target in self.db["transactions"]:
                         if isopentransfer(target) and \
@@ -281,6 +292,7 @@ class DB(object):
                             trans["amount"] = 0
                             target["amount"] = 0
                             break
+                # For a cash transaction, split it out of most recent ATM withdrawl.
                 if trans["account"].lower() == "cash" and \
                    trans["state"] == "open" and \
                    not trans.get("parent"):
@@ -295,8 +307,10 @@ class DB(object):
 
             self.db["transactions"].insert(0,trans)
 
+        # Sort for fastest performance on default (most recent) searches
         self.db["transactions"].sort(cmp=lambda x,y: cmp(x["date"],y["date"]) or cmp(x["id"],y["id"]), reverse=True)
 
+        # Updat balances
         for bal in data.get("balances",[]):
             amount = parse_amount(bal["balance"])
             oldbal = self.db["balances"].setdefault(bal["account"],{}).setdefault(bal["subaccount"],[])

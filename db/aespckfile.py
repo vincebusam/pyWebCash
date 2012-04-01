@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# AES encrypt/decrypt Pickle files.  Base64 encode before writing to disk.
 import os
 import sys
 import json

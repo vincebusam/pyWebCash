@@ -1,3 +1,4 @@
+# Client uses HTTP API
 import sys
 import json
 import urllib
