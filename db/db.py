@@ -94,9 +94,11 @@ class DB(object):
         self.db.setdefault("centers",["home"])
         self.db.setdefault("rules",[])
         self.db.setdefault("cities",[])
+        self.db.setdefault("states",["CA"])
         self.db.setdefault("categories",{})
         self.rules = copy.deepcopy(self.db.setdefault("rules",[]))
         self.rules.extend(json.load(open(os.path.dirname(__file__) + "/../rules.json")))
+        self.citymatch = re.compile(" (%s) ?(%s)?$" % ("|".join(self.db["cities"]), "|".join(self.db["states"])), re.I)
 
     def save(self):
         aespckfile.dump("%s/%s.pck" % (config.dbdir, self.username), self.db, self.password)
@@ -288,8 +290,7 @@ class DB(object):
                     trans.setdefault("orig_desc", trans["desc"])
                     trans["desc"] = " ".join([x[0].upper()+x[1:] if len(x) > 2 else x.upper() for x in trans["desc"].lower().split() if not digitre.match(x)])
                 # Remove any local cities from the descriptions
-                for city in self.db.get("cities",[]):
-                    trans["desc"].rstrip(city)
+                trans["desc"] = self.citymatch.sub("", trans["desc"])
                 trans["autoprocessed"] = True
                 
                 # See if we can match this transfer with another, and cancel them out.
