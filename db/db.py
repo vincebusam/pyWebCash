@@ -268,7 +268,7 @@ class DB(object):
                         elif match == "absamount" and abs(trans["amount"]) != val:
                             matched = False
                             break
-                        elif val and not re.search(val, trans.get(match,""), re.I):
+                        elif val and not re.search(str(val), str(trans.get(match,"")), re.I):
                             matched = False
                             break
                     if matched:
