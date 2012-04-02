@@ -293,7 +293,7 @@ class DB(object):
                         if isopentransfer(target) and \
                            trans["amount"] == -target["amount"] and \
                            parsedate(trans["date"]) - parsedate(target["date"]) <= datetime.timedelta(days=4):
-                            trans.setdefault("children").append(target["id"])
+                            trans.setdefault("children",[]).append(target["id"])
                             target["parent"] = trans["id"]
                             trans["amount"] = 0
                             target["amount"] = 0
