@@ -1,12 +1,13 @@
 [
-  [ {"desc": "^target.."}, {"category": "Shopping", "desc": "Target"} ],
   [ {"desc": "autopay"}, {"category": "Transfer"} ],
   [ {"desc": "online banking transfer"}, {"category": "Transfer"} ],
   [ {"desc": "CITI CARD ONLINE DES PAYMENT"}, {"category": "Transfer"} ],
   [ {"desc": "AUTOMATIC PAYMENT"}, {"category": "Transfer"} ],
   [ {"desc": "ATM WITHDRWL"}, {"category": "Uncategorized", "subcategory": "Cash & ATM"} ],
+  [ {"desc": "ATM FEE"}, {"category": "Fees & Charges", "subcategory": "ATM Fee"} ],
   [ {"desc": "Parking"}, {"category": "Auto & Transport", "subcategory": "Parking"} ],
   [ {"desc": "^THE GAS COMPANY"}, {"category": "Bills & Utilities", "subcategory": "Utilities"} ],
+  [ {"desc": "^Amazon"}, {"category": "Shopping" } ],
   [ {"attr_Merchant Category": "GROCERY STORE,SUPERMARKET"}, {"category": "Food & Dining", "subcategory": "Groceries"} ],
   [ {"attr_Merchant Category": "FAST FOOD RESTAURANTS"}, {"category": "Food & Dining", "subcategory": "Fast Food"} ],
   [ {"attr_Merchant Category": "EATING PLACE,RESTAURANT"}, {"category": "Food & Dining", "subcategory": "Restaurants"} ],
@@ -15,6 +16,7 @@
   [ {"attr_Merchant Category": "MEMBERSHIP CLUBS-SPORTS,RECREATION"}, {"category": "Health & Fitness", "subcategory": "Gym"} ],
   [ {"attr_Merchant Category": "AUTO PARKING LOTS / GARAGES"}, {"category": "Auto & Transport", "subcategory": "Parking"} ],
   [ {"attr_Merchant Category": "AUTOMATED GAS DISPENSER"}, {"category": "Auto & Transport", "subcategory": "Gas & Fuel"} ],
+  [ {"attr_Merchant Category": "SERVICE STATION"}, {"category": "Auto & Transport", "subcategory": "Gas & Fuel"} ],
   [ {"attr_Merchant Category": "DEPARTMENT STORE"}, {"category": "Shopping" } ],
   [ {"attr_Merchant Category": "MISCELLANEOUS / SPECIALTY RETAIL STORES"}, {"category": "Shopping"} ],
   [ {"attr_Merchant Category": "BEAUTY SHOPS / BARBER SHOPS"}, {"category": "Personal Care", "subcategory": "Hair"} ],
@@ -22,5 +24,13 @@
   [ {"attr_Merchant Category": "MISC HOUSE FURNISHING SPECIALTY SHOP"}, {"category": "Home", "subcategory": "Furnishings"} ],
   [ {"attr_Merchant Category": "CARPET / UPHOLSTERY CLEANING"}, {"category": "Home", "subcategory": "Home Services"} ],
   [ {"attr_Merchant Category": "DRUG STORES,PHARMACIES"}, {"category": "Health & Fitness", "subcategory": "Pharmacy" } ],
-  [ {"attr_Merchant Category": "POSTAL SERVICES - GOVERNMENT ONLY"}, {"category": "Business Services", "subcategory": "Shipping"}]
+  [ {"attr_Merchant Category": "POSTAL SERVICES - GOVERNMENT ONLY"}, {"category": "Business Services", "subcategory": "Shipping"} ],
+  [ {"attr_Merchant Category": "UTILITIES-ELECTRIC,GAS,SANITARY,WATER"}, {"category": "Bills & Utilities", "subcategory": "Utilities"} ],
+  [ {"attr_Merchant Category": "MOTION PICTURE THEATERS"}, {"category": "Entertainment", "subcategory": "Movies & DVDs"} ],
+  [ {"attr_Merchant Category": "DOCTORS,PHYSICIANS"}, {"category": "Health & Fitness", "subcategory": "Doctor"} ],
+  [ {"attr_Merchant Category": "DISCOUNT STORE"}, {"category": "Shopping"} ],
+  [ {"attr_Merchant Category": "TOURIST ATTRACTIONS AND EXHIBITS"}, {"category": "Entertainment", "subcategory": "Amusement"} ],
+  [ {"attr_Merchant Category": "NOVELTY / SOUVENIR SHOPS"}, {"category": "Shopping"} ],
+  [ {"attr_Merchant Category": "CHARITABLE/SOCIAL SERVICE ORGANIZATIONS"}, {"category": "Gifts & Donations", "subcategory": "Charity"} ],
+  [ {"attr_Merchant Category": "DRINKING PLACES-ALCOHOLIC BEVERAGES"}, {"category": "Food & Dining", "subcategory": "Alcohol & Bars"} ]
 ]
