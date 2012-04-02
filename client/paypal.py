@@ -36,24 +36,22 @@ def downloadaccount(b, params):
     b.find_element_by_link_text("History").click()
     while not b.find_elements_by_id("dayoption"):
         time.sleep(1)
-    for loop in range(2):
-        if loop:
-            Select(b.find_element_by_id("dayoption")).select_by_value("7")
-            time.sleep(5)
-        for row in b.find_element_by_id("transactionTable").find_elements_by_class_name("primary"):
-            data = [x.text for x in row.find_elements_by_tag_name("td")]
-            trans = { "account": params["name"],
-                      "subaccount": subaccount,
-                      "date": datetime.datetime.strptime(data[2], "%b %d, %Y").date(),
-                      "desc": data[5],
-                      "amount": data[-1].rstrip(" USD")
-                    }
-            trans["id"] = "%s-%s-%s-%s" % (trans["date"], params["name"], subaccount, hashlib.sha1(trans["desc"]).hexdigest())
-            if trans["date"] < params["lastcheck"]:
-                break
-            if trans["id"] in params["seenids"]:
-                continue
-            transactions.append(trans)
+    Select(b.find_element_by_id("dayoption")).select_by_value("8")
+    time.sleep(5)
+    for row in b.find_element_by_id("transactionTable").find_elements_by_class_name("primary"):
+        data = [x.text for x in row.find_elements_by_tag_name("td")]
+        trans = { "account": params["name"],
+                  "subaccount": subaccount,
+                  "date": datetime.datetime.strptime(data[2], "%b %d, %Y").date(),
+                  "desc": data[5],
+                  "amount": data[-1].rstrip(" USD")
+                }
+        trans["id"] = "%s-%s-%s-%s" % (trans["date"], params["name"], subaccount, hashlib.sha1(trans["desc"]).hexdigest())
+        if trans["date"] < params["lastcheck"]:
+            break
+        if trans["id"] in params["seenids"]:
+            continue
+        transactions.append(trans)
     b.find_element_by_link_text("Log Out").click()
     time.sleep(2)
     return {"transactions": transactions, "balances": balances}
