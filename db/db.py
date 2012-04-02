@@ -282,9 +282,9 @@ class DB(object):
                 if trans["desc"].isupper() or trans["desc"].islower():
                     trans.setdefault("orig_desc", trans["desc"])
                     trans["desc"] = " ".join([x[0].upper()+x[1:] if len(x) > 2 else x.upper() for x in trans["desc"].lower().split() if not digitre.match(x)])
-                    # Remove any local cities from the descriptions
-                    for city in self.db.get("cities",[]):
-                        trans["desc"].rstrip(city)
+                # Remove any local cities from the descriptions
+                for city in self.db.get("cities",[]):
+                    trans["desc"].rstrip(city)
                 trans["autoprocessed"] = True
                 
                 # See if we can match this transfer with another, and cancel them out.
