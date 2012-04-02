@@ -52,7 +52,7 @@ def downloadaccount(b, params):
             trans = { "account": params["name"],
                       "subaccount": subaccount,
                       "date": datetime.datetime.strptime(data[0], "%m/%d/%Y").date(),
-                      "desc": data[1],
+                      "desc": data[2],
                       "amount": data[3]
                     }
             if data[4] != "CR":
