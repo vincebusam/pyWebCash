@@ -316,7 +316,7 @@ class DB(object):
         # Sort for fastest performance on default (most recent) searches
         self.db["transactions"].sort(cmp=lambda x,y: cmp(x["date"],y["date"]) or cmp(x["id"],y["id"]), reverse=True)
 
-        # Updat balances
+        # Update balances
         for bal in data.get("balances",[]):
             amount = parse_amount(bal["balance"])
             oldbal = self.db["balances"].setdefault(bal["account"],{}).setdefault(bal["subaccount"],[])
@@ -348,11 +348,22 @@ if __name__ == "__main__":
         sys.exit(1)
     password = getpass.getpass()
     db = DB(sys.argv[1],password)
-    print "accountstodo"
-    print json.dumps(db.accountstodo(), indent=2)
-    print "accounts"
-    print json.dumps(db.accounts(), indent=2)
-    if os.getenv("DATAFILE"):
-        print json.dumps(db.newtransactions(json.load(open(os.getenv("DATAFILE")))), indent=2)
+    print "Accounts TODO:"
+    accounts = db.accountstodo()
+    for acct in accounts:
+        print "  %s %s" % (acct["name"], acct.get("username"))
+    print "Accounts:"
+    accounts = db.accounts()
+    for acct in accounts:
+        print "  %s %s" % (acct["name"], acct.get("username"))
+        for sub in acct.get("subaccounts",[]):
+            print "    %s %s" % (sub["name"], sub["amount"])
+    if len(sys.argv) > 2 and os.path.exists(sys.argv[2]):
+        print "Data import:"
+        print json.dumps(db.newtransactions(json.load(open(sys.argv[2]))), indent=2)
+        del sys.argv[2]
     if len(sys.argv) > 2:
-        print json.dumps(db.search(query=json.loads(sys.argv[2]),limit=5), indent=2)
+        print "Query for %s" % (sys.argv[2])
+        results = db.search(query=json.loads(sys.argv[2]),limit=sys.maxint)
+        for res in results:
+            print "%s %s %s" % (res["date"], res["desc"], res["amount"])
