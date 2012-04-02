@@ -43,7 +43,8 @@ for account in todo:
             data = json.dumps(banks[account["bankname"]].downloadaccount(b, account),default=str)
             if os.getenv("DATAFILE"):
                 open(account["bankname"]+".json","w").write(data)
-        api.callapi("newtransactions", {"data": data})
+        if not api.callapi("newtransactions", {"data": data}):
+            print "Error uploading transactions"
     except Exception, e:
         print e
         traceback.print_exc()
