@@ -102,8 +102,10 @@ function clearpage() {
   $("#newaccount").hide();
   $("#username").val("");
   $("#password").val("");
-  if (sessioncheckinterval)
+  if (sessioncheckinterval) {
     clearInterval(sessioncheckinterval);
+    sessioncheckinterval = null;
+  }
 
   $.ajax({
     type: "POST",
