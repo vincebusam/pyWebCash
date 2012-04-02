@@ -32,5 +32,6 @@
   [ {"attr_Merchant Category": "TOURIST ATTRACTIONS AND EXHIBITS"}, {"category": "Entertainment", "subcategory": "Amusement"} ],
   [ {"attr_Merchant Category": "NOVELTY / SOUVENIR SHOPS"}, {"category": "Shopping"} ],
   [ {"attr_Merchant Category": "CHARITABLE/SOCIAL SERVICE ORGANIZATIONS"}, {"category": "Gifts & Donations", "subcategory": "Charity"} ],
-  [ {"attr_Merchant Category": "DRINKING PLACES-ALCOHOLIC BEVERAGES"}, {"category": "Food & Dining", "subcategory": "Alcohol & Bars"} ]
+  [ {"attr_Merchant Category": "DRINKING PLACES-ALCOHOLIC BEVERAGES"}, {"category": "Food & Dining", "subcategory": "Alcohol & Bars"} ],
+  [ {"attr_Merchant Category": "AIRLINE,AIR CARRIER"}, {"category": "Travel", "subcategory": "Air Travel"} ]
 ]
