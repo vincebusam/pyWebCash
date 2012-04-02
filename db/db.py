@@ -107,6 +107,11 @@ class DB(object):
         shutil.copyfile("%s/%s.pck" % (config.dbdir, self.username),
                         "%s/backup/%s.pck-backup-%s" % (config.dbdir, self.username, str(datetime.datetime.now().replace(microsecond=0)).replace(" ","_")))
 
+    def clear(self):
+        """Wipes out all account history!!!"""
+        self.db["transactions"] = []
+        self.db["balances"] = {}
+
     def getlock(self):
         """Use a hard-link as a lock.  Re-load database file if mtime has changed since load"""
         if self.lockfn:
