@@ -363,12 +363,14 @@ if __name__ == "__main__":
         print "  %s %s" % (acct["name"], acct.get("username"))
         for sub in acct.get("subaccounts",[]):
             print "    %s %s" % (sub["name"], sub["amount"])
-    if len(sys.argv) > 2 and os.path.exists(sys.argv[2]):
-        print "Data import:"
-        print json.dumps(db.newtransactions(json.load(open(sys.argv[2]))), indent=2)
-        del sys.argv[2]
-    if len(sys.argv) > 2:
-        print "Query for %s" % (sys.argv[2])
-        results = db.search(query=json.loads(sys.argv[2]),limit=sys.maxint)
-        for res in results:
-            print "%s %s %s" % (res["date"], res["desc"], res["amount"])
+    for arg in sys.argv[2:]:
+        if os.path.exists(arg):
+            print "Data import:"
+            print json.dumps(db.newtransactions(json.load(open(arg))), indent=2)
+        elif arg == "clear":
+            db.clear()
+        else:
+            print "Query for %s" % (arg)
+            results = db.search(query=json.loads(arg),limit=sys.maxint)
+            for res in results:
+                print "%s %s %s" % (res["date"], res["desc"], res["amount"])
