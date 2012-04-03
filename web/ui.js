@@ -447,7 +447,10 @@ $(document).ready(function () {
     modal: true,
     autoOpen: false,
     title: "Edit Transaction",
-    minWidth: 600
+    minWidth: 600,
+    close: function() {
+      showing = -1;
+    }
   });
 
   $("#searchoptions .date").datepicker({
