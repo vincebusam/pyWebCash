@@ -18,7 +18,8 @@ header = []
 headermap = { "description": "desc",
               "original description": "orig_desc",
               "transaction type": "type",
-              "account name": "subaccount" }
+              "account name": "subaccount",
+              "labels": "tags" }
 
 dryrun = False
 if sys.argv[1] == "-n":
@@ -52,6 +53,8 @@ for row in csv.reader(open(sys.argv[1])):
         header = [headermap.get(x.lower(),x.lower()) for x in row]
         continue
     trans = dict([(header[x],row[x]) for x in range(len(row))])
+    if trans["tags"]:
+        trans["tags"] = [ trans["tags"] ]
     trans["subaccount"] = accountmap.get(trans["subaccount"],trans["subaccount"])
     if trans["subaccount"] in subaccountnames:
         trans["account"] = subaccountnames[trans["subaccount"]]
