@@ -373,6 +373,7 @@ if __name__ == "__main__":
             print json.dumps(db.newtransactions(json.load(open(arg))), indent=2)
         elif arg == "clear":
             db.clear()
+            db.save()
         else:
             print "Query for %s" % (arg)
             results = db.search(query=json.loads(arg),limit=sys.maxint)
