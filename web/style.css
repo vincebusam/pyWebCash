@@ -7,7 +7,7 @@
 .account { margin-bottom: 10px; cursor: pointer; }
 
 #transactiondetail { position: relative; }
-#transactiondetail > #file { max-width: 400px; }
+#transactiondetail > #file { max-width: 560px; }
 #transactiondetail > #date { float: left; margin-right: 10px;}
 #transactiondetail > #amount { float: right; }
 #transactiondetail #savebuttons { text-align: right; }
