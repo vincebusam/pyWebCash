@@ -279,6 +279,34 @@ function showtransaction(t) {
   $(".dollar").each(decoratedollar);
   if (categories[showtrans["category"]] != undefined)
     $("#transactiondetail #subcategory").autocomplete("option", "source", categories[showtrans["category"]]);
+  $("#transactiondetail #linked").html("");
+  if (showtrans["parent"] != undefined) {
+    $("#transactiondetail #linked").append("Linked Transactions:<br>");
+    $("#transactiondetail #linked").append("<a href='#' class='translink'>"+showtrans["parent"]+"</a><br>");
+  }
+  if (showtrans["children"] != undefined) {
+    $("#transactiondetail #linked").append("Linked Transactions:<br>");
+    for (i=0; i<showtrans["children"].length; i++)
+      $("#transactiondetail #linked").append("<a href='#' class='translink'>"+showtrans["children"][i]+"</a><br>");
+  }
+  $(".translink").click(function (event) {
+    event.preventDefault();
+    $.ajax({
+      type: "POST",
+      url: apiurl,
+      data: { "action": "search", "data": JSON.stringify({"id": $(this).text()}) },
+      success: function(data) {
+        if (data) {
+          showtransaction(data);
+        } else {
+          show_error("Bad transaction data");
+        }
+      },
+      error: function(data) {
+        show_error("Error getting transaction");
+      }
+    });
+  });
   $("#transactiondetail").dialog("open");
 }
 
