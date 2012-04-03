@@ -11,6 +11,7 @@ import shutil
 import base64
 import string
 import random
+import locale
 import getpass
 import datetime
 import StringIO
@@ -26,6 +27,8 @@ try:
     prctl.prctl(prctl.DUMPABLE, 0)
 except ImportError:
     pass
+
+locale.setlocale(locale.LC_ALL, '')
 
 parsedate = lambda x: datetime.datetime.strptime(x,"%Y-%m-%d").date()
 
@@ -363,7 +366,7 @@ if __name__ == "__main__":
     for acct in accounts:
         print "  %s %s" % (acct["name"], acct.get("username"))
         for sub in acct.get("subaccounts",[]):
-            print "    %s %s" % (sub["name"], sub["amount"])
+            print "    %s %s" % (sub["name"], locale.currency(float(sub["amount"])/100, grouping=True))
     for arg in sys.argv[2:]:
         if os.path.exists(arg):
             print "Data import:"
@@ -374,4 +377,4 @@ if __name__ == "__main__":
             print "Query for %s" % (arg)
             results = db.search(query=json.loads(arg),limit=sys.maxint)
             for res in results:
-                print "%s %s %s" % (res["date"], res["desc"], res["amount"])
+                print "%s %s %s" % (res["date"], res["desc"], locale.currency(float(res["amount"]/100), grouping=True))
