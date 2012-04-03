@@ -25,6 +25,12 @@ html/javascript front-end for viewing and editing transactions.  Loading
 transactions is done client-side (interactively or scripted) by python with
 selenium.
 
+The database is an AES-encrypted cPickle file.  It's encrypted with the
+user's password, so don't lose it!  Check images, and HTTP session files
+(which contain the database password) are stored encrypted as well.  This
+requires the database to be entirely re-loaded for each HTTP request, but
+I've found it easily fast enough for unloaded servers to handle.
+
  ---
 
 ## Installation
