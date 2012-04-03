@@ -108,10 +108,11 @@ class DB(object):
         self.citymatch = re.compile(" (%s) ?(%s)?$" % ("|".join(self.db["cities"]), "|".join(self.db["states"])), re.I)
 
     def save(self):
-        aespckfile.dump("%s/%s.pck" % (config.dbdir, self.username), self.db, self.password)
+        aespckfile.dump(self.dbfn, self.db, self.password)
         if self.lockfn:
             os.unlink(self.lockfn)
             self.lockfn = None
+            self.dbmtime = os.path.getmtime(self.dbfn)
 
     def backup(self):
         shutil.copyfile("%s/%s.pck" % (config.dbdir, self.username),
