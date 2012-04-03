@@ -121,16 +121,17 @@ class DB(object):
         """Use a hard-link as a lock.  Re-load database file if mtime has changed since load"""
         if self.lockfn:
             return True
+        fn = "%s/.%s.lck" % (config.dbdir, self.username)
         for loop in range(10):
             try:
-                fn = "%s/.%s.lck" % (config.dbdir, self.username)
                 os.link(self.dbfn, fn)
                 if os.path.getmtime(self.dbfn) > self.dbmtime:
                     self.loaddb()
                 self.lockfn = fn
                 return True
             except OSError:
-                pass
+                if os.path.getmtime(fn) < time.time()-(60*4):
+                    os.unlink(fn)
             time.sleep(1)
         return False
 
