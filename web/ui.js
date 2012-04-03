@@ -116,10 +116,12 @@ function clearpage() {
         loginsuccess();
       } else {
         $("#login").show();
+        $("#username").focus();
       }
     },
     error: function() {
       $("#login").show();
+      $("#username").focus();
     }
   });
 }
@@ -491,6 +493,10 @@ $(document).ready(function () {
   });
 
   $("#loginsubmit").click(function () {
+    $("#loginform").submit();
+  });
+
+  $("#loginform").submit(function () {
     $.ajax({
       type: "POST",
       url: apiurl,
