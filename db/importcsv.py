@@ -112,6 +112,10 @@ for i in range(len(transactions)):
                    transactions[i]["child"] = transactions[j]["id"]
                    transactions[j]["parent"] = transactions[i]["id"]
 
+for trans in transactions:
+    if trans.get("category") == "Transfer" and not trans.get("subcategory") and trans["amount"]:
+        print "%s %s %s" % (trans["date"], trans["desc"], trans["amount"])
+
 # Overkill to convert all dates to strings.
 transactions = json.loads(json.dumps(transactions,default=str))
 if not dryrun:
