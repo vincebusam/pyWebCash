@@ -294,10 +294,10 @@ function showtransaction(t) {
     $.ajax({
       type: "POST",
       url: apiurl,
-      data: { "action": "search", "data": JSON.stringify({"id": $(this).text()}) },
+      data: { "action": "search", "query": JSON.stringify({"id": "$eq:" + $(this).text()}) },
       success: function(data) {
-        if (data) {
-          showtransaction(data);
+        if (data && data.length) {
+          showtransaction(data[0]);
         } else {
           show_error("Bad transaction data");
         }
