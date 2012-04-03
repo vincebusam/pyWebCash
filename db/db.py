@@ -78,6 +78,7 @@ def isopentransfer(trans):
 
 class DB(object):
     def __init__(self, username, password):
+        self.lockfn = None
         self.username = username
         self.password = password
         fn = "%s/%s.pck" % (config.dbdir, self.username)
@@ -86,7 +87,10 @@ class DB(object):
             self.username = os.readlink(fn).rstrip(".pck")
         self.dbfn = "%s/%s.pck" % (config.dbdir, self.username)
         self.loaddb()
-        self.lockfn = None
+
+    def __del__(self):
+        if self.lockfn:
+            os.unlink(self.lockfn)
 
     def loaddb(self):
         self.dbmtime = os.path.getmtime(self.dbfn)
@@ -130,8 +134,7 @@ class DB(object):
                 self.lockfn = fn
                 return True
             except OSError:
-                if os.path.getmtime(fn) < time.time()-(60*4):
-                    os.unlink(fn)
+                pass
             time.sleep(1)
         return False
 
