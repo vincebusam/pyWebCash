@@ -111,6 +111,7 @@ class DB(object):
         aespckfile.dump("%s/%s.pck" % (config.dbdir, self.username), self.db, self.password)
         if self.lockfn:
             os.unlink(self.lockfn)
+            self.lockfn = None
 
     def backup(self):
         shutil.copyfile("%s/%s.pck" % (config.dbdir, self.username),
