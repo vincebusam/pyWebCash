@@ -142,7 +142,10 @@ class DB(object):
             acct["seenids"] = [x["id"] for x in trans]
             if trans:
                 acct["lastcheck"] = trans[0]["date"]
-        return ret
+            for sub in self.db["balances"].get(acct["name"],{}):
+                if self.db["balances"][acct["name"]][sub][0]["lastdate"] > acct.get("lastcheck"):
+                    acct["lastcheck"] = self.db["balances"][acct["name"]][sub][0]["lastdate"]
+        return [x for x in ret if x.get("lastcheck") < str(datetime.date.today()) ]
 
     def editaccount(self, account):
         """Create or edit an account"""
