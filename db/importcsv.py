@@ -83,7 +83,15 @@ for row in csv.reader(open(sys.argv[1])):
                                     hashlib.sha1(trans["desc"]).hexdigest())).replace(" ","")
     trans["state"] = "closed"
     trans["attr_Imported From"] = os.path.basename(sys.argv[1])
-    transactions.append(trans)
+    dups = mydb.search({"amount": "$eq:%s" % (trans["amount"]), "date": str(trans["date"])}, limit=1)
+    if dups and not trans.get("category") == "Transfer":
+        # Update desc, category, subcategory, labels, notes
+        update = {}
+        for key in [ "desc", "category", "subcategory", "tags", "notes", "state" ]:
+            update.setdefault(key, trans[key]) if trans.get(key) else False
+        mydb.updatetransaction(dups[0]["id"], update, save=False)
+    else:
+        transactions.append(trans)
 
 # Squash transfers - match up with transfer to other account, set both of their amounts to 0
 for i in range(len(transactions)):
