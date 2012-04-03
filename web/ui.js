@@ -42,7 +42,7 @@ function loginsuccess() {
         minLength: 0,
         select: function(event, ui) {
           if ($(this).hasClass("transdataval")) {
-            $("#transactiondetail > #save").button("enable");
+            $("#transactiondetail .savebutton").button("enable");
             if (editedfields.indexOf("category") == -1)
               editedfields.push("category");
           }
@@ -57,7 +57,7 @@ function loginsuccess() {
           if ($(this).hasClass("transdataval")) {
             if (editedfields.indexOf("subcategory") == -1)
               editedfields.push("subcategory");
-            $("#transactiondetail > #save").button("enable");
+            $("#transactiondetail .savebutton").button("enable");
           }
         }
       });
@@ -252,7 +252,7 @@ function showtransaction(t) {
     showtrans = t;
   }
   editedfields = [];
-  $("#transactiondetail > #save").button("disable");
+  $("#transactiondetail .savebutton").button("disable");
   $("#transactiondetail > #file").hide();
   $("#transactiondetail .transdata").each(function () {
     name = $(this).attr("id");
@@ -410,14 +410,19 @@ $(document).ready(function () {
       $this.data('before', $this.text());
       if (editedfields.indexOf($(this).attr("id")) == -1) {
         editedfields.push($(this).attr("id"));
-        $("#transactiondetail > #save").button("enable");
+        $("#transactiondetail .savebutton").button("enable");
       }
     }
     return $this;
   });
 
-  $("#transactiondetail > #save").button();
-  $("#transactiondetail > #save").click(savetransaction);
+  $("#transactiondetail .savebutton").button();
+  $("#transactiondetail #save").click(savetransaction);
+  $("#transactiondetail #saveclose").click(function() {
+    $("#transactiondetail #state").val("closed")
+    editedfields.push("state");
+    savetransaction();
+  });
   $("#transactiondetail > #dateselect").datepicker({
     dateFormat: "yy-mm-dd",
     altField: "#transactiondetail > #date",
@@ -425,7 +430,7 @@ $(document).ready(function () {
       $("#transactiondetail > #date").text(dateText);
       if (editedfields.indexOf("date") == -1) {
         editedfields.push("date");
-        $("#transactiondetail > #save").button("enable");
+        $("#transactiondetail .savebutton").button("enable");
       }
     }
   });
@@ -435,7 +440,7 @@ $(document).ready(function () {
   $("#transactiondetail select").change(function () {
     if (editedfields.indexOf($(this).attr("id")) == -1) {
       editedfields.push($(this).attr("id"));
-      $("#transactiondetail > #save").button("enable");
+      $("#transactiondetail .savebutton").button("enable");
     }
   });
   $("#transactiondetail").dialog({

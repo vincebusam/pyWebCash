@@ -10,8 +10,8 @@
 #transactiondetail > #file { max-width: 400px; }
 #transactiondetail > #date { float: left; margin-right: 10px;}
 #transactiondetail > #amount { float: right; }
-#transactiondetail > #save { position: absolute; right: 9px; bottom: 3px; }
-.description { max-width: 350px; overflow: hidden; white-space: nowrap; text-overflow:ellipsis; }
+#transactiondetail #savebuttons { text-align: right; }
+.description { max-width: 350px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 
 #searchoptions { position: absolute; top: 5px; right: 5px; text-align: right; }
 #searchoptions .ui-button .ui-button-text { padding: 5px 11px 5px 11px !important; font-size: .82em !important; }
