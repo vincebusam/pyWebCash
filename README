@@ -47,8 +47,10 @@ I've found it easily fast enough for unloaded servers to handle.
 ### Backend
 
 Setup the web/ directory to be web viewable.
-(apache) Alias /myfinances/ /usr/local/my/finance/web
-Update config.py to point to this url.
+`Alias /myfinances/ /usr/local/myfinance/web`
+Make sure .py files are run as cgi scripts.  The provided .htaccess will do
+this if permissions allow.  Update config.py (on backend and scraper) to
+point to this url.
 
 Edit/create the database, image, session directories specified in config.py,
 make them writable by the http user (www-data?)
