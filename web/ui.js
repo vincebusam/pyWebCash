@@ -147,11 +147,13 @@ function clearpage() {
         loginsuccess();
       } else {
         $("#login").show();
+        $("#login").center();
         $("#username").focus();
       }
     },
     error: function() {
       $("#login").show();
+      $("#login").center();
       $("#username").focus();
     }
   });
@@ -664,3 +666,12 @@ $(document).ready(function () {
   $("th").addClass("ui-state-default");
 
 });
+
+jQuery.fn.center = function () {
+    this.css("position","absolute");
+    this.css("top", (($(window).height() - this.outerHeight()) / 2) +
+                      $(window).scrollTop() + "px");
+    this.css("left", (($(window).width() - this.outerWidth()) / 2) +
+                       $(window).scrollLeft() + "px");
+    return this;
+}
