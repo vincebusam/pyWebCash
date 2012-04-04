@@ -22,10 +22,10 @@ def cardname(card):
 
 def parsetransaction(trans, lines):
     trans["date"] = datetime.datetime.strptime(lines[0].split()[0],"%m/%d/%Y").date()
-    trans["dispamount"] = lines[0].split()[-1]
+    trans["orig_amount_str"] = lines[0].split()[-1]
     trans["desc"] = " ".join(lines[0].split()[1:-1])
     # Need to negate amount!
-    trans["amount"] = -int(trans["dispamount"].replace("$","").replace(".","").replace(",",""))
+    trans["amount"] = -int(trans["orig_amount_str"].replace("$","").replace(".","").replace(",",""))
     for line in lines[1:]:
         if ":" in line:
             l = line.split(":",1)
