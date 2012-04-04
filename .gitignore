@@ -7,3 +7,4 @@ chromedriver.log
 .*DS_Store
 *.csv
 ._*
+*.xcworkspace
