@@ -626,9 +626,10 @@ $(document).ready(function () {
   
   $("#newaccount > #createaccount").button();
   $("#newaccount > #createaccount").click(function () {
-    account = new Object();
+    account = {}
     $("#newaccount input,select").each(function() {
-      account[$(this).attr("id")] = $(this).val();
+      if ($(this).val() != "")
+        account[$(this).attr("id")] = $(this).val();
     });
     $.ajax({
       type: "POST",
