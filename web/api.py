@@ -192,5 +192,7 @@ elif action == "getcategories":
         exit_error(500, "Error %s" % (e))
 elif action == "getcenters":
     json_print(mydb.getcenters())
+elif action == "gettags":
+    json_print(mydb.gettags())
 else:
     exit_error(404,"Method not found")

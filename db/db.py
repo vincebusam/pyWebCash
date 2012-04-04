@@ -103,6 +103,7 @@ class DB(object):
         self.db.setdefault("cities",[])
         self.db.setdefault("states",["CA"])
         self.db.setdefault("categories",{})
+        self.db.setdefault("tags",[])
         self.rules = copy.deepcopy(self.db.setdefault("rules",[]))
         self.rules.extend(json.load(open(os.path.dirname(__file__) + "/../rules.json")))
         self.citymatch = re.compile(" (%s) ?(%s)?$" % ("|".join(self.db["cities"]), "|".join(self.db["states"])), re.I)
@@ -361,6 +362,9 @@ class DB(object):
 
     def getcenters(self):
         return self.db["centers"]
+
+    def gettags(self):
+        return self.db["tags"]
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

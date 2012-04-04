@@ -10,7 +10,8 @@ var query = accountsearches[0];
 var sessioncheckinterval = null;
 var categories = {};
 var allcategories = [];
-var centers = []
+var centers = [];
+var tags = [];
 
 // "nice" jQueryUI popup message
 function showerror(err) {
@@ -104,6 +105,15 @@ function loginsuccess() {
     },
     error: function() {
       showerr("Error loading cost centers!");
+    }
+  });
+  $.ajax({
+    type: "POST",
+    url: apiurl,
+    data: { "action": "gettags" },
+    success: function(data) {
+      tags = data;
+      tags.sort();
     }
   });
 
