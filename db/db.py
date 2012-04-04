@@ -267,7 +267,7 @@ class DB(object):
                 continue
             trans.setdefault("state", "open")
             trans.setdefault("center", self.db["centers"][0])
-            trans["orig_amount_str"] = trans["amount"]
+            trans.setdefault("orig_amount_str", trans["amount"])
             trans["amount"] = parse_amount(trans["amount"])
             trans["orig_amount"] = trans["amount"]
             if trans.get("parent"):
