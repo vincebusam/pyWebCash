@@ -9,6 +9,7 @@ var skip = 0;
 var query = accountsearches[0];
 var sessioncheckinterval = null;
 var categories = {};
+var allcategories = [];
 var centers = []
 
 // "nice" jQueryUI popup message
@@ -34,6 +35,12 @@ function loginsuccess() {
     data: { "action": "getcategories" },
     success: function (data) {
       categories = data;
+      allcategories = []
+      for (cat in categories) {
+        allcategories.push(cat);
+        allcategories = allcategories.concat(categories[cat]);
+      }
+      allcategories.sort();
       keys = Object.keys(categories);
       keys.sort();
       $(".category").autocomplete({
@@ -50,7 +57,7 @@ function loginsuccess() {
         }
       });
       $(".subcategory").autocomplete({
-        source: [],
+        source: allcategories,
         delay: 50,
         minLength: 0,
         select: function(event, ui) {
@@ -58,6 +65,20 @@ function loginsuccess() {
             if (editedfields.indexOf("subcategory") == -1)
               editedfields.push("subcategory");
             $("#transactiondetail .savebutton").button("enable");
+          }
+          catval = $(this).parent().children(".category").val();
+          if ((catval == "") || (categories[catval].indexOf(ui.item.value) == -1)) {
+            for (cat in categories) {
+              if (categories[cat].indexOf(ui.item.value) != -1) {
+                $(this).parent().children(".category").val(cat);
+                if ($(this).hasClass("transdataval")) {
+                  if (editedfields.indexOf("category") == -1)
+                    editedfields.push("category");
+                  $("#transactiondetail .savebutton").button("enable");
+                }
+                break;
+              }
+            }
           }
         }
       });
@@ -275,6 +296,8 @@ function showtransaction(t) {
   $(".dollar").each(decoratedollar);
   if (categories[showtrans["category"]] != undefined)
     $("#transactiondetail #subcategory").autocomplete("option", "source", categories[showtrans["category"]]);
+  else
+    $("#transactiondetail #subcategory").autocomplete("option", "source", allcategories);
   $("#transactiondetail #linked").html("");
   if (showtrans["parent"] != undefined) {
     $("#transactiondetail #linked").append("Linked Transactions:<br>");
