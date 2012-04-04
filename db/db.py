@@ -117,6 +117,7 @@ class DB(object):
     def backup(self):
         shutil.copyfile("%s/%s.pck" % (config.dbdir, self.username),
                         "%s/backup/%s.pck-backup-%s" % (config.dbdir, self.username, str(datetime.datetime.now().replace(microsecond=0)).replace(" ","_")))
+        [os.unlink("%s/backup/%s" % (config.dbdir,y)) for y in [x for x in sorted(os.listdir("%s/backup" % (config.dbdir)), reverse=True) if x.startswith(self.username + ".pck-backup")][20:]]
 
     def clear(self):
         """Wipes out all account history!!!"""
