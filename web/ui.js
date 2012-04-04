@@ -1,6 +1,6 @@
 var apiurl = "api.py";
 var loadedtransactions = [];
-var accountsearches = [ {"state": "$ne:closed" }, {"amount": "$ne:0"}, {} ];
+var accountsearches = [ {"state": "open" }, {"state": "reimbursewait"}, {"amount": "$ne:0"}, {} ];
 var showing = -1;
 var showtrans = {};
 var editedfields = []
@@ -163,11 +163,11 @@ function loadaccounts() {
     url: apiurl,
     data: { "action": "accounts" },
     success: function(data) {
-      accountsearches = accountsearches.slice(0,3);
+      accountsearches = accountsearches.slice(0,4);
       $("#accounts > #bankaccounts").html("");
       for (i in data) {
         for (j in data[i]["subaccounts"]) {
-          newaccount = "<div class='account useraccount'>";
+          newaccount = "<div class='account useraccount' id='account"+accountsearches.length+"'>";
           newaccount += "<div class='accountname'>"+data[i]["name"]+"</div>";
           newaccount += "<div class='subname'>"+data[i]["subaccounts"][j]["name"]+"</div>";
           newaccount += "<div class='dollar accountbalance'>"+data[i]["subaccounts"][j]["amount"]+"</div>";
@@ -179,13 +179,9 @@ function loadaccounts() {
       }
       $(".dollar").each(decoratedollar);
       $(".account").click(function() {
-        for (i=0; i < $(this).parent().children(".account").length; i++) {
-          if ($(this).text() == $(this).parent().children(".account").eq(i).text()) {
-            query = accountsearches[i];
-            loadtransactions();
-            return;
-          }
-        }
+        skip = 0;
+        query = accountsearches[parseInt($(this).attr("id").substring(7))];
+        loadtransactions();
       });
       $("#accounts").show();
     },
