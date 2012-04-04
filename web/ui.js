@@ -402,6 +402,7 @@ function loadtransactions() {
       $("#transactionsum").text(total);
       $(".dollar").each(decoratedollar);
       $("#transtablebody td").addClass("ui-widget-content");
+      $("#transtablebody td").removeClass("ui-state-hover");
       $("#transtablebody tr").hover(
         function() {
           $(this).children("td").addClass("ui-state-hover");
