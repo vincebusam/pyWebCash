@@ -348,6 +348,29 @@ class DB(object):
 
         return True
 
+    def link(self, parent, children, type, save=True):
+        # Make sure we can find parent and children
+        parenttrans = (self.search({"id": parent}) or [{}])[0]
+        if not parenttrans:
+            return False
+        childtrans = [(self.search({"id": x}) or [{}])[0] for x in children]
+        if [x for x in childtrans if not x]:
+            return False
+        parenttrans["children"] = children
+        [x.update({"parent": parent}) for x in childtrans]
+        if type == "dup":
+            [x.update({"amount": 0}) for x in childtrans]
+        elif type == "combine":
+            for child in childtrans:
+                parenttrans["amount"] += child["amount"]
+                child["amount"] = 0
+        elif type == "split":
+            parenttrans["amount"] -= sum([x.get("amount") for x in childtrans])
+        self.getlock()
+        if save:
+            self.save()
+        return True
+
     def getimage(self, id):
         trans = self.search({"id": id})
         if trans:

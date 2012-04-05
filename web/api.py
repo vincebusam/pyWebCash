@@ -194,5 +194,9 @@ elif action == "getcenters":
     json_print(mydb.getcenters())
 elif action == "gettags":
     json_print(mydb.gettags())
+elif action == "link":
+    json_print(mydb.link(form.getfirst("parent") or "null",
+                         json.loads(form.getfirst("children") or "[]"),
+                         form.getfirst("linktype") or "none"))
 else:
     exit_error(404,"Method not found")

@@ -30,3 +30,7 @@
 #tagslist .ui-selected { background: #F39814; color: white; }
 #tagslist { list-style-type: none; margin: 0; padding: 0; width: 250px; font-size: 62.5%; cursor: pointer; }
 #tagslist li { margin: 3px; padding: 0.4em; font-size: 1.4em; height: 18px; }
+
+#linktransactions { position: absolute; right: 5px; top: 300px; }
+#linktransactions div { border-style: solid; border-width: 2px; width: 200px; min-height: 30px; margin-bottom: 20px;}
+#linktransactions button { font-size: 62.5%; }

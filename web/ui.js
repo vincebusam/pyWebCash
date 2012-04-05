@@ -12,6 +12,8 @@ var categories = {};
 var allcategories = [];
 var centers = [];
 var tags = [];
+var linkparent = "";
+var linkchildren = [];
 
 // "nice" jQueryUI popup message
 function showerror(err) {
@@ -23,6 +25,8 @@ function showerror(err) {
 function loginsuccess() {
   $("#login").hide();
   $("#searchoptions").show();
+  $("#linktransactions").show();
+  clearlink();
   loadedtransactions = [];
   showing = -1;
   limit = 25;
@@ -146,6 +150,7 @@ function clearpage() {
   $("#searchoptions").hide();
   $("#newaccount").hide();
   $("#tagselect").hide();
+  $("#linktransactions").hide();
   $("#username").val("");
   $("#password").val("");
   if (sessioncheckinterval) {
@@ -353,11 +358,11 @@ function showtransaction(t) {
         if (data && data.length) {
           showtransaction(data[0]);
         } else {
-          show_error("Bad transaction data");
+          showerror("Bad transaction data");
         }
       },
       error: function(data) {
-        show_error("Error getting transaction");
+        showerror("Error getting transaction");
       }
     });
   });
@@ -446,6 +451,10 @@ function loadtransactions() {
           $(this).children("td").removeClass("ui-state-hover");
         }
       );
+      $("#transtablebody tr").draggable({
+        revert: true,
+        helper: "clone"
+      });
       $("#transactions").show();
       $("#transtable").width($("#searchoptions").offset().left-$("#transtable").offset().left);
       $("#transtablebody .category").width($("#transtablebody .category").width());
@@ -454,6 +463,12 @@ function loadtransactions() {
       showerror("Transaction loading error");
     }
   });
+}
+
+function clearlink() {
+    linkparent = "";
+    linkchildren = [];
+    $("#linktransactions div").html("");
 }
 
 $(document).ready(function () {
@@ -712,6 +727,45 @@ $(document).ready(function () {
       error: function() {
         showerror("HTTP Error editing account");
       }
+    });
+  });
+
+  $("#linktransactions div").droppable({
+    drop: function (event, ui) {
+        var t = parseInt($(ui.draggable).attr("id").substring(5));
+        if ($(this).attr("id") == "parent") {
+            linkparent = loadedtransactions[t]["id"];
+            $(this).html("");
+        } else {
+            linkchildren.push(loadedtransactions[t]["id"])
+        }
+        $(this).append(loadedtransactions[t]["id"] + "<br>");
+    },
+    tolerance: "touch",
+    hoverClass: "ui-state-active"
+  });
+  $("#linktransactions button").button();
+  $("#linktransactions #clear").click(clearlink);
+  $("#linktransactions #combine,#split,#dup").click(function () {
+    $.ajax({
+        type: "POST",
+        url: apiurl,
+        data: { "action": "link",
+                "parent": linkparent,
+                "children": JSON.stringify(linkchildren),
+                "linktype": $(this).attr("id")
+        },
+        success: function(data) {
+            if (data) {
+                clearlink();
+                loadtransactions();
+            } else {
+                showerror("Error linking transactions");
+            }
+        },
+        error: function() {
+            showerror("HTTP error linking transactions");
+        }
     });
   });
 
