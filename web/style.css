@@ -13,6 +13,7 @@
 #transactiondetail > #amount { float: right; }
 #transactiondetail #savebuttons { text-align: right; }
 #transactiondetail #addtag { font-size: 62.5%; }
+#transactiondetail .category { overflow: hidden; white-space: nowrap; }
 .description { max-width: 380px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 
 #searchoptions { position: absolute; top: 5px; right: 5px; text-align: right; }
