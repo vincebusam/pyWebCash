@@ -461,7 +461,6 @@ function loadtransactions() {
       });
       $("#transactions").show();
       $("#transtable").width($("#searchoptions").offset().left-$("#transtable").offset().left);
-      $("#transtablebody .category").width($("#transtablebody .category").width());
     },
     error: function() {
       showerror("Transaction loading error");

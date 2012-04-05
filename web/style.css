@@ -14,7 +14,8 @@
 #transactiondetail #savebuttons { text-align: right; }
 #transactiondetail #addtag { font-size: 62.5%; }
 #transactiondetail .category { overflow: hidden; white-space: nowrap; }
-.description { max-width: 380px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.ui-state-hover { font-weight: normal; }
+.description { max-width: 280px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 
 #searchoptions { position: absolute; top: 5px; right: 5px; text-align: right; }
 #searchoptions .ui-button .ui-button-text { padding: 5px 11px 5px 11px !important; font-size: .82em !important; }
