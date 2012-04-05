@@ -216,8 +216,8 @@ function loadaccounts() {
       for (i in data) {
         for (j in data[i]["subaccounts"]) {
           newaccount = "<div class='account useraccount' id='account"+accountsearches.length+"'>";
-          newaccount += "<div class='accountname'>"+data[i]["name"]+"</div>";
-          newaccount += "<div class='subname'>"+data[i]["subaccounts"][j]["name"]+"</div>";
+          newaccount += "<span class='accountname'>"+data[i]["name"]+"</span> / ";
+          newaccount += "<span class='subname'>"+data[i]["subaccounts"][j]["name"]+"</span>";
           newaccount += "<div class='dollar accountbalance'>"+data[i]["subaccounts"][j]["amount"]+"</div>";
           newaccount += "<div class='accountupdate'>"+data[i]["subaccounts"][j]["date"]+"</div>";
           newaccount += "</div>";

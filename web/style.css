@@ -3,8 +3,9 @@
 #transactions .ui-button .ui-button-text { padding: 0px 11px 0px 11px !important; font-size: .72em !important; }
 .transaction { cursor: pointer; }
 
-#accounts { max-width: 280px; }
-.account { margin-bottom: 10px; cursor: pointer; }
+#accounts { max-width: 220px; }
+.account { margin-bottom: 10px; cursor: pointer; position: relative; }
+.account .accountbalance { position: absolute; top: 0px; right: 0px; background: white; }
 
 #transactiondetail { position: relative; }
 #transactiondetail > #file { max-width: 560px; }
