@@ -33,5 +33,7 @@
   [ {"attr_Merchant Category": "NOVELTY / SOUVENIR SHOPS"}, {"category": "Shopping"} ],
   [ {"attr_Merchant Category": "CHARITABLE/SOCIAL SERVICE ORGANIZATIONS"}, {"category": "Gifts & Donations", "subcategory": "Charity"} ],
   [ {"attr_Merchant Category": "DRINKING PLACES-ALCOHOLIC BEVERAGES"}, {"category": "Food & Dining", "subcategory": "Alcohol & Bars"} ],
-  [ {"attr_Merchant Category": "AIRLINE,AIR CARRIER"}, {"category": "Travel", "subcategory": "Air Travel"} ]
+  [ {"attr_Merchant Category": "AIRLINE,AIR CARRIER"}, {"category": "Travel", "subcategory": "Air Travel"} ],
+  [ {"attr_Merchant Category": "TRAVEL AGENCY AND TOUR OPERATORS"}, {"category": "Travel"} ],
+  [ {"attr_Merchant Category": "MISC FOOD STORE,SPECIALTY,CONVENIENCE"}, {"category": "Food & Dining"} ]
 ]
