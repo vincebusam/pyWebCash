@@ -114,6 +114,20 @@ function loginsuccess() {
     success: function(data) {
       tags = data;
       tags.sort();
+      $("#tagslist").html("");
+      for (t in tags)
+        $("#tagslist").append("<li>"+tags[t]+"</li>");
+      $("#tagslist").selectable({
+        selected: function(event, ui) {
+            if (editedfields.indexOf("tags") == -1)
+                editedfields.push("tags");
+        },
+        unselected: function(event, ui) {
+            if (editedfields.indexOf("tags") == -1)
+                editedfields.push("tags");
+        }
+      });
+      $("#tagslist li").addClass("ui-widget-content");
     }
   });
 
@@ -131,6 +145,7 @@ function clearpage() {
   $("#errormsg").hide();
   $("#searchoptions").hide();
   $("#newaccount").hide();
+  $("#tagselect").hide();
   $("#username").val("");
   $("#password").val("");
   if (sessioncheckinterval) {
@@ -248,6 +263,9 @@ function savetransaction() {
       else
         updatejson["amount"] = -parseInt(newamount);
     }
+    if (editedfields.indexOf("tags") != -1) {
+        updatejson["tags"] = showtrans["tags"];
+    }
     $.ajax({
       type: "POST",
       url: apiurl,
@@ -319,6 +337,11 @@ function showtransaction(t) {
     $("#transactiondetail #linked").append("Linked Transactions:<br>");
     for (i=0; i<showtrans["children"].length; i++)
       $("#transactiondetail #linked").append("<a href='#' class='translink'>"+showtrans["children"][i]+"</a><br>");
+  }
+  $("#transactiondetail #tags").html("");
+  if (showtrans["tags"] != undefined) {
+    for (var tag in showtrans["tags"])
+      $("#transactiondetail #tags").append(showtrans["tags"][tag] + " ");
   }
   $(".translink").click(function (event) {
     event.preventDefault();
@@ -474,6 +497,35 @@ $(document).ready(function () {
       editedfields.push($(this).attr("id"));
       $("#transactiondetail .savebutton").button("enable");
     }
+  });
+  $("#transactiondetail #addtag").button({
+    icons: {
+      primary: "ui-icon-circle-plus"
+    },
+    text: false
+  });
+  $("#transactiondetail #addtag").click(function () {
+    $("#tagselect").show();
+    $("#tagselect").center();
+    $("#tagselect ol").removeClass("ui-selected");
+    if (showtrans["tags"] != undefined)
+      $("#tagselect ol").each(function () {
+        if (showtrans["tags"].indexOf($(this).text()) != -1)
+          $(this).addClass("ui-selected");
+      });
+  });
+  $("#tagselect button").button();
+  $("#tagselect button").click(function () {
+    showtrans["tags"] = [];
+    $("#transactiondetail #tags").html("");
+    $("#tagselect ol .ui-selected").each(function () {
+        showtrans["tags"].push($(this).text());
+        $("#transactiondetail #tags").append($(this).text() + " ");
+        if (editedfields.indexOf("tags") == -1)
+            editedfields.push("tags");
+        $("#transactiondetail .savebutton").button("enable");
+    });
+    $("#tagselect").hide();
   });
   $("#transactiondetail").dialog({
     modal: true,

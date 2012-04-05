@@ -99,7 +99,8 @@
         <option value="closed">Closed</option>
       </select>
       <br>
-      Notes: <input id="notes" class="transdataval">
+      Notes: <input id="notes" class="transdataval"><br>
+      Tags: <span id="tags"></span> <button id="addtag">New</button><br>
       </div>
       <div id="static">
       Original Description: <span id="orig_desc" class="transdata"></span><br>
@@ -113,6 +114,12 @@
       <button type="button" id="saveclose" class="savebutton">Close &amp; Save</button>
       <button type="button" id="save" class="savebutton">Save</button>
       </div>
+    </div>
+
+    <div id="tagselect">
+      <ol id="tagslist">
+      </ol>
+      <button>Set</button>
     </div>
 
     <div id="newaccount">
