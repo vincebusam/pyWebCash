@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# Import csv dumps from other finance tracking systems.
 import os
 import db
 import sys
@@ -33,9 +34,11 @@ accounts = mydb.accounts()
 accountnames = [x["name"] for x in accounts]
 accountnames.append("Cash")
 subaccountnames = {}
+mindate = {}
 for acct in accounts:
     for sub in acct["subaccounts"]:
         subaccountnames[sub["name"]] = acct["name"]
+        mindate[sub["name"]] = (mydb.search({"subaccount": sub["name"]}, limit=sys.maxint) or [{}])[-1].get("date")
 accountmap = json.load(open("../accountmap.json"))
 
 categories = mydb.getcategories()
@@ -90,6 +93,8 @@ for row in csv.reader(open(sys.argv[1])):
         for key in [ "desc", "category", "subcategory", "tags", "notes", "state" ]:
             update.setdefault(key, trans[key]) if trans.get(key) else False
         mydb.updatetransaction(dups[0]["id"], update, save=False)
+    elif str(trans["date"]) >= mindate.get(trans.get("subaccount", ""), str(datetime.date.today())):
+        print "No existing transaction found for %s %s %s %s" % (trans["date"], trans["desc"], trans.get("subaccount"), trans["amount"])
     else:
         transactions.append(trans)
 
@@ -114,7 +119,7 @@ for i in range(len(transactions)):
 
 for trans in transactions:
     if trans.get("category") == "Transfer" and not trans.get("subcategory") and trans["amount"]:
-        print "%s %s %s" % (trans["date"], trans["desc"], trans["amount"])
+        print "Non-zero transfer: %s %s %s" % (trans["date"], trans["desc"], trans["amount"])
 
 # Overkill to convert all dates to strings.
 transactions = json.loads(json.dumps(transactions,default=str))
