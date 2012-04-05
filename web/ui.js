@@ -775,6 +775,8 @@ $(document).ready(function () {
   });
 
   clearpage();
+  
+  $("body").addClass("ui-widget");
 
   $("th").addClass("ui-state-default");
 
