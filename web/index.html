@@ -25,16 +25,7 @@
     <div id="accounts">
     Accounts
       <div class="account" id="account0">
-        All Open
-      </div>
-      <div class="account" id="account1">
-        Waiting for Reimbursement
-      </div>
-      <div class="account" id="account2">
-        All Transactions
-      </div>
-      <div class="account" id="account3">
-        All Transactions (Including ignored)
+        All
       </div>
       <div id="bankaccounts">
       </div>
@@ -79,6 +70,12 @@
       All fields: <input id="all" class="queryoption"><br>
       Category: <input id="category" class="queryoption category"><br>
       Subcategory: <input id="subcategory" class="queryoption subcategory"><br>
+      State: <select id="state" class="queryoption">
+      	<option value="">All</option>
+      	<option value="open" selected>Open</option>
+      	<option value="reimbursewait">ReimburseWait</option>
+      	<option value="closed">Closed</option>
+      </select><br>
       Cost Center: <select id="center" class="centersel queryoption"></select><br>
       <button id="clearsearch">Clear</button>
       <button id="executesearch">Search</button><br>

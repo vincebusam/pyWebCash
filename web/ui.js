@@ -1,6 +1,6 @@
 var apiurl = "api.py";
 var loadedtransactions = [];
-var accountsearches = [ {"state": "open" }, {"state": "reimbursewait"}, {"amount": "$ne:0"}, {} ];
+var accountsearches = [ {} ];
 var showing = -1;
 var showtrans = {};
 var editedfields = []
@@ -32,7 +32,6 @@ function loginsuccess() {
   limit = 25;
   skip = 0;
   loadaccounts();
-  loadtransactions();
   // Get user's categories and configure everywhere
   $.ajax({
     type: "POST",
@@ -101,7 +100,7 @@ function loginsuccess() {
       centers = data;
       $(".centersel").each(function() {
         $(this).html("");
-        $(this).append("<option value=''>None</option>");
+        $(this).append("<option value=''>All</option>");
         for (i = 0; i<centers.length; i++) {
           $(this).append("<option value='"+centers[i]+"'>"+centers[i]+"</option>");
         }
@@ -216,7 +215,7 @@ function loadaccounts() {
     url: apiurl,
     data: { "action": "accounts" },
     success: function(data) {
-      accountsearches = accountsearches.slice(0,4);
+      accountsearches = accountsearches.slice(0,1);
       $("#accounts > #bankaccounts").html("");
       for (i in data) {
         for (j in data[i]["subaccounts"]) {
@@ -234,9 +233,14 @@ function loadaccounts() {
       $(".account").click(function() {
         skip = 0;
         query = accountsearches[parseInt($(this).attr("id").substring(7))];
+        $(".account").removeClass("ui-state-active");
+        $(this).addClass("ui-state-active");
         loadtransactions();
       });
       $("#accounts").show();
+      $("#account0").addClass("ui-state-active");
+      query = accountsearches[0];
+      loadtransactions();
     },
     error: function() {
       showerror("Error loading accounts");
@@ -574,6 +578,7 @@ $(document).ready(function () {
   $("#searchoptions #clearsearch").click(function () {
     $("#searchoptions .searchoption").each(function () { $(this).val(""); });
     $("#searchoptions .queryoption").each(function () { $(this).val(""); });
+    loadtransactions();
   });
 
   $("#errormsg").dialog({
