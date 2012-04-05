@@ -18,7 +18,7 @@ import StringIO
 import aespckfile
 from PIL import Image
 
-sys.path.append("../")
+sys.path.append(os.path.dirname(__file__) + "/../")
 
 import config
 
