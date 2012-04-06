@@ -2,8 +2,9 @@
 
 ## Summary
 
-This is a web-based personal finance management program.  The goal is a
-system that can:
+pyWebCash is a web-based personal finance management program.
+
+### Goals
 
  * Import _all_ data from institutions, including all transaction attributes
    and check images.
@@ -13,8 +14,8 @@ system that can:
  * More easily separate business and personal transactions.
  * Bettar automate categorizing and filing transactions.
  * Encrypted database - file is useless if it falls into the wrong hands.
- * Scraping can be run automatically or interactively based on if you want to
-   store your password in the database.
+ * Scraping can be run automatically or interactively based on willingness to
+   store password in the database.
 
  ---
 
@@ -35,45 +36,50 @@ I've found it easily fast enough for unloaded servers to handle.
 
 ## Installation
 
+### Download
+
+Get it at [GitHub](https://github.com/vincebusam/pyWebCash)
+
 ### Requiremets
 
  * python (tested with 2.6 and 2.7)
  * selenium (for the scraper)
  * Crypto, PIL and numpy on the back-end
  * prctl is optional, and enhances security.
- * You can find these with pip, easy_install, apt, yum, etc...
- * __You'll probably be writing your own scraper until more bank support is  contributed__
+ * Can be found with pip, easy_install, apt, yum, etc...
+ * __There is currently a very limited number of bank scrapers.  Most banks
+   are not supported__ (Contributions are welcome)!
 
 ### Backend
 
 Setup the web/ directory to be web viewable.
-`Alias /myfinances/ /usr/local/myfinance/web`
+`Alias /myfinances/ /my/installdir/web`
 Make sure .py files are run as cgi scripts.  The provided .htaccess will do
 this if permissions allow.  Update config.py (on backend and scraper) to
 point to this url.
 
 Edit/create the database, image, session directories specified in config.py,
 make them writable by the http user (www-data?)
-If you don't use https, edit api.py to remove the secure cookies setting.
+If not using SSL, edit api.py to remove the secure cookies setting.
 
-Create a cron file to clean dead session files:  
-`*/5 * * * * root find /usr/local/finance/session/ -type f -mmin +20 -exec rm \{} \;`
+Create a cron file to clean dead session files:
+`*/5 * * * * root find /my/installdir/session/ -type f -mmin +20 -exec rm \{} \;`
 
 ### Scraper (client)
 
-I've tested this on a Mac, should also work on Linux.  By default it uses
-Chrome, so you'll need to install the chrome webdriver binary or change the
-code to use your browser of choice.
+This has been tested on a Mac, but should also work on Linux.  By default it
+uses Chrome, which requires the chrome webdrivery binary in the path.  It
+can be easily edited to use other browsers.
 
  ---
 
 ## Usage
 
 Create a new user from the web interface (do not forget that password,
-without it, your data is lost).  Add all your applicable accounts
-(password is optional if you run the scraper interactively).
+without it, all data is lost).  Add all applicable accounts
+(password is optional if the scraper is run interactively).
 
-Run ./gettransactions.py in the client directory.  Enter your login username
-and password, and it will get a list of accounts to check.  If you don't set
-the account's password in the account settings, it will interactively ask
-before checking that account.
+Run ./gettransactions.py in the client directory.  Enter login username and
+password, and it will get a list of accounts to check.  If the account's
+password was not set in the account settings, it will interactively ask
+for it before checking that account.
