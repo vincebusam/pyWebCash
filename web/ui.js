@@ -308,7 +308,8 @@ function showtransaction(t) {
     showtrans = t;
   }
   editedfields = [];
-  $("#transactiondetail .savebutton").button("disable");
+  $("#transactiondetail #save").button("disable");
+  $("#transactiondetail #saveclose").button("enable");
   $("#transactiondetail > #file").hide();
   $("#transactiondetail .transdata").each(function () {
     name = $(this).attr("id");
@@ -518,6 +519,8 @@ $(document).ready(function () {
       editedfields.push($(this).attr("id"));
       $("#transactiondetail .savebutton").button("enable");
     }
+    if (($(this).attr("id") == "state") && ($(this).val() != "closed"))
+      $("#transactiondetail #saveclose").button("disable");
   });
   $("#transactiondetail #addtag").button({
     icons: {
