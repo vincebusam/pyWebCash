@@ -61,6 +61,12 @@ function loginsuccess() {
               editedfields.push("category");
           }
           $(this).parent().children(".subcategory").autocomplete("option", "source", categories[ui.item.value]);
+        },
+        change: function(event, ui) {
+            var newauto = categories[$(this).val()];
+            if (newauto == undefined)
+                newauto = allcategories;
+            $(this).parent().children(".subcategory").autocomplete("option", "source", newauto);
         }
       });
       $(".subcategory").autocomplete({
