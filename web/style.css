@@ -1,3 +1,6 @@
+#login { text-align: center; }
+#loginform { text-align: right; }
+
 #transactions { position: absolute; top: 5px; left: 240px; }
 #transactions #nav { float: right; }
 #transactions .ui-button .ui-button-text { padding: 0px 11px 0px 11px !important; font-size: .72em !important; }
