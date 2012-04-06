@@ -577,6 +577,7 @@ $(document).ready(function () {
   
   $("#searchoptions #executesearch").button();
   $("#searchoptions #executesearch").click(function () {
+    skip = 0;
     loadtransactions();
   });
   
