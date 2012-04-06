@@ -26,6 +26,7 @@ function loginsuccess() {
   $("#login").hide();
   $("#searchoptions").show();
   $("#linktransactions").show();
+  $("#linktransactions").width($("#searchoptions").width())
   clearlink();
   loadedtransactions = [];
   showing = -1;
@@ -465,7 +466,7 @@ function loadtransactions() {
         helper: "clone"
       });
       $("#transactions").show();
-      $("#transtable").width($("#searchoptions").offset().left-$("#transtable").offset().left);
+      $("#transtable").width($("#searchoptions").offset().left-$("#transtable").offset().left-5);
     },
     error: function() {
       showerror("Transaction loading error");
