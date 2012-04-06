@@ -645,6 +645,15 @@ $(document).ready(function () {
     $("#loginform").submit();
   });
 
+  $("#loginform").keypress(function (e) {
+    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+        $("#loginform").submit();
+        return false;
+    } else {
+        return true;
+    }
+  });
+
   $("#loginform").submit(function () {
     $.ajax({
       type: "POST",
