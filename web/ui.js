@@ -81,6 +81,11 @@ function loginsuccess() {
           }
           catval = $(this).parent().children(".category").val();
           if ((catval == "") || (categories[catval].indexOf(ui.item.value) == -1)) {
+            if (categories[ui.item.value] != undefined) {
+                $(this).parent().children(".category").val(ui.item.value);
+                $(this).val("");
+                return false;
+            }
             for (cat in categories) {
               if (categories[cat].indexOf(ui.item.value) != -1) {
                 $(this).parent().children(".category").val(cat);
