@@ -390,29 +390,79 @@ class DB(object):
         return self.db["tags"]
 
 if __name__ == "__main__":
+    import readline, fcntl, termios, struct
+    try:
+        readline.read_history_file(os.path.join(os.path.expanduser("~"), ".pywebcash"))
+    except IOError:
+        pass
     if len(sys.argv) < 2:
         sys.exit(1)
-    password = getpass.getpass()
-    db = DB(sys.argv[1],password)
-    print "Accounts TODO:"
-    accounts = db.accountstodo()
-    for acct in accounts:
-        print "  %s %s" % (acct["name"], acct.get("username"))
-    print "Accounts:"
-    accounts = db.accounts()
-    for acct in accounts:
-        print "  %s %s" % (acct["name"], acct.get("username"))
-        for sub in acct.get("subaccounts",[]):
-            print "    %s %s" % (sub["name"], locale.currency(float(sub["amount"])/100, grouping=True))
-    for arg in sys.argv[2:]:
+    while True:
+        try:
+            password = getpass.getpass()
+            if not password:
+                sys.exit(0)
+            db = DB(sys.argv[1],password)
+            break
+        except:
+            print "Invalid Password"
+    # Pop off non-commands from argv
+    sys.argv.pop(0)
+    sys.argv.pop(0)
+    results = []
+    while True:
+        if len(sys.argv):
+            arg = sys.argv.pop(0)
+            if not arg.strip():
+                break
+        else:
+            try:
+                arg = raw_input("> ").strip()
+            except EOFError:
+                print
+                readline.write_history_file(os.path.join(os.path.expanduser("~"), ".pywebcash"))
+                break
+        if not arg:
+            continue
         if os.path.exists(arg):
             print "Data import:"
             print json.dumps(db.newtransactions(json.load(open(arg))), indent=2)
         elif arg == "clear":
+            print "Clear database"
             db.clear()
             db.save()
-        else:
+        elif arg == "todo":
+            print "Accounts TODO:"
+            accounts = db.accountstodo()
+            for acct in accounts:
+                print "  %s %s" % (acct["name"], acct.get("username"))
+        elif arg == "balances":
+            print "Accounts:"
+            accounts = db.accounts()
+            for acct in accounts:
+                print "  %s %s" % (acct["name"], acct.get("username"))
+                for sub in acct.get("subaccounts",[]):
+                    print "    %s %s" % (sub["name"], locale.currency(float(sub["amount"])/100, grouping=True))
+        elif arg.isdigit():
+            if len(results) >= int(arg):
+                res = results[int(arg)-1]
+                mainkeys = ["date", "account", "subaccount", "desc", "orig_desc", "amount", "category", "subcategory"]
+                for key in mainkeys:
+                    print "%s: %s" % (key, res.get(key) if key != "amount" else locale.currency(float(res["amount"])/100, grouping=True))
+                for key in res.keys():
+                    if key not in mainkeys:
+                        print "%s: %s" % (key, res[key])
+        elif arg.startswith("{"):
             print "Query for %s" % (arg)
-            results = db.search(query=json.loads(arg),limit=sys.maxint)
+            try:
+                results = db.search(query=json.loads(arg),limit=sys.maxint)
+            except Exception, e:
+                print e
+                continue
+            h, w, hp, wp = struct.unpack('HHHH',fcntl.ioctl(0, termios.TIOCGWINSZ,struct.pack('HHHH', 0, 0, 0, 0)))
+            descwidth = w - 35
             for res in results:
-                print "%s %s %s" % (res["date"], res["desc"], locale.currency(float(res["amount"]/100), grouping=True))
+                print ("{0} {1:10} {2:%s} {3:>12}" % (descwidth)).format(res["date"], (res.get("subaccount") or res["account"])[:10], res["desc"][:descwidth], locale.currency(float(res["amount"])/100, grouping=True))
+            print "%s Transactions, Total %s" % (len(results), locale.currency(float(sum([x["amount"] for x in results]))/100, grouping=True))
+        else:
+            print "Unknown command %s" % (arg)
