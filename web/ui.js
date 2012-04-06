@@ -415,9 +415,11 @@ function loadtransactions() {
               data: { "action": "updatetransaction", "id": loadedtransactions[transid]["id"], "data" : JSON.stringify({"state": "closed"}) },
               context: this,
               success: function(data) {
-                if (data)
+                if (data) {
                   $(this).button("disable");
-                else
+                  if (($("#searchoptions #state").val() != "") && ($("#searchoptions #state").val() != "closed"))
+                    $(this).parent().parent().hide(200);
+                } else
                   showerror("Error closing transaction");
               },
               error: function(data) {
@@ -440,6 +442,7 @@ function loadtransactions() {
           $("#trans"+t+" .close").button("enable");
         else
           $("#trans"+t+" .close").button("disable");
+        $("#transtablebody > #trans"+t).show();
         total += data[t]["amount"];
       }
       for (t=data.length; $("#transtablebody > #trans"+t).length > 0; t++)
