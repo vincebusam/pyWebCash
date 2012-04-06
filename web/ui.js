@@ -27,6 +27,8 @@ function loginsuccess() {
   $("#searchoptions").show();
   $("#linktransactions").show();
   $("#linktransactions").width($("#searchoptions").width())
+  $("#searchoptions .searchoption").each(function () { $(this).val(""); });
+  $("#searchoptions .queryoption").each(function () { $(this).val(""); });
   clearlink();
   loadedtransactions = [];
   showing = -1;
