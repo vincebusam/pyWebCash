@@ -63,6 +63,7 @@ make them writable by the http user (www-data?)
 If not using SSL, edit api.py to remove the secure cookies setting.
 
 Create a cron file to clean dead session files:
+
 `*/5 * * * * root find /my/installdir/session/ -type f -mmin +20 -exec rm \{} \;`
 
 ### Scraper (client)
