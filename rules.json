@@ -12,6 +12,7 @@
   [ {"attr_Merchant Category": "FAST FOOD RESTAURANTS"}, {"category": "Food & Dining", "subcategory": "Fast Food"} ],
   [ {"attr_Merchant Category": "EATING PLACE,RESTAURANT"}, {"category": "Food & Dining", "subcategory": "Restaurants"} ],
   [ {"attr_Merchant Category": "SHOE STORE"}, {"category": "Shopping", "subcategory": "Clothing"} ],
+  [ {"attr_Merchant Category": "FAMILY CLOTHING STORE"}, {"category": "Shopping", "subcategory": "Clothing"} ],
   [ {"attr_Merchant Category": "WOMENS READY-TO-WEAR STORE"}, {"category": "Shopping", "subcategory": "Clothing"} ],
   [ {"attr_Merchant Category": "MEMBERSHIP CLUBS-SPORTS,RECREATION"}, {"category": "Health & Fitness", "subcategory": "Gym"} ],
   [ {"attr_Merchant Category": "AUTO PARKING LOTS / GARAGES"}, {"category": "Auto & Transport", "subcategory": "Parking"} ],
