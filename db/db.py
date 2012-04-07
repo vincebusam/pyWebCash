@@ -468,7 +468,7 @@ if __name__ == "__main__":
             h, w, hp, wp = struct.unpack('HHHH',fcntl.ioctl(0, termios.TIOCGWINSZ,struct.pack('HHHH', 0, 0, 0, 0)))
             descwidth = w - 35
             for res in results:
-                print ("{0} {1:10} {2:%s} {3:>12}" % (descwidth)).format(res["date"], (res.get("subaccount") or res["account"])[:10], res["desc"][:descwidth], locale.currency(float(res["amount"])/100, grouping=True))
+                print ("{0} {1:10} {2:%s} {3:>12}" % (descwidth)).format(res["date"], (res.get("subaccount") or res["account"])[:10], res["desc"][:descwidth].encode("ascii","ignore"), locale.currency(float(res["amount"])/100, grouping=True))
             print "%s Transactions, Total %s" % (len(results), locale.currency(float(sum([x["amount"] for x in results]))/100, grouping=True))
         else:
             print "Unknown command %s" % (arg)
