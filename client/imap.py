@@ -64,6 +64,11 @@ def downloadaccount(b, params):
                         item["itemamount"] =  -int(line.split("; ")[-1].replace("$","").replace(".","").replace(",",""))
             if line.startswith("Delivery estimate"):
                 initems = True
+        if not items:
+            print "No items found! %s %s" % (date, amount)
+            continue
+        if items[0]["id"] in params["seenids"]:
+            continue
         [x.update({"date": date, "account": params["name"], "subaccount": "Amazon"}) for x in items]
         if sum([x["amount"] for x in items]) == amount:
             print "%s %s" % (date, amount)
