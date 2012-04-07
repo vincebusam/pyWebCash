@@ -770,12 +770,21 @@ $(document).ready(function () {
     drop: function (event, ui) {
         var t = parseInt($(ui.draggable).attr("id").substring(5));
         if ($(this).attr("id") == "parent") {
-            linkparent = loadedtransactions[t]["id"];
             $(this).html("");
+            linkparent = loadedtransactions[t]["id"];
+            // If this already has children, clear out any new one
+            // Then append new ones to the current list
+            if (loadedtransactions[t]["children"]) {
+                linkchildren = loadedtransactions[t]["children"];
+                $("#linktransactions #children").html("");
+            }
         } else {
+            // Can only have one parent!
+            if (loadedtransactions[t]["parent"])
+                return;
             linkchildren.push(loadedtransactions[t]["id"])
         }
-        $(this).append(loadedtransactions[t]["id"] + "<br>");
+        $(this).append(loadedtransactions[t]["date"] + " " + loadedtransactions[t]["amount"] + " " + loadedtransactions[t]["desc"] + "<br>");
     },
     tolerance: "touch",
     hoverClass: "ui-state-active"
