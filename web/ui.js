@@ -53,7 +53,7 @@ function loginsuccess() {
       keys.sort();
       $(".category").autocomplete({
         source: keys,
-        delay: 50,
+        delay: 0,
         minLength: 0,
         select: function(event, ui) {
           if ($(this).hasClass("transdataval")) {
@@ -72,7 +72,7 @@ function loginsuccess() {
       });
       $(".subcategory").autocomplete({
         source: allcategories,
-        delay: 50,
+        delay: 0,
         minLength: 0,
         select: function(event, ui) {
           if ($(this).hasClass("transdataval")) {
