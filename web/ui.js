@@ -81,7 +81,7 @@ function loginsuccess() {
             $("#transactiondetail .savebutton").button("enable");
           }
           catval = $(this).parent().children(".category").val();
-          if ((catval == "") || (categories[catval].indexOf(ui.item.value) == -1)) {
+          if ((catval == "") || (categories[catval] == undefined) || (categories[catval].indexOf(ui.item.value) == -1)) {
             if (categories[ui.item.value] != undefined) {
                 $(this).parent().children(".category").val(ui.item.value);
                 $(this).val("");
