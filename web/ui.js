@@ -27,6 +27,7 @@ function loginsuccess() {
   $("#searchoptions").show();
   $("#linktransactions").show();
   $("#linktransactions").width($("#searchoptions").width())
+  $("#linktransactions").css("top", $("#searchoptions").offset().top+$("#searchoptions").height()+10)
   $("#searchoptions .searchoption").each(function () { $(this).val(""); });
   $("#searchoptions .queryoption").each(function () { $(this).val(""); });
   clearlink();
@@ -432,7 +433,7 @@ function loadtransactions() {
                 if (data) {
                   $(this).button("disable");
                   if (($("#searchoptions #state").val() != "") && ($("#searchoptions #state").val() != "closed"))
-                    $(this).parent().parent().hide(200);
+                    $(this).parent().parent().slideUp(200);
                 } else
                   showerror("Error closing transaction");
               },
