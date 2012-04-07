@@ -452,6 +452,12 @@ if __name__ == "__main__":
                 for key in res.keys():
                     if key not in mainkeys:
                         print "%s: %s" % (key, res[key])
+        elif arg.startswith("update"):
+            update = json.loads(arg.split(None,1)[1])
+            print "Update loaded transactions with %s" % (update)
+            for t in results:
+                db.updatetransaction(t["id"], update, save=False)
+            db.save()
         elif arg.startswith("{"):
             print "Query for %s" % (arg)
             try:
