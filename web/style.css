@@ -4,6 +4,11 @@
 #transactions { position: absolute; top: 5px; left: 240px; }
 #transactions #nav { float: right; }
 #transactions .ui-button .ui-button-text { padding: 0px 11px 0px 11px !important; font-size: .72em !important; }
+#transactions .date {width:0;}
+#transactions .center {width:0;}
+#transactions .amount {width:0;}
+#transactions .category { overflow: hidden; white-space: nowrap; max-width: 30px;}
+#transactions .description { max-width: 280px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .transaction { cursor: pointer; }
 
 #accounts { max-width: 220px; }
@@ -16,9 +21,8 @@
 #transactiondetail > #amount { float: right; }
 #transactiondetail #savebuttons { text-align: right; }
 #transactiondetail #addtag { font-size: 62.5%; }
-#transactiondetail .category { overflow: hidden; white-space: nowrap; }
 .ui-state-hover { font-weight: normal; }
-.description { max-width: 280px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+#transactiondetail .description { max-width: 280px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 
 #searchoptions { position: absolute; top: 5px; right: 5px; text-align: right; }
 #searchoptions .ui-button .ui-button-text { padding: 5px 11px 5px 11px !important; font-size: .82em !important; }
