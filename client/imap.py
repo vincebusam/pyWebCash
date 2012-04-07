@@ -65,7 +65,7 @@ def downloadaccount(b, params):
             if line.startswith("Delivery estimate"):
                 initems = True
         [x.update({"date": date, "account": params["name"], "subaccount": "Amazon"}) for x in items]
-        if sum([x["amount"] for x in items]) == amount:        
+        if sum([x["amount"] for x in items]) == amount:
             print "%s %s" % (date, amount)
             trans = api.callapi("search", {"query": json.dumps({"desc": "amazon", "amount": "$eq:"+str(amount)}), "startdate": str(date-datetime.timedelta(days=4)), "enddate": str(date+datetime.timedelta(days=4)), "limit":1})
             if trans:
@@ -85,12 +85,12 @@ def downloadaccount(b, params):
             print "Mismatch! %s %s" % (date, amount)
         if date < params["lastcheck"]:
             break
-    
+
     imap.close()
     imap.logout()
-    
+
     return {}
-            
+
 if __name__ == "__main__":
     """Command-line driver"""
 
