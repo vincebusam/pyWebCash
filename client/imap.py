@@ -19,21 +19,28 @@ def uploaditems(parent, items):
     api.callapi("newtransactions", {"data": json.dumps({"transactions": items}, default=str)})
     api.callapi("updatetransaction", {"id": parent, "data": json.dumps({"amount":0, "children": [x["id"] for x in items]})})
 
-def checkitems(items, date, amount, params):
+def checkitems(items, amazontrans, amount, itemsamount, params):
     if items[0]["id"] in params["seenids"]:
         return
-    [x.update({"date": date, "account": params["name"], "subaccount": "Amazon"}) for x in items]
-    if sum([x["amount"] for x in items]) != amount:
-        print "Item amount / total mismatch! %s %s" % (date, amount)
+    if "%s-%s-Amazon-%s" % (items[0]["date"], params["name"], hashlib.sha1(str(items[0]["quantity"]) + ' "' + items[0]["desc"]).hexdigest()+'"') in params["seenids"]:
         return
-    print "Finding a match for %s %s" % (date, amount)
-    trans = api.callapi("search", {"query": json.dumps({"desc": "amazon", "amount": "$eq:"+str(amount)}), "startdate": str(date-datetime.timedelta(days=1)), "enddate": str(date+datetime.timedelta(days=4)), "limit":1})
+    if sum([x["amount"] for x in items]) != amount:
+        if sum([x["amount"] for x in items]) == itemsamount:
+            # Distribute tax/shipping/discounts evenly among items for now
+            diff = amount - itemsamount
+            for item in items:
+                item["amount"] += diff/len(items)
+        else:
+            print "Item amount / total mismatch! %s %s" % (items[0]["date"], amount)
+            return
+    print "Finding a match for %s %s" % (items[0]["date"], amount)
+    trans = [x for x in amazontrans if x["amount"] == amount]
     if trans:
         print "Matched to %s" % (trans[0]["id"])
         uploaditems(trans[0]["id"], items)
     else:
         for item in items:
-            trans = api.callapi("search", {"query": json.dumps({"desc": "amazon", "amount": "$eq:"+str(item["amount"])}), "startdate": str(date-datetime.timedelta(days=1)), "enddate": str(date+datetime.timedelta(days=4)), "limit":1})
+            trans = [x for x in amazontrans if x["amount"] == item["amount"]]
             if trans:
                 print "Matched to %s" % (trans[0]["id"])
                 uploaditems(trans[0]["id"], [item])
@@ -55,6 +62,7 @@ def downloadaccount(b, params):
     imap.login(params["username"],params["password"])
     imap.select(params["mailbox"])
 
+    amazontrans = api.callapi("search",{"query": json.dumps({"desc": "amazon", "amount": "$ne:0"})})
     msgs = sorted(map(int,imap.search(None, "FROM", "auto-confirm@amazon.com")[1][0].split()),reverse=True)
     for msg in msgs:
         initems = False
@@ -67,9 +75,11 @@ def downloadaccount(b, params):
             line = line.strip()
             if line.startswith("Date:"):
                 date = datetime.datetime.fromtimestamp(rfc822.mktime_tz(rfc822.parsedate_tz(line[6:]))).date()
+            if line.startswith("Items:") or line.startswith("Subtotal of Items:"):
+                itemsamount = -int(line.split()[-1].replace("$","").replace(".","").replace(",",""))
             if line.startswith("Order Total:") or line.startswith("Total for this Order:"):
                 if items:
-                    checkitems(items, date, amount, params)
+                    checkitems(items, amazontrans, amount, itemsamount, params)
                     items = []
                 amount = -int(line.split()[-1].replace("$","").replace(".","").replace(",",""))
             if initems and line.startswith("****"):
@@ -79,12 +89,16 @@ def downloadaccount(b, params):
                     if item:
                         item["amount"] = item["quantity"] * item["itemamount"]
                         item["id"] = "%s-%s-Amazon-%s" % (date, params["name"], hashlib.sha1(item["desc"]).hexdigest())
+                        item["date"] = date
+                        item["account"] = params["name"]
+                        item["subaccount"] = "Amazon"
                         items.append(item)
                     item = {}
                 else:
                     if line[0].isdigit():
                         item["quantity"] = int(line.split()[0])
-                        item["desc"] = line
+                        item["attr_Quantity"] = line.split()[0]
+                        item["desc"] = line.split(None,1)[1].strip('"')
                     elif line.startswith("$"):
                         item["itemamount"] =  -int(line.replace("$","").replace(".","").replace(",",""))
                     elif "$" in line:
@@ -93,7 +107,7 @@ def downloadaccount(b, params):
             if line.startswith("Delivery estimate"):
                 initems = True
         if items:
-            checkitems(items, date, amount, params)
+            checkitems(items, amazontrans, amount, itemsamount, params)
         else:
             print "No items found! %s %s" % (date, amount)
         if date < params["lastcheck"]:
@@ -125,6 +139,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     params["seenids"] = [x["id"] for x in api.callapi("search", {"query": json.dumps({"account": params["name"]})})]
+    print "Found %s old transactions" % (len(params["seenids"]))
 
     data = downloadaccount(None, params)
 
