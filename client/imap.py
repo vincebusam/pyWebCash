@@ -6,10 +6,12 @@ import sys
 import time
 import json
 import rfc822
+import quopri
 import common
 import hashlib
 import getpass
 import imaplib
+import StringIO
 import datetime
 
 def downloadaccount(b, params):
@@ -30,16 +32,13 @@ def downloadaccount(b, params):
     msgs = sorted(map(int,imap.search(None, "FROM", "auto-confirm@amazon.com")[1][0].split()),reverse=True)
     for msg in msgs:
         initems = False
-        continuation = False
         item = {}
         items = []
-        for line in imap.fetch(str(msg), "(RFC822)")[1][0][1].split("\n"):
+        out = StringIO.StringIO()
+        messagetext = quopri.decode(StringIO.StringIO(imap.fetch(str(msg), "(RFC822)")[1][0][1]), out)
+        out.seek(0)
+        for line in out.read().split("\n"):
             line = line.strip()
-            if line.endswith("="):
-                continuation = line.rstrip("=")
-                continue
-            if continuation:
-                line = continuation + line
             if line.startswith("Date:"):
                 date = datetime.datetime.fromtimestamp(rfc822.mktime_tz(rfc822.parsedate_tz(line[6:]))).date()
             if line.startswith("Order Total:") or line.startswith("Total for this Order:"):
