@@ -29,6 +29,7 @@ def downloadaccount(b, params):
             continue
         trans["id"] = "%s-%s-%s" % (trans["date"], params["name"], hashlib.sha1(str(entry)).hexdigest())
         trans["account"] = params["name"]
+        trans["subaccount"] = ""
         if trans["id"] in params["seenids"]:
             continue
         transactions.append(trans)
