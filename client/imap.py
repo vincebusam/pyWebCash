@@ -30,10 +30,16 @@ def downloadaccount(b, params):
     msgs = sorted(map(int,imap.search(None, "FROM", "auto-confirm@amazon.com")[1][0].split()),reverse=True)
     for msg in msgs:
         initems = False
+        continuation = False
         item = {}
         items = []
         for line in imap.fetch(str(msg), "(RFC822)")[1][0][1].split("\n"):
             line = line.strip()
+            if line.endswith("="):
+                continuation = line.rstrip("=")
+                continue
+            if continuation:
+                line = continuation + line
             if line.startswith("Date:"):
                 date = datetime.datetime.fromtimestamp(rfc822.mktime_tz(rfc822.parsedate_tz(line[6:]))).date()
             if line.startswith("Order Total:") or line.startswith("Total for this Order:"):
