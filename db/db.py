@@ -226,6 +226,35 @@ class DB(object):
                 break
         return ret
 
+    def summary(self, startdate=str((datetime.date.today().replace(day=1)-datetime.timedelta(days=1)).replace(day=1)),
+                      enddate=str(datetime.date.today().replace(day=1)-datetime.timedelta(days=1)),
+                      filter={},
+                      filterout={},
+                      key="category",
+                      keydef="Uncategorized",
+                      subkey="subcategory",
+                      subkeydef=""):
+        """Summarize transactions for a report (& chart)
+           params:
+             startdate, enddate - date range
+             filter, filter out - filters to match (or remove) transactions
+             key - transaction key to aggregate on, with keydef as the default
+             subkey, subkeydef - aggregate on under key
+        """
+        ret = {}
+        for trans in self.db["transactions"]:
+            if trans["date"] > enddate:
+                continue
+            if trans["date"] < startdate:
+                continue
+            if filter and not self.matchtrans(trans, filter):
+                continue
+            if filterout and self.matchtrans(trans, filterout):
+                continue
+            ret.setdefault(trans.get(key, keydef),{"amount":0})["amount"] += trans["amount"]
+            ret[trans.get(key, keydef)].setdefault("subs",{}).setdefault(trans.get(subkey, subkeydef),{"amount":0})["amount"] += trans["amount"]
+        return ret
+
     def getallids(self):
         return [x["id"] for x in self.db["transactions"]]
 
@@ -443,6 +472,8 @@ if __name__ == "__main__":
                 print "  %s %s" % (acct["name"], acct.get("username"))
                 for sub in acct.get("subaccounts",[]):
                     print "    %s %s" % (sub["name"], locale.currency(float(sub["amount"])/100, grouping=True))
+        elif arg == "summary":
+            print json.dumps(db.summary(), indent=2)
         elif arg.isdigit():
             if len(results) >= int(arg):
                 res = results[int(arg)-1]
