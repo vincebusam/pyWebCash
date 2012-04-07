@@ -100,8 +100,8 @@ if __name__ == "__main__":
     params = {}
     params["username"] = sys.argv[1]
     params["server"] = sys.argv[2]
-    params["lastcheck"] = datetime.date.today()-datetime.timedelta(days=14)
-    params["seenids"] = []
+    params["name"] = "Email"
+    params["lastcheck"] = datetime.date.today()-datetime.timedelta(days=90)
 
     print "pyWebCash API Login"
     username = raw_input("Username: ")
@@ -110,6 +110,8 @@ if __name__ == "__main__":
     if not api.callapi("login",{"username": username, "password": password}):
         print "Login failed"
         sys.exit(1)
+
+    params["seenids"] = [x["id"] for x in api.callapi("search", {"query": json.dumps({"account": params["name"]})})]
 
     data = downloadaccount(None, params)
 
