@@ -4,18 +4,22 @@
 
 pyWebCash is a web-based personal finance management program.
 
-### Goals
+### Features
 
  * Import _all_ data from institutions, including all transaction attributes
-   and check images.
+   and check images, autosplitting if necessary.
  * Import transactions more reliabily than the market leaders.
  * Import/edit data from anywhere via API.
- * Allow for more advanced (arbitrary) queries and summaries of transactions.
- * More easily separate business and personal transactions.
- * Bettar automate categorizing and filing transactions.
+ * Advanced (arbitrary) queries and summaries of transactions.
+ * Easily separate business and personal transactions.
+ * Automated categorizing and filing transactions.
  * Encrypted database - file is useless if it falls into the wrong hands.
  * Scraping can be run automatically or interactively based on willingness to
    store password in the database.
+
+### Todo
+
+ * Scan email for receipts
 
  ---
 
@@ -48,7 +52,7 @@ Get it at [GitHub](https://github.com/vincebusam/pyWebCash)
  * prctl is optional, and enhances security.
  * Can be found with pip, easy_install, apt, yum, etc...
  * __There is currently a very limited number of bank scrapers.  Most banks
-   are not supported__ (Contributions are welcome)!
+   are not supported__ (Contributions are welcome!)
 
 ### Backend
 
