@@ -441,7 +441,8 @@ if __name__ == "__main__":
                 sys.exit(0)
             db = DB(sys.argv[1],password)
             break
-        except:
+        except Exception, e:
+            print e
             print "Invalid Password"
     # Pop off non-commands from argv
     sys.argv.pop(0)
