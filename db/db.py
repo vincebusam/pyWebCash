@@ -182,7 +182,7 @@ class DB(object):
         """Query function"""
         for k in query:
             if k == "all":
-                if not [x for x in trans.values() if query[k].lower() in str(x).lower()]:
+                if not [x for x in trans.values() if query[k].lower() in unicode(x).lower()]:
                     return False
                 continue
             if k not in trans and not query[k].startswith("$ne:"):
@@ -190,11 +190,11 @@ class DB(object):
             if not query[k].startswith("$") and query[k].lower() not in trans[k].lower():
                 return False
             if query[k].startswith("$eq:"):
-                if query[k].split(":")[1].lower() != str(trans[k]).lower():
+                if query[k].split(":")[1].lower() != unicode(trans[k]).lower():
                     return False
                 continue
             if query[k].startswith("$ne:"):
-                if query[k].split(":")[1].lower() == str(trans.get(k)).lower():
+                if query[k].split(":")[1].lower() == unicode(trans.get(k)).lower():
                     return False
                 continue
             if query[k].startswith("$abseq:"):
@@ -289,7 +289,7 @@ class DB(object):
                         elif match == "absamount" and abs(trans["amount"]) != val:
                             matched = False
                             break
-                        elif val and not re.search(str(val), str(trans.get(match,"")), re.I):
+                        elif val and not re.search(unicode(val), unicode(trans.get(match,"")), re.I):
                             matched = False
                             break
                     if matched:
