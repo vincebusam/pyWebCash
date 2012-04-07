@@ -13,13 +13,10 @@ pyWebCash is a web-based personal finance management program.
  * Advanced (arbitrary) queries and summaries of transactions.
  * Easily separate business and personal transactions.
  * Automated categorizing and filing transactions.
+ * Scan email for receipts
  * Encrypted database - file is useless if it falls into the wrong hands.
  * Scraping can be run automatically or interactively based on willingness to
    store password in the database.
-
-### Todo
-
- * Scan email for receipts
 
  ---
 
