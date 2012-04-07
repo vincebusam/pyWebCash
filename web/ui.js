@@ -233,6 +233,8 @@ function loadaccounts() {
       accountsearches = accountsearches.slice(0,1);
       $("#accounts > #bankaccounts").html("");
       for (i in data) {
+        if (data[i]["subaccounts"].length == 0)
+            data[i]["subaccounts"] = [{"name":"", "date": "", "amount": "0"}]
         for (j in data[i]["subaccounts"]) {
           newaccount = "<div class='account useraccount' id='account"+accountsearches.length+"'>";
           newaccount += "<span class='accountname'>"+data[i]["name"]+"</span> / ";
