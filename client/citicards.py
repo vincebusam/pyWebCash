@@ -81,6 +81,9 @@ def downloadaccount(b, params):
                 if trans["id"] in params["seenids"]:
                     skipped += 1
                     continue
+                if trans["id"] in [x["id"] for x in transactions]:
+                    print "Dup Reference Number!!"
+                    trans["id"] += "-" + trans["amount"]
                 transactions.append(trans)
             if skipped > 3:
                 break
