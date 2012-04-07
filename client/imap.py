@@ -14,6 +14,32 @@ import imaplib
 import StringIO
 import datetime
 
+def uploaditems(parent, items):
+    [x.update({"parent": parent}) for x in items]
+    api.callapi("newtransactions", {"data": json.dumps({"transactions": items}, default=str)})
+    api.callapi("updatetransaction", {"id": parent, "data": json.dumps({"amount":0, "children": [x["id"] for x in items]})})
+
+def checkitems(items, date, amount, params):
+    if items[0]["id"] in params["seenids"]:
+        return
+    [x.update({"date": date, "account": params["name"], "subaccount": "Amazon"}) for x in items]
+    if sum([x["amount"] for x in items]) != amount:
+        print "Item amount / total mismatch! %s %s" % (date, amount)
+        return
+    print "Finding a match for %s %s" % (date, amount)
+    trans = api.callapi("search", {"query": json.dumps({"desc": "amazon", "amount": "$eq:"+str(amount)}), "startdate": str(date-datetime.timedelta(days=1)), "enddate": str(date+datetime.timedelta(days=4)), "limit":1})
+    if trans:
+        print "Matched to %s" % (trans[0]["id"])
+        uploaditems(trans[0]["id"], items)
+    else:
+        for item in items:
+            trans = api.callapi("search", {"query": json.dumps({"desc": "amazon", "amount": "$eq:"+str(item["amount"])}), "startdate": str(date-datetime.timedelta(days=1)), "enddate": str(date+datetime.timedelta(days=4)), "limit":1})
+            if trans:
+                print "Matched to %s" % (trans[0]["id"])
+                uploaditems(trans[0]["id"], [item])
+            else:
+                print "No match found"
+
 def downloadaccount(b, params):
     if "password" not in params:
         params["password"] = getpass.getpass("IMAP Password for %s at %s: " % (params["username"], params["server"]))
@@ -42,6 +68,9 @@ def downloadaccount(b, params):
             if line.startswith("Date:"):
                 date = datetime.datetime.fromtimestamp(rfc822.mktime_tz(rfc822.parsedate_tz(line[6:]))).date()
             if line.startswith("Order Total:") or line.startswith("Total for this Order:"):
+                if items:
+                    checkitems(items, date, amount, params)
+                    items = []
                 amount = -int(line.split()[-1].replace("$","").replace(".","").replace(",",""))
             if initems and line.startswith("****"):
                 initems = False
@@ -63,30 +92,10 @@ def downloadaccount(b, params):
                         item["itemamount"] =  -int(line.split("; ")[-1].replace("$","").replace(".","").replace(",",""))
             if line.startswith("Delivery estimate"):
                 initems = True
-        if not items:
-            print "No items found! %s %s" % (date, amount)
-            continue
-        if items[0]["id"] in params["seenids"]:
-            continue
-        [x.update({"date": date, "account": params["name"], "subaccount": "Amazon"}) for x in items]
-        if sum([x["amount"] for x in items]) == amount:
-            print "%s %s" % (date, amount)
-            trans = api.callapi("search", {"query": json.dumps({"desc": "amazon", "amount": "$eq:"+str(amount)}), "startdate": str(date-datetime.timedelta(days=4)), "enddate": str(date+datetime.timedelta(days=4)), "limit":1})
-            if trans:
-                print "Matched to %s" % (trans[0]["id"])
-                [x.update({"parent": trans[0]["id"]}) for x in items]
-                api.callapi("newtransactions", {"data": json.dumps({"transactions": items}, default=str)})
-                api.callapi("updatetransaction", {"id": trans[0]["id"], "data": json.dumps({"amount":0, "children": [x["id"] for x in items]})})
-            else:
-                for item in items:
-                    trans = api.callapi("search", {"query": json.dumps({"desc": "amazon", "amount": "$eq:"+str(item["amount"])}), "startdate": str(date-datetime.timedelta(days=4)), "enddate": str(date+datetime.timedelta(days=4)), "limit":1})
-                    if trans:
-                        print "Matched to %s" % (trans[0]["id"])
-                        item["parent"] = trans[0]["id"]
-                        api.callapi("newtransactions", {"data": json.dumps({"transactions": [item]}, default=str)})
-                        api.callapi("updatetransaction", {"id": trans[0]["id"], "data": json.dumps({"amount":0, "children": [item["id"]]})})
+        if items:
+            checkitems(items, date, amount, params)
         else:
-            print "Mismatch! %s %s" % (date, amount)
+            print "No items found! %s %s" % (date, amount)
         if date < params["lastcheck"]:
             break
 
