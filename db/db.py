@@ -250,6 +250,8 @@ class DB(object):
              subkey, subkeydef - aggregate on under key
         """
         ret = {}
+        suminfo = {"startdate": startdate, "enddate": enddate, "filter": filter, "filterout": filterout, "key": [key, subkey]}
+        count = 0
         for trans in self.db["transactions"]:
             if trans["date"] > enddate:
                 continue
@@ -259,9 +261,12 @@ class DB(object):
                 continue
             if filterout and self.matchtrans(trans, filterout):
                 continue
+            count += 1
             ret.setdefault(trans.get(key, keydef),{"amount":0})["amount"] += trans["amount"]
             ret[trans.get(key, keydef)].setdefault("subs",{}).setdefault(trans.get(subkey, subkeydef),{"amount":0})["amount"] += trans["amount"]
+        suminfo["totalcount"] = count
         [ret.pop(x) for x in ret.keys() if ret[x]["amount"] == 0]
+        [ret[x].update(suminfo) for x in ret.keys()]
         [[ret[x]["subs"].pop(y) for y in ret[x]["subs"].keys() if ret[x]["subs"][y]["amount"] == 0] for x in ret.keys()]
         return ret
 
