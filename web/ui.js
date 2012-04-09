@@ -868,6 +868,37 @@ $(document).ready(function () {
                     else
                         $(this).next().slideUp();
                 });
+                if (typeof Highcharts != "undefined") {
+                    var maindata = []
+                    for (key in keys) {
+                        maindata.push({
+                            name: keys[key],
+                            y: data[keys[key]]["amount"]
+                        });
+                    }
+                    chart = new Highcharts.Chart({
+                        chart: {
+                            renderTo: 'reportgraph',
+                            type: 'pie'
+                        },
+                        title: {
+                            text: 'Spending by Category'
+                        },
+                        tooltip: {
+                            formatter: function() {
+                                return '<b>'+ this.point.name +'</b>: '+ dollarstr(this.y);
+                            }
+                        },
+                        series: [ {
+                            data: maindata,
+                            dataLabels: {
+                                formatter: function() {
+                                    return this.y/total > .05 ? this.point.name : null;
+                                }
+                            }
+                        } ]
+                    });
+                }
             },
             error: function() {
                 showerror("HTTP error getting summary");

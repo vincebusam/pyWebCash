@@ -48,6 +48,7 @@ Get it at [GitHub](https://github.com/vincebusam/pyWebCash)
  * Crypto, PIL and numpy on the back-end
  * prctl is optional, and enhances security.
  * Can be found with pip, easy_install, apt, yum, etc...
+ * [Highcharts](http://www.highcharts.com/) (free for non-commercial use only) for graphs
  * __There is currently a very limited number of bank scrapers.  Most banks
    are not supported__ (Contributions are welcome!)
 
