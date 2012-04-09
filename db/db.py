@@ -262,6 +262,7 @@ class DB(object):
             ret.setdefault(trans.get(key, keydef),{"amount":0})["amount"] += trans["amount"]
             ret[trans.get(key, keydef)].setdefault("subs",{}).setdefault(trans.get(subkey, subkeydef),{"amount":0})["amount"] += trans["amount"]
         [ret.pop(x) for x in ret.keys() if ret[x]["amount"] == 0]
+        [[ret[x]["subs"].pop(y) for y in ret[x]["subs"].keys() if ret[x]["subs"][y]["amount"] == 0] for x in ret.keys()]
         return ret
 
     def getallids(self):
