@@ -859,7 +859,7 @@ $(document).ready(function () {
                     $("#reports #summary").append(keyhtml);
                     total += data[key]["amount"];
                 }
-                $("#reports #summary").append("Total: <span class='dollar'>"+total+"</span>");
+                $("#reports #summary").append("<b>Total: <span class='dollar'>"+total+"</span></b>");
                 $("#reports #summary .detail").hide();
                 $("#reports #summary .dollar").each(decoratedollar);
                 $("#reports #summary .summaryline").click(function () {
