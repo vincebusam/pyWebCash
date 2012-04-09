@@ -835,12 +835,15 @@ $(document).ready(function () {
         $.ajax({
             type: "POST",
             url: apiurl,
-            data: {"action": "summary"},
+            data: {"action": "summary", "filterout": JSON.stringify({"category": "Income"})},
             success: function(data) {
+                var keys = Object.keys(data);
+                keys.sort(function (a,b) {return data[a]["amount"]>data[b]["amount"]?1:-1});
                 $("#reports #summary").html("");
                 $("#reports #summary");
                 var i = 0;
-                for (key in data) {
+                for (key in keys) {
+                    key = keys[key];
                     keyhtml = "<div class='summaryline'>"+key+" <span class='dollar'>"+data[key]["amount"]+"</span></div>";
                     keyhtml += "<div class='detail'>"
                     for (sub in data[key]["subs"]) {
