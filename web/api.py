@@ -198,5 +198,14 @@ elif action == "link":
     json_print(mydb.link(form.getfirst("parent") or "null",
                          json.loads(form.getfirst("children") or "[]"),
                          form.getfirst("linktype") or "none"))
+elif action == "summary":
+    json_print(mydb.summary(form.getfirst("startdate") or str((datetime.date.today().replace(day=1)-datetime.timedelta(days=1)).replace(day=1)),
+                            form.getfirst("enddate") or str(datetime.date.today().replace(day=1)-datetime.timedelta(days=1)),
+                            json.loads(form.getfirst("filter") or "{}"),
+                            json.loads(form.getfirst("filterout") or "{}"),
+                            form.getfirst("key") or "category",
+                            form.getfirst("keydef") or "Uncategorized",
+                            form.getfirst("subkey") or "subcategory",
+                            form.getfirst("subkeydef") or "None"))
 else:
     exit_error(404,"Method not found")
