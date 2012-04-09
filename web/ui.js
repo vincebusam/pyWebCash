@@ -836,10 +836,19 @@ $(document).ready(function () {
         margin: "5px"
     }, 400, function() {
         $("#reports #summary").show();
+        filteropts = {};
+        $("#reports .reportfilterval").each(function() {
+            if ($(this).val() != "")
+                filteropts[$(this).attr("id")] = $(this).val();
+        });
         $.ajax({
             type: "POST",
             url: apiurl,
-            data: {"action": "summary", "filterout": JSON.stringify({"category": "Income"})},
+            data: {"action": "summary",
+                   "startdate": $("#reports #startdate").val(),
+                   "enddate": $("#reports #enddate").val(),
+                   "filter": JSON.stringify(filteropts),
+                   "filterout": JSON.stringify({"category": "Income"})},
             success: function(data) {
                 var keys = Object.keys(data);
                 keys.sort(function (a,b) {return data[a]["amount"]>data[b]["amount"]?1:-1});
@@ -940,6 +949,8 @@ $(document).ready(function () {
         margin: "0px"
     });
   });
+
+  $("#reports .date").datepicker({ dateFormat: "yy-mm-dd" });
 
   clearpage();
   
