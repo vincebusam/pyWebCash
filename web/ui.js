@@ -869,12 +869,25 @@ $(document).ready(function () {
                         $(this).next().slideUp();
                 });
                 if (typeof Highcharts != "undefined") {
-                    var maindata = []
-                    for (key in keys) {
+                    var maindata = [];
+                    var subdata = [];
+                    var colors = Highcharts.getOptions().colors;
+                    for (var i in keys) {
+                        key = keys[i];
                         maindata.push({
-                            name: keys[key],
-                            y: data[keys[key]]["amount"]
+                            name: key,
+                            y: data[key]["amount"],
+                            color: colors[i]
                         });
+                        subs = Object.keys(data[key]["subs"]);
+                        subs.sort(function (a,b) {return data[key]["subs"][a]["amount"]>data[key]["subs"][b]["amount"]?1:-1});
+                        for (sub in subs) {
+                            subdata.push({
+                                name: subs[sub],
+                                y: data[key]["subs"][subs[sub]]["amount"],
+                                color: Highcharts.Color(colors[i]).brighten(0.2).get()
+                            });
+                        }
                     }
                     chart = new Highcharts.Chart({
                         chart: {
@@ -895,7 +908,16 @@ $(document).ready(function () {
                                 formatter: function() {
                                     return this.y/total > .05 ? this.point.name : null;
                                 }
-                            }
+                            },
+                            size: '60%'
+                        }, {
+                            data: subdata,
+                            dataLabels: {
+                                formatter: function() {
+                                    return null;
+                                }
+                            },
+                            innerSize: '60%'
                         } ]
                     });
                 }
