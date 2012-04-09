@@ -841,18 +841,21 @@ $(document).ready(function () {
                 keys.sort(function (a,b) {return data[a]["amount"]>data[b]["amount"]?1:-1});
                 $("#reports #summary").html("");
                 $("#reports #summary");
-                var i = 0;
+                var total = 0;
                 for (key in keys) {
                     key = keys[key];
                     keyhtml = "<div class='summaryline'>"+key+" <span class='dollar'>"+data[key]["amount"]+"</span></div>";
                     keyhtml += "<div class='detail'>"
-                    for (sub in data[key]["subs"]) {
-                        keyhtml += sub + " <span class='dollar'>" + data[key]["subs"][sub]["amount"] + "</span><br>";
+                    subs = Object.keys(data[key]["subs"]);
+                    subs.sort(function (a,b) {return data[key]["subs"][a]["amount"]>data[key]["subs"][b]["amount"]?1:-1});
+                    for (sub in subs) {
+                        keyhtml += subs[sub] + " <span class='dollar'>" + data[key]["subs"][subs[sub]]["amount"] + "</span><br>";
                     }
                     keyhtml += "</div>"
                     $("#reports #summary").append(keyhtml);
-                    i += 1;
+                    total += data[key]["amount"];
                 }
+                $("#reports #summary").append("Total: <span class='dollar'>"+total+"</span>");
                 $("#reports #summary .detail").hide();
                 $("#reports #summary .dollar").each(decoratedollar);
                 $("#reports #summary .summaryline").click(function () {

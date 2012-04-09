@@ -45,4 +45,5 @@
 #linktransactions button { font-size: 62.5%; }
 
 #reports { position: absolute; z-index: 10; background: white; }
+#reports #summary .summaryline { cursor: pointer; }
 #reports #summary .detail { padding-left: 10px; }
