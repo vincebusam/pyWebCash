@@ -217,6 +217,10 @@ function checksession() {
   });
 }
 
+function dollarstr(amount) {
+   return "$"+Math.abs(amount/100).toFixed(2);
+}
+
 // Convert amount in positive/negative cents to human-readable format
 function decoratedollar() {
   if ($(this).text().substring(0,1) == "$")
@@ -226,7 +230,7 @@ function decoratedollar() {
     $(this).addClass("posnum");
   else
     $(this).removeClass("posnum");
-  $(this).text("$"+Math.abs(amount/100).toFixed(2));
+  $(this).text(dollarstr(amount));
 }
 
 // Get accounts and balances, load up table and search options
