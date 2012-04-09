@@ -26,8 +26,12 @@ function loginsuccess() {
   $("#login").hide();
   $("#searchoptions").show();
   $("#linktransactions").show();
+  $("#reports").show();
   $("#linktransactions").width($("#searchoptions").width())
   $("#linktransactions").css("top", $("#searchoptions").offset().top+$("#searchoptions").height()+10)
+  $("#reports").width($("#searchoptions").width());
+  $("#reports").css("top", $("#linktransactions").offset().top+$("#linktransactions").height()+10)
+  $("#reports").css("left", $("#linktransactions").offset().left);
   $("#searchoptions .searchoption").each(function () { $(this).val(""); });
   $("#searchoptions .queryoption").each(function () { $(this).val(""); });
   clearlink();
@@ -165,6 +169,8 @@ function clearpage() {
   $("#newaccount").hide();
   $("#tagselect").hide();
   $("#linktransactions").hide();
+  $("#reports").hide();
+  $("#reports #summary").hide();
   $("#username").val("");
   $("#password").val("");
   if (sessioncheckinterval) {
@@ -813,6 +819,62 @@ $(document).ready(function () {
         error: function() {
             showerror("HTTP error linking transactions");
         }
+    });
+  });
+
+  $(".doreport").click(function (e) {
+    e.preventDefault();
+    $("#reports").animate({
+        top: "0px",
+        left: "0px",
+        height: "100%",
+        width: "100%",
+        margin: "5px"
+    }, 400, function() {
+        $("#reports #summary").show();
+        $.ajax({
+            type: "POST",
+            url: apiurl,
+            data: {"action": "summary"},
+            success: function(data) {
+                $("#reports #summary").html("");
+                $("#reports #summary");
+                var i = 0;
+                for (key in data) {
+                    keyhtml = "<div class='summaryline'>"+key+" <span class='dollar'>"+data[key]["amount"]+"</span></div>";
+                    keyhtml += "<div class='detail'>"
+                    for (sub in data[key]["subs"]) {
+                        keyhtml += sub + " <span class='dollar'>" + data[key]["subs"][sub]["amount"] + "</span><br>";
+                    }
+                    keyhtml += "</div>"
+                    $("#reports #summary").append(keyhtml);
+                    i += 1;
+                }
+                $("#reports #summary .detail").hide();
+                $("#reports #summary .dollar").each(decoratedollar);
+                $("#reports #summary .summaryline").click(function () {
+                    if ($(this).next().is(":hidden"))
+                        $(this).next().slideDown();
+                    else
+                        $(this).next().slideUp();
+                });
+            },
+            error: function() {
+                showerror("HTTP error getting summary");
+            }
+        });
+    });
+  });
+
+  $("#reports #close").click(function (e) {
+    e.preventDefault();
+    $("#reports #summary").hide();
+    $("#reports").animate({
+        top: $("#linktransactions").offset().top+$("#linktransactions").height()+10,
+        left: $("#linktransactions").offset().left,
+        height: 0,
+        width: $("#searchoptions").width(),
+        margin: "0px"
     });
   });
 
