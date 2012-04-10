@@ -49,6 +49,6 @@ for account in todo:
         print e
         traceback.print_exc()
 
-b.close()
+b.quit()
 
 api.callapi("logout")
