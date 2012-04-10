@@ -8,7 +8,9 @@
   [ {"desc": "Parking"}, {"category": "Auto & Transport", "subcategory": "Parking"} ],
   [ {"desc": "^THE GAS COMPANY"}, {"category": "Bills & Utilities", "subcategory": "Utilities"} ],
   [ {"desc": "^Amazon"}, {"category": "Shopping" } ],
+  [ {"desc": "^Target"}, {"category": "Shopping" } ],
   [ {"desc": "^Netflix"}, {"category": "Entertainment", "subcategory": "Movies & DVDs" } ],
+  [ {"desc": "^Vonage"}, {"category": "Bills & Utilities", "subcategory": "Home Phone" } ],
   [ {"desc": "^Interest Paid"}, {"category": "Income", "subcategory": "Interest Income" }],
   [ {"attr_Merchant Category": "GROCERY STORE,SUPERMARKET"}, {"category": "Food & Dining", "subcategory": "Groceries"} ],
   [ {"attr_Merchant Category": "FAST FOOD RESTAURANTS"}, {"category": "Food & Dining", "subcategory": "Fast Food"} ],
@@ -39,5 +41,6 @@
   [ {"attr_Merchant Category": "AIRLINE,AIR CARRIER"}, {"category": "Travel", "subcategory": "Air Travel"} ],
   [ {"attr_Merchant Category": "TRAVEL AGENCY AND TOUR OPERATORS"}, {"category": "Travel"} ],
   [ {"attr_Merchant Category": "MISC FOOD STORE,SPECIALTY,CONVENIENCE"}, {"category": "Food & Dining"} ],
+  [ {"attr_Merchant Category": "HOBBY,TOY / GAME SHOPS"}, {"category": "Kids", "subcategory": "Toys"} ],
   [ {"attr_Merchant Category": "Gasoline"}, {"category": "Auto & Transport", "subcategory": "Gas & Fuel"} ]
 ]
