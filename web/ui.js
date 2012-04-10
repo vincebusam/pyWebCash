@@ -174,6 +174,7 @@ function clearpage() {
   $("#reports").hide();
   $("#reports #summary").hide();
   $("#reports #close").hide();
+  $("#reports #reopen").hide();
   $("#username").val("");
   $("#password").val("");
   if (sessioncheckinterval) {
@@ -835,6 +836,10 @@ $(document).ready(function () {
 
   $(".doreport").click(function (e) {
     e.preventDefault();
+    if ($(this).attr("id") != "reopen") {
+        reportid = $(this).attr("id");
+        curreport = -1;
+    }
     $("#reports").animate({
         top: "0px",
         left: "0px",
@@ -844,8 +849,9 @@ $(document).ready(function () {
     }, 400, function() {
         $("#reports #close").show();
         $("#reports #summary").show();
+        $("#reports #reportgraph").show();
+        $("#reports #reopen").show();
         $("#reports .doreport").hide();
-        reportid = $(this).attr("id");
         if (curreport == reportid)
             return;
         curreport = reportid;
@@ -987,6 +993,7 @@ $(document).ready(function () {
   $("#reports #close").click(function (e) {
     e.preventDefault();
     $("#reports #summary").hide();
+    $("#reports #reportgraph").hide()
     $("#reports #close").hide();
     $("#reports .doreport").show();
     $("#reports").animate({
