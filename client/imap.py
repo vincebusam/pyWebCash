@@ -14,10 +14,11 @@ import imaplib
 import StringIO
 import datetime
 
-def uploaditems(parent, items):
-    [x.update({"parent": parent}) for x in items]
+def uploaditems(parent, items, siblings):
+    [x.update({"parents": [parent]}) for x in items]
     api.callapi("newtransactions", {"data": json.dumps({"transactions": items}, default=str)})
-    api.callapi("updatetransaction", {"id": parent, "data": json.dumps({"amount":0, "children": [x["id"] for x in items]})})
+    siblings.extend([x["id"] for x in items])
+    api.callapi("updatetransaction", {"id": parent, "data": json.dumps({"amount":0, "children": siblings})})
 
 def checkitems(items, amazontrans, amount, itemsamount, params):
     if items[0]["id"] in params["seenids"]:
@@ -37,13 +38,13 @@ def checkitems(items, amazontrans, amount, itemsamount, params):
     trans = [x for x in amazontrans if x["amount"] == amount]
     if trans:
         print "Matched to %s" % (trans[0]["id"])
-        uploaditems(trans[0]["id"], items)
+        uploaditems(trans[0]["id"], items, trans[0].get("children",[]))
     else:
         for item in items:
             trans = [x for x in amazontrans if x["amount"] == item["amount"]]
             if trans:
                 print "Matched to %s" % (trans[0]["id"])
-                uploaditems(trans[0]["id"], [item])
+                uploaditems(trans[0]["id"], [item], trans[0].get("children", []))
             else:
                 print "No match found"
 

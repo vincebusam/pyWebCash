@@ -70,7 +70,7 @@ def create_db(username, password):
 def isopentransfer(trans):
     """All of these must pass to see if this can be matched with another transfer"""
     return trans.get("state") != "closed" and \
-           not trans.get("parent") and \
+           not trans.get("parents") and \
            not trans.get("children") and \
            trans.get("amount") != 0 and \
            trans.get("category") == "Transfer" and \
@@ -314,10 +314,10 @@ class DB(object):
             trans.setdefault("orig_amount_str", trans["amount"])
             trans["amount"] = parse_amount(trans["amount"])
             trans["orig_amount"] = trans["amount"]
-            if trans.get("parent"):
+            if trans.get("parents"):
                 p = self.search({"id": trans["parent"]})
-                if p:
-                    self.updatetransaction(trans["parent"], {"amount": p[0]["amount"]-trans["amount"]}, False)
+                for t in p:
+                    self.updatetransaction(trans["parent"], {"amount": t["amount"]-trans["amount"]}, False)
 
             # Auto re-name, categorize, then match up transfers
             if autoprocess:
@@ -358,20 +358,20 @@ class DB(object):
                            trans["amount"] == -target["amount"] and \
                            parsedate(trans["date"]) - parsedate(target["date"]) <= datetime.timedelta(days=4):
                             trans.setdefault("children",[]).append(target["id"])
-                            target["parent"] = trans["id"]
+                            target["parents"] = [trans["id"]]
                             trans["amount"] = 0
                             target["amount"] = 0
                             break
                 # For a cash transaction, split it out of most recent ATM withdrawl.
                 if trans["account"].lower() == "cash" and \
                    trans["state"] == "open" and \
-                   not trans.get("parent"):
+                   not trans.get("parents"):
                     for target in self.db["transactions"]:
                         if target.get("subcategory") == "Cash & ATM" and \
                            target["amount"] < trans["amount"] and \
                            target["date"] <= trans["date"]:
                             target["amount"] -= trans["amount"]
-                            trans["parent"] = target["id"]
+                            trans["parents"] = [target["id"]]
                             target.setdefault("children",[]).append(trans["id"])
                             break
 
@@ -400,8 +400,8 @@ class DB(object):
         childtrans = [(self.search({"id": x}) or [{}])[0] for x in children]
         if [x for x in childtrans if not x]:
             return False
-        parenttrans["children"] = children
-        [x.update({"parent": parent}) for x in childtrans]
+        parenttrans.setdefault("children", []).append(children)
+        [x.setdefault("parents",[]).append(parent) for x in childtrans]
         if type == "dup":
             [x.update({"amount": 0}) for x in childtrans]
         elif type == "combine":

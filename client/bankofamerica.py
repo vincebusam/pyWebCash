@@ -83,7 +83,7 @@ def downloadaccount(b, params):
                         continue
                     subtrans = {"account": params["name"],
                                 "subaccount": acct,
-                                "parent": transaction["id"],
+                                "parents": [transaction["id"]],
                                 "date": transaction["date"],
                                 "desc": "BofA Check Deposit",
                                 "id": "%s-%s" % (transaction["id"], checkid) }

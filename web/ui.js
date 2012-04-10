@@ -366,12 +366,14 @@ function showtransaction(t) {
   else
     $("#transactiondetail #subcategory").autocomplete("option", "source", allcategories);
   $("#transactiondetail #linked").html("");
-  if (showtrans["parent"] != undefined) {
+  if (showtrans["parents"] != undefined) {
     $("#transactiondetail #linked").append("Linked Transactions:<br>");
-    $("#transactiondetail #linked").append("<a href='#' class='translink'>"+showtrans["parent"]+"</a><br>");
+    for (i=0; i<showtrans["parents"].length; i++)
+      $("#transactiondetail #linked").append("<a href='#' class='translink'>"+showtrans["parents"][i]+"</a><br>");
   }
   if (showtrans["children"] != undefined) {
-    $("#transactiondetail #linked").append("Linked Transactions:<br>");
+    if ($("#transactiondetail #linked").html() == "")
+      $("#transactiondetail #linked").append("Linked Transactions:<br>");
     for (i=0; i<showtrans["children"].length; i++)
       $("#transactiondetail #linked").append("<a href='#' class='translink'>"+showtrans["children"][i]+"</a><br>");
   }
@@ -784,16 +786,7 @@ $(document).ready(function () {
         if ($(this).attr("id") == "parent") {
             $(this).html("");
             linkparent = loadedtransactions[t]["id"];
-            // If this already has children, clear out any new one
-            // Then append new ones to the current list
-            if (loadedtransactions[t]["children"]) {
-                linkchildren = loadedtransactions[t]["children"];
-                $("#linktransactions #children").html("");
-            }
         } else {
-            // Can only have one parent!
-            if (loadedtransactions[t]["parent"])
-                return;
             linkchildren.push(loadedtransactions[t]["id"])
         }
         $(this).append(loadedtransactions[t]["date"] + " " + loadedtransactions[t]["amount"] + " " + loadedtransactions[t]["desc"] + "<br>");

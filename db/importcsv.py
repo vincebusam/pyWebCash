@@ -102,20 +102,20 @@ for row in csv.reader(open(sys.argv[1])):
 for i in range(len(transactions)):
     if transactions[i]["category"] == "Transfer" and \
        not "Cash" in transactions[i].get("subcategory","") and \
-       not "parent" in transactions[i] and \
-       not "child" in transactions[i]:
+       not "parents" in transactions[i] and \
+       not "children" in transactions[i]:
         for j in range(i+1,len(transactions)):
             if transactions[j]["category"] == "Transfer" and not "Cash" in transactions[j].get("subcategory","") and \
                transactions[i]["amount"] == -transactions[j]["amount"] and \
-               not transactions[j].get("parent") and \
-               not transactions[j].get("child") and \
+               not transactions[j].get("parents") and \
+               not transactions[j].get("children") and \
                abs(transactions[i]["date"] - transactions[j]["date"]) <= datetime.timedelta(days=4):
                    transactions[i]["orig_amount"] = transactions[i]["amount"]
                    transactions[i]["amount"] = 0
                    transactions[j]["orig_amount"] = transactions[j]["amount"]
                    transactions[j]["amount"] = 0
-                   transactions[i]["child"] = transactions[j]["id"]
-                   transactions[j]["parent"] = transactions[i]["id"]
+                   transactions[i]["children"] = [transactions[j]["id"]]
+                   transactions[j]["parents"] = [transactions[i]["id"]]
 
 for trans in transactions:
     if trans.get("category") == "Transfer" and not trans.get("subcategory") and trans["amount"]:
