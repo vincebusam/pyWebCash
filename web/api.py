@@ -10,8 +10,8 @@ import Cookie
 import urlparse
 import datetime
 
-sys.path.append(os.path.dirname(__file__) + "/../db")
-sys.path.append(os.path.dirname(__file__) + "/../")
+sys.path.append((os.path.dirname(__file__) or ".") + "/../db")
+sys.path.append((os.path.dirname(__file__) or ".") + "/../")
 
 import config
 import db

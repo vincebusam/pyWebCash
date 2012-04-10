@@ -9,7 +9,7 @@ import getpass
 import traceback
 from selenium import webdriver
 
-sys.path.append(os.path.dirname(__file__) + "/../")
+sys.path.append((os.path.dirname(__file__) or ".") + "/../")
 
 import config
 

@@ -6,7 +6,7 @@ import urllib
 import urllib2
 import cookielib
 
-sys.path.append(os.path.dirname(__file__) + "/../")
+sys.path.append((os.path.dirname(__file__) or ".") + "/../")
 
 import config
 

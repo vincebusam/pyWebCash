@@ -18,7 +18,7 @@ import StringIO
 import aespckfile
 from PIL import Image
 
-sys.path.append(os.path.dirname(__file__) + "/../")
+sys.path.append((os.path.dirname(__file__) or ".") + "/../")
 
 import config
 
@@ -105,7 +105,7 @@ class DB(object):
         self.db.setdefault("categories",{})
         self.db.setdefault("tags",[])
         self.rules = copy.deepcopy(self.db.setdefault("rules",[]))
-        self.rules.extend(json.load(open(os.path.dirname(__file__) + "/../rules.json")))
+        self.rules.extend(json.load(open((os.path.dirname(__file__) or ".") + "/../rules.json")))
         self.citymatch = re.compile(" (%s) ?(%s)?$" % ("|".join(self.db["cities"]), "|".join(self.db["states"])), re.I)
 
     def save(self):
@@ -422,7 +422,7 @@ class DB(object):
         return False
 
     def getcategories(self):
-        cats = json.load(open(os.path.dirname(__file__) + "/../categories.json"))
+        cats = json.load(open((os.path.dirname(__file__) or ".") + "/../categories.json"))
         for cat in self.db.get("categories",{}):
             cats.setdefault(cat,[]).extend(self.db["categories"][cat])
         return cats
