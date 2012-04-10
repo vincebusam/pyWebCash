@@ -901,6 +901,7 @@ $(document).ready(function () {
                         $(this).next().slideUp();
                 });
                 if (typeof Highcharts != "undefined") {
+                    $("#reports #reportgraph").height($(window).height());
                     var maindata = [];
                     var subdata = [];
                     var colors = Highcharts.getOptions().colors;
@@ -939,13 +940,16 @@ $(document).ready(function () {
                                 return '<b>'+ this.point.name +'</b>: '+ dollarstr(this.y);
                             }
                         },
+                        plotOptions: {
+                            shadow: false
+                        },
                         series: [ {
                             data: maindata,
                             dataLabels: {
                                 formatter: function() {
                                     return this.y/total > .05 ? this.point.name : null;
                                 },
-                                distance: 40,
+                                distance: 50,
                                 connectorWidth: 0
                             },
                             size: '60%',
