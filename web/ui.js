@@ -14,6 +14,8 @@ var centers = [];
 var tags = [];
 var linkparent = "";
 var linkchildren = [];
+var chart = null;
+var curreport = -1;
 
 // "nice" jQueryUI popup message
 function showerror(err) {
@@ -171,6 +173,7 @@ function clearpage() {
   $("#linktransactions").hide();
   $("#reports").hide();
   $("#reports #summary").hide();
+  $("#reports #close").hide();
   $("#username").val("");
   $("#password").val("");
   if (sessioncheckinterval) {
@@ -839,12 +842,21 @@ $(document).ready(function () {
         width: "100%",
         margin: "5px"
     }, 400, function() {
+        $("#reports #close").show();
         $("#reports #summary").show();
+        $("#reports .doreport").hide();
+        reportid = $(this).attr("id");
+        if (curreport == reportid)
+            return;
+        curreport = reportid;
         filteropts = {};
         $("#searchoptions .queryoption").each(function() {
             if ($(this).val() != "")
                 filteropts[$(this).attr("id")] = $(this).val();
         });
+        $("#reports #summary").html("");
+        if (chart != null)
+            chart.destroy();
         $.ajax({
             type: "POST",
             url: apiurl,
@@ -855,9 +867,10 @@ $(document).ready(function () {
                    "filterout": JSON.stringify({"category": "Income"})},
             success: function(data) {
                 var keys = Object.keys(data);
+                if (keys.length == 0)
+                    return;
                 keys.sort(function (a,b) {return data[a]["amount"]>data[b]["amount"]?1:-1});
-                $("#reports #summary").html("");
-                $("#reports #summary");
+                var months = parseInt(data[keys[0]]["enddate"].substr(6,2)) - parseInt(data[keys[0]]["startdate"].substr(6,2)) + 1;
                 var total = 0;
                 for (key in keys) {
                     key = keys[key];
@@ -866,13 +879,13 @@ $(document).ready(function () {
                     subs = Object.keys(data[key]["subs"]);
                     subs.sort(function (a,b) {return data[key]["subs"][a]["amount"]>data[key]["subs"][b]["amount"]?1:-1});
                     for (sub in subs) {
-                        keyhtml += subs[sub] + " <span class='dollar'>" + data[key]["subs"][subs[sub]]["amount"] + "</span><br>";
+                        keyhtml += subs[sub] + " <span class='dollar'>" + (data[key]["subs"][subs[sub]]["amount"]/months) + "</span><br>";
                     }
                     keyhtml += "</div>"
                     $("#reports #summary").append(keyhtml);
                     total += data[key]["amount"];
                 }
-                $("#reports #summary").append("<b>Total: <span class='dollar'>"+total+"</span></b>");
+                $("#reports #summary").append("<b>Total: <span class='dollar'>"+(total/months)+"</span></b>");
                 $("#reports #summary .detail").hide();
                 $("#reports #summary .dollar").each(decoratedollar);
                 $("#reports #summary .summaryline").click(function () {
@@ -889,7 +902,7 @@ $(document).ready(function () {
                         key = keys[i];
                         maindata.push({
                             name: key,
-                            y: data[key]["amount"],
+                            y: (data[key]["amount"]/months),
                             color: colors[i]
                         });
                         subs = Object.keys(data[key]["subs"]);
@@ -897,7 +910,7 @@ $(document).ready(function () {
                         for (sub in subs) {
                             subdata.push({
                                 name: subs[sub],
-                                y: data[key]["subs"][subs[sub]]["amount"],
+                                y: (data[key]["subs"][subs[sub]]["amount"]/months),
                                 color: Highcharts.Color(colors[i]).brighten(0.2).get()
                             });
                         }
@@ -910,6 +923,9 @@ $(document).ready(function () {
                         title: {
                             text: 'Spending by Category'
                         },
+                        subtitle: {
+                            text: data[keys[0]]["startdate"] + ' to ' + data[keys[0]]["enddate"] + ', Total: ' + dollarstr(total)
+                        },
                         tooltip: {
                             formatter: function() {
                                 return '<b>'+ this.point.name +'</b>: '+ dollarstr(this.y);
@@ -920,17 +936,43 @@ $(document).ready(function () {
                             dataLabels: {
                                 formatter: function() {
                                     return this.y/total > .05 ? this.point.name : null;
-                                }
+                                },
+                                distance: 40,
+                                connectorWidth: 0
                             },
-                            size: '60%'
+                            size: '60%',
+                            cursor: 'pointer',
+                            events: {
+                                click: function(event) {
+                                    $("#searchoptions #category").val(keys[event.point.x]);
+                                    $("#searchoptions #subcategory").val("");
+                                    if ($("#searchoptions #startdate").val() == "")
+                                        $("#searchoptions #startdate").val(data[keys[0]]["startdate"])
+                                    if ($("#searchoptions #enddate").val() == "")
+                                        $("#searchoptions #enddate").val(data[keys[0]]["enddate"])
+                                    loadtransactions();
+                                    $("#reports #close").click();
+                                }
+                            }
                         }, {
                             data: subdata,
                             dataLabels: {
-                                formatter: function() {
-                                    return null;
-                                }
+                                enabled: false
                             },
-                            innerSize: '60%'
+                            innerSize: '60%',
+                            cursor: 'pointer',
+                            events: {
+                                click: function(event) {
+                                    $("#searchoptions #category").val("");
+                                    $("#searchoptions #subcategory").val(event.point.series.data[event.point.x]["name"]);
+                                    if ($("#searchoptions #startdate").val() == "")
+                                        $("#searchoptions #startdate").val(data[keys[0]]["startdate"])
+                                    if ($("#searchoptions #enddate").val() == "")
+                                        $("#searchoptions #enddate").val(data[keys[0]]["enddate"])
+                                    loadtransactions();
+                                    $("#reports #close").click();
+                                }
+                            }
                         } ]
                     });
                 }
@@ -945,6 +987,8 @@ $(document).ready(function () {
   $("#reports #close").click(function (e) {
     e.preventDefault();
     $("#reports #summary").hide();
+    $("#reports #close").hide();
+    $("#reports .doreport").show();
     $("#reports").animate({
         top: $("#linktransactions").offset().top+$("#linktransactions").height()+10,
         left: $("#linktransactions").offset().left,
