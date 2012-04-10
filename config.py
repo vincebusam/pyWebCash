@@ -4,4 +4,4 @@ apiurl = "https://example.com/pywebfinance/api.py"
 sessiondir = "/usr/local/finance/session"
 sessiontimeout = (60*15) # 15 minutes
 
-banks = [ "bankofamerica", "citicards", "wellsfargo", "chase", "paypal", "gap", "fecu", "csvurl" ]
+banks = [ "bankofamerica", "citicards", "wellsfargo", "chase", "paypal", "gap", "fecu", "csvurl", "imap" ]
