@@ -146,7 +146,7 @@ class DB(object):
         """Return list of accounts that need new data"""
         ret = copy.deepcopy(self.db["accounts"])
         for acct in ret:
-            trans = self.search({"account":acct.get("name")},limit=5)
+            trans = self.search({"account":acct.get("name")},limit=20)
             acct["seenids"] = [x["id"] for x in trans]
             if trans:
                 acct["lastcheck"] = trans[0]["date"]
