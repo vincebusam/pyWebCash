@@ -880,7 +880,7 @@ $(document).ready(function () {
                 var total = 0;
                 for (key in keys) {
                     key = keys[key];
-                    keyhtml = "<div class='summaryline'>"+key+" <span class='dollar'>"+data[key]["amount"]+"</span></div>";
+                    keyhtml = "<div class='summaryline'>"+key+" <span class='dollar'>"+(data[key]["amount"]/months)+"</span></div>";
                     keyhtml += "<div class='detail'>"
                     subs = Object.keys(data[key]["subs"]);
                     subs.sort(function (a,b) {return data[key]["subs"][a]["amount"]>data[key]["subs"][b]["amount"]?1:-1});
@@ -930,7 +930,9 @@ $(document).ready(function () {
                             text: 'Spending by Category'
                         },
                         subtitle: {
-                            text: data[keys[0]]["startdate"] + ' to ' + data[keys[0]]["enddate"] + ', Total: ' + dollarstr(total)
+                            text: data[keys[0]]["startdate"] + ' to ' + data[keys[0]]["enddate"] +
+                                  ', Total: ' + dollarstr(total) +
+                                  ((months>1)?', Average: ' + dollarstr(total/months):'')
                         },
                         tooltip: {
                             formatter: function() {
