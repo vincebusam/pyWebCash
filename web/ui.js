@@ -835,7 +835,7 @@ $(document).ready(function () {
     $("#reports").animate({
         top: "0px",
         left: "0px",
-        height: "100%",
+        height: $(document).height(),
         width: "100%",
         margin: "5px"
     }, 400, function() {
