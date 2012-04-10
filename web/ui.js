@@ -217,8 +217,19 @@ function checksession() {
   });
 }
 
+function addCommas(number) {
+    x = number.toString().split('.');
+    x1 = x[0];
+    x2 = x.length > 1 ? '.' + x[1] : '';
+    var rgx = /(\d+)(\d{3})/;
+    while (rgx.test(x1)) {
+        x1 = x1.replace(rgx, '$1' + ',' + '$2');
+    }
+    return x1 + x2;
+}
+
 function dollarstr(amount) {
-   return "$"+Math.abs(amount/100).toFixed(2);
+   return "$"+addCommas(Math.abs(amount/100).toFixed(2));
 }
 
 // Convert amount in positive/negative cents to human-readable format
