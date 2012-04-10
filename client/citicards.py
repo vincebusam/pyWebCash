@@ -74,6 +74,8 @@ def downloadaccount(b, params):
                 if not entry.text:
                     continue
                 trans = {"account": params["name"], "subaccount": cardname(card)}
+                if not entry or not entry.text[0].isdigit():
+                    continue
                 parsetransaction(trans, entry.text.split("\n"))
                 if trans["date"] < params["lastcheck"]:
                     skipped += 1
