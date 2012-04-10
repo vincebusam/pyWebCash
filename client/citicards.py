@@ -83,7 +83,7 @@ def downloadaccount(b, params):
                     continue
                 if trans["id"] in [x["id"] for x in transactions]:
                     print "Dup Reference Number!!"
-                    trans["id"] += "-" + trans["amount"]
+                    trans["id"] += "-" + str(abs(trans["amount"]))
                 transactions.append(trans)
             if skipped > 3:
                 break
