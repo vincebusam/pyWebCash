@@ -17,6 +17,25 @@ var linkchildren = [];
 var chart = null;
 var curreport = -1;
 
+var reportopts = {
+    "spendcategory": {
+        "filter": {"amount": "$lt:0"},
+        "filterout": {},
+        "key": "category",
+        "keydef": "subcategory",
+        "subkey": "subcategory",
+        "subkeydef": "None"
+    },
+    "incomecategory": {
+        "filter": {"amount": "$gt:0"},
+        "filterout": {},
+        "key": "category",
+        "keydef": "subcategory",
+        "subkey": "subcategory",
+        "subkeydef": "None"
+    }
+}
+
 // "nice" jQueryUI popup message
 function showerror(err) {
   $("#errormsg").text(err);
@@ -855,7 +874,7 @@ $(document).ready(function () {
         if (curreport == reportid)
             return;
         curreport = reportid;
-        filteropts = {};
+        filteropts = reportopts[curreport]["filter"];
         $("#searchoptions .queryoption").each(function() {
             if ($(this).val() != "")
                 filteropts[$(this).attr("id")] = $(this).val();
@@ -870,7 +889,12 @@ $(document).ready(function () {
                    "startdate": $("#searchoptions #startdate").val(),
                    "enddate": $("#searchoptions #enddate").val(),
                    "filter": JSON.stringify(filteropts),
-                   "filterout": JSON.stringify({"category": "Income"})},
+                   "filterout": JSON.stringify(reportopts[curreport]["filterout"]),
+                   "key": reportopts[curreport]["key"],
+                   "keydef": reportopts[curreport]["keydef"],
+                   "subkey": reportopts[curreport]["subkey"],
+                   "subkeydef": reportopts[curreport]["subkeydef"]
+            },
             success: function(data) {
                 var keys = Object.keys(data);
                 if (keys.length == 0)
