@@ -74,6 +74,8 @@ def downloadaccount(b, params):
                 if not entry.text:
                     continue
                 trans = {"account": params["name"], "subaccount": cardname(card)}
+                if not entry or not entry.text[0].isdigit():
+                    continue
                 parsetransaction(trans, entry.text.split("\n"))
                 if trans["date"] < params["lastcheck"]:
                     skipped += 1
@@ -83,7 +85,7 @@ def downloadaccount(b, params):
                     continue
                 if trans["id"] in [x["id"] for x in transactions]:
                     print "Dup Reference Number!!"
-                    trans["id"] += "-" + trans["amount"]
+                    trans["id"] += "-" + str(abs(trans["amount"]))
                 transactions.append(trans)
             if skipped > 3:
                 break
@@ -104,5 +106,5 @@ if __name__ == "__main__":
     params["seenids"] = []
     b = webdriver.Chrome()
     data = downloadaccount(b, params)
-    b.close()
+    b.quit()
     json.dump(data, open("citicards.json","w"), indent=2, default=str)

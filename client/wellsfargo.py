@@ -62,5 +62,5 @@ if __name__ == "__main__":
     params["seenids"] = []
     b = webdriver.Chrome()
     data = downloadaccount(b, params)
-    b.close()
+    b.quit()
     json.dump(data, open("wellsfargo.json","w"), indent=2, default=str)
