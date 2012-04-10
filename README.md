@@ -71,7 +71,7 @@ Create a cron file to clean dead session files:
 ### Scraper (client)
 
 This has been tested on a Mac, but should also work on Linux.  By default it
-uses Chrome, which requires the chrome webdrivery binary in the path.  It
+uses Chrome, which requires the chrome webdriver binary in the path.  It
 can be easily edited to use other browsers.
 
  ---
