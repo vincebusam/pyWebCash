@@ -29,6 +29,10 @@ if not api.callapi("login",{"username": username, "password": password}):
 
 todo = api.callapi("accountstodo")
 
+for account in todo:
+    if account.get("username") and "password" not in account:
+        account["password"] = getpass.getpass("Password for %s (%s): " % (account["name"], account["username"]))
+
 b = webdriver.Chrome()
 
 for account in todo:
