@@ -636,6 +636,7 @@ function clearlink() {
     linkparent = "";
     linkchildren = [];
     $("#linktransactions div").html("");
+    $("#reports").css("top", $("#linktransactions").offset().top+$("#linktransactions").height()+10)
 }
 
 function getpiedata(data, months) {
@@ -981,6 +982,7 @@ $(document).ready(function () {
             linkchildren.push(loadedtransactions[t]["id"])
         }
         $(this).append(loadedtransactions[t]["date"] + " " + loadedtransactions[t]["amount"] + " " + loadedtransactions[t]["desc"] + "<br>");
+        $("#reports").css("top", $("#linktransactions").offset().top+$("#linktransactions").height()+10)
     },
     tolerance: "touch",
     hoverClass: "ui-state-active"
