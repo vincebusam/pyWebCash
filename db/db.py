@@ -234,14 +234,23 @@ class DB(object):
                 break
         return ret
 
+    sumval = {
+        "month": lambda x: x["date"][:7],
+        "year": lambda x: x["date"][:4]
+    }
+
     def summary(self, startdate=str((datetime.date.today().replace(day=1)-datetime.timedelta(days=1)).replace(day=1)),
                       enddate=str(datetime.date.today().replace(day=1)-datetime.timedelta(days=1)),
                       filter={},
                       filterout={},
                       key="category",
                       keydef="Uncategorized",
+                      keysort="amount",
+                      keysortrev=True,
                       subkey="subcategory",
-                      subkeydef=""):
+                      subkeydef="",
+                      subkeysort="amount",
+                      subkeysortrev=True):
         """Summarize transactions for a report (& chart)
            params:
              startdate, enddate - date range
@@ -262,13 +271,27 @@ class DB(object):
             if filterout and self.matchtrans(trans, filterout):
                 continue
             count += 1
-            ret.setdefault(trans.get(key, keydef),{"amount":0})["amount"] += trans["amount"]
-            ret[trans.get(key, keydef)].setdefault("subs",{}).setdefault(trans.get(subkey, subkeydef),{"amount":0})["amount"] += trans["amount"]
+            if key in self.sumval:
+                keyval = self.sumval[key](trans)
+            else:
+                keyval = trans.get(key, keydef) or keydef
+            if subkey in self.sumval:
+                subkeyval = self.sumval[subkey](trans)
+            else:
+                subkeyval = trans.get(subkey, subkeydef) or subkeydef
+            ret.setdefault(keyval,{"amount":0})["amount"] += trans["amount"]
+            if subkey:
+                ret[keyval].setdefault("subs",{}).setdefault(subkeyval,{"amount":0})["amount"] += trans["amount"]
         suminfo["totalcount"] = count
         [ret.pop(x) for x in ret.keys() if ret[x]["amount"] == 0]
         [ret[x].update(suminfo) for x in ret.keys()]
         [[ret[x]["subs"].pop(y) for y in ret[x]["subs"].keys() if ret[x]["subs"][y]["amount"] == 0] for x in ret.keys()]
-        return ret
+        for k,v in ret.iteritems():
+            v.update({"name":k})
+            for sk, sv in v["subs"].iteritems():
+                sv.update({"name":sk})
+            v["subs"] = sorted(v["subs"].values(), key=lambda x: x[subkeysort], reverse=subkeysortrev)
+        return sorted(ret.values(), key=lambda x: x[keysort], reverse=keysortrev)
 
     def getallids(self):
         return [x["id"] for x in self.db["transactions"]]
