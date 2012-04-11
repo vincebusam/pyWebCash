@@ -22,17 +22,113 @@ var reportopts = {
         "filter": {"amount": "$lt:0"},
         "filterout": {},
         "key": "category",
-        "keydef": "subcategory",
+        "keydef": "Uncategorized",
+        "keysort": "amount",
+        "keysortrev": false,
         "subkey": "subcategory",
-        "subkeydef": "None"
+        "subkeydef": "None",
+        "subkeysort": "amount",
+        "subkeysortrev": false,
+        "title": "Spending by Category",
+        "type": "pie",
+        getseries: getpiedata,
+        getsettings: function(data, months) { return {}; },
     },
     "incomecategory": {
         "filter": {"amount": "$gt:0"},
         "filterout": {},
         "key": "category",
-        "keydef": "subcategory",
+        "keydef": "Uncategorized",
+        "keysort": "amount",
+        "keysortrev": true,
         "subkey": "subcategory",
-        "subkeydef": "None"
+        "subkeydef": "None",
+        "subkeysort": "amount",
+        "subkeysortrev": true,
+        "title": "Income by Category",
+        "type": "pie",
+        getseries: getpiedata,
+        getsettings: function(data, months) { return {}; },
+    },
+    "spendingtrend": {
+        "filter": {"amount": "$lt:0"},
+        "filterout": {},
+        "key": "category",
+        "keydef": "Uncategorized",
+        "keysort": "amount",
+        "keysortrev": "false",
+        "subkey": "month",
+        "subkeydef": "",
+        "subkeysort": "name",
+        "subkeysortrev": false,
+        "title": "Spending Trend",
+        "type": "column",
+        getseries: function (data, months) { return []; },
+        getsettings: function(data, months) {
+            var monthnames = [];
+            var series = [];
+            for (i in data) {
+                for (j in data[i]["subs"])
+                    if (monthnames.indexOf(data[i]["subs"][j]["name"]) == -1)
+                        monthnames.push(data[i]["subs"][j]["name"]);
+            }
+            monthnames.sort();
+            for (i in data) {
+                data[i].data = [];
+                for (j in monthnames)
+                    data[i].data.push(0);
+                for (j in data[i]["subs"])
+                    data[i].data[monthnames.indexOf(data[i]["subs"][j]["name"])] = data[i]["subs"][j]["amount"];
+            }
+            return {
+                series: data,
+                plotOptions: {
+                    column: {
+                        stacking: 'normal',
+                        events: {
+                            click: function(event) {
+                                $("#searchoptions #category").val(this.name);
+                                $("#searchoptions #subcategory").val("");
+                                $("#searchoptions #startdate").val(event.point.series.data[event.point.x].category + "-01")
+                                $("#searchoptions #enddate").val(event.point.series.data[event.point.x].category + "-31")
+                                loadtransactions();
+                                $("#reports #close").click();
+                            }
+                        }
+                    },
+                },
+                xAxis: {
+                    categories: monthnames
+                },
+                yAxis: {
+                    stackLabels: {
+                        enabled: true,
+                        style: {
+                            fontWeight: 'bold'
+                        },
+                        formatter: function() {
+                            return dollarstr(this.total);
+                        }
+                    },
+                    title: {
+                        text: null
+                    },
+                    labels: {
+                        formatter: function() {
+                            return dollarstr(this.value);
+                        }
+                    }
+                },
+                tooltip: {
+                    formatter: function() {
+                        return this.series.name +': '+ dollarstr(this.y);
+                    }
+                },
+                legend: {
+                    enabled: false
+                }
+            };
+        },
     }
 }
 
@@ -542,6 +638,67 @@ function clearlink() {
     $("#linktransactions div").html("");
 }
 
+function getpiedata(data, months) {
+    var subdata = [];
+    var colors = Highcharts.getOptions().colors;
+    for (var i in data) {
+        data[i].y = data[i].amount;
+        data[i].color = colors[i];
+        for (j in data[i]["subs"]) {
+            subdata.push({
+                name: data[i]["subs"][j]["name"],
+                y: (data[i]["subs"][j]["amount"]/months),
+                color: Highcharts.Color(colors[i]).brighten(0.2).get(),
+                startdate: data[i].startdate,
+                enddate: data[i].enddate
+            });
+        }
+    }
+    return [ {
+        data: data,
+        dataLabels: {
+            formatter: function() {
+                return this.y/total > .05 ? this.point.name : null;
+            },
+            distance: 50,
+            connectorWidth: 0
+        },
+        size: '60%',
+        cursor: 'pointer',
+        events: {
+            click: function(event) {
+                $("#searchoptions #category").val(event.point.name);
+                $("#searchoptions #subcategory").val("");
+                if ($("#searchoptions #startdate").val() == "")
+                    $("#searchoptions #startdate").val(event.point.startdate)
+                if ($("#searchoptions #enddate").val() == "")
+                    $("#searchoptions #enddate").val(event.point.enddate)
+                loadtransactions();
+                $("#reports #close").click();
+            }
+        }
+    }, {
+        data: subdata,
+        dataLabels: {
+            enabled: false
+        },
+        innerSize: '60%',
+        cursor: 'pointer',
+        events: {
+            click: function(event) {
+                $("#searchoptions #category").val("");
+                $("#searchoptions #subcategory").val(event.point.name);
+                if ($("#searchoptions #startdate").val() == "")
+                    $("#searchoptions #startdate").val(event.point.startdate)
+                if ($("#searchoptions #enddate").val() == "")
+                    $("#searchoptions #enddate").val(event.point.enddate)
+                loadtransactions();
+                $("#reports #close").click();
+            }
+        }
+    } ]
+}
+
 $(document).ready(function () {
   $('[contenteditable]').live('focus', function() {
     var $this = $(this);
@@ -874,7 +1031,7 @@ $(document).ready(function () {
         if (curreport == reportid)
             return;
         curreport = reportid;
-        filteropts = reportopts[curreport]["filter"];
+        filteropts = JSON.parse(JSON.stringify(reportopts[curreport]["filter"]));
         $("#searchoptions .queryoption").each(function() {
             if ($(this).val() != "")
                 filteropts[$(this).attr("id")] = $(this).val();
@@ -892,28 +1049,27 @@ $(document).ready(function () {
                    "filterout": JSON.stringify(reportopts[curreport]["filterout"]),
                    "key": reportopts[curreport]["key"],
                    "keydef": reportopts[curreport]["keydef"],
+                   "keysort": reportopts[curreport]["keysort"],
+                   "keysortrev": reportopts[curreport]["keysortrev"],
                    "subkey": reportopts[curreport]["subkey"],
-                   "subkeydef": reportopts[curreport]["subkeydef"]
+                   "subkeydef": reportopts[curreport]["subkeydef"],
+                   "subkeysort": reportopts[curreport]["subkeysort"],
+                   "subkeysortrev": reportopts[curreport]["subkeysortrev"],
             },
             success: function(data) {
-                var keys = Object.keys(data);
-                if (keys.length == 0)
+                if (data.length == 0)
                     return;
-                keys.sort(function (a,b) {return data[a]["amount"]>data[b]["amount"]?1:-1});
-                var months = parseInt(data[keys[0]]["enddate"].substr(6,2)) - parseInt(data[keys[0]]["startdate"].substr(6,2)) + 1;
+                var months = parseInt(data[0]["enddate"].substr(6,2)) - parseInt(data[0]["startdate"].substr(6,2)) + 1;
                 var total = 0;
-                for (key in keys) {
-                    key = keys[key];
-                    keyhtml = "<div class='summaryline'>"+key+" <span class='dollar'>"+(data[key]["amount"]/months)+"</span></div>";
+                for (i in data) {
+                    keyhtml = "<div class='summaryline'>"+data[i]["name"]+" <span class='dollar'>"+(data[i]["amount"]/months)+"</span></div>";
                     keyhtml += "<div class='detail'>"
-                    subs = Object.keys(data[key]["subs"]);
-                    subs.sort(function (a,b) {return data[key]["subs"][a]["amount"]>data[key]["subs"][b]["amount"]?1:-1});
-                    for (sub in subs) {
-                        keyhtml += subs[sub] + " <span class='dollar'>" + (data[key]["subs"][subs[sub]]["amount"]/months) + "</span><br>";
+                    for (j in data[i]["subs"]) {
+                        keyhtml += data[i]["subs"][j]["name"] + " <span class='dollar'>" + (data[i]["subs"][j]["amount"]/months) + "</span><br>";
                     }
                     keyhtml += "</div>"
                     $("#reports #summary").append(keyhtml);
-                    total += data[key]["amount"];
+                    total += data[i]["amount"];
                 }
                 $("#reports #summary").append("<b>Total: <span class='dollar'>"+(total/months)+"</span></b>");
                 $("#reports #summary .detail").hide();
@@ -926,36 +1082,29 @@ $(document).ready(function () {
                 });
                 if (typeof Highcharts != "undefined") {
                     $("#reports #reportgraph").height($(window).height());
-                    var maindata = [];
                     var subdata = [];
                     var colors = Highcharts.getOptions().colors;
-                    for (var i in keys) {
-                        key = keys[i];
-                        maindata.push({
-                            name: key,
-                            y: (data[key]["amount"]/months),
-                            color: colors[i]
-                        });
-                        subs = Object.keys(data[key]["subs"]);
-                        subs.sort(function (a,b) {return data[key]["subs"][a]["amount"]>data[key]["subs"][b]["amount"]?1:-1});
-                        for (sub in subs) {
+                    for (var i in data) {
+                        data[i].y = data[i].amount;
+                        data[i].color = colors[i];
+                        for (j in data[i]["subs"]) {
                             subdata.push({
-                                name: subs[sub],
-                                y: (data[key]["subs"][subs[sub]]["amount"]/months),
+                                name: data[i]["subs"][j]["name"],
+                                y: (data[i]["subs"][j]["amount"]/months),
                                 color: Highcharts.Color(colors[i]).brighten(0.2).get()
                             });
                         }
                     }
-                    chart = new Highcharts.Chart({
+                    var chartsettings = {
                         chart: {
                             renderTo: 'reportgraph',
-                            type: 'pie'
+                            type: reportopts[curreport]["type"]
                         },
                         title: {
-                            text: 'Spending by Category'
+                            text: reportopts[curreport]["title"]
                         },
                         subtitle: {
-                            text: data[keys[0]]["startdate"] + ' to ' + data[keys[0]]["enddate"] +
+                            text: data[0]["startdate"] + ' to ' + data[0]["enddate"] +
                                   ', Total: ' + dollarstr(total) +
                                   ((months>1)?', Average: ' + dollarstr(total/months):'')
                         },
@@ -965,52 +1114,12 @@ $(document).ready(function () {
                             }
                         },
                         plotOptions: {
-                            shadow: false
+                            shadow: false,
                         },
-                        series: [ {
-                            data: maindata,
-                            dataLabels: {
-                                formatter: function() {
-                                    return this.y/total > .05 ? this.point.name : null;
-                                },
-                                distance: 50,
-                                connectorWidth: 0
-                            },
-                            size: '60%',
-                            cursor: 'pointer',
-                            events: {
-                                click: function(event) {
-                                    $("#searchoptions #category").val(keys[event.point.x]);
-                                    $("#searchoptions #subcategory").val("");
-                                    if ($("#searchoptions #startdate").val() == "")
-                                        $("#searchoptions #startdate").val(data[keys[0]]["startdate"])
-                                    if ($("#searchoptions #enddate").val() == "")
-                                        $("#searchoptions #enddate").val(data[keys[0]]["enddate"])
-                                    loadtransactions();
-                                    $("#reports #close").click();
-                                }
-                            }
-                        }, {
-                            data: subdata,
-                            dataLabels: {
-                                enabled: false
-                            },
-                            innerSize: '60%',
-                            cursor: 'pointer',
-                            events: {
-                                click: function(event) {
-                                    $("#searchoptions #category").val("");
-                                    $("#searchoptions #subcategory").val(event.point.series.data[event.point.x]["name"]);
-                                    if ($("#searchoptions #startdate").val() == "")
-                                        $("#searchoptions #startdate").val(data[keys[0]]["startdate"])
-                                    if ($("#searchoptions #enddate").val() == "")
-                                        $("#searchoptions #enddate").val(data[keys[0]]["enddate"])
-                                    loadtransactions();
-                                    $("#reports #close").click();
-                                }
-                            }
-                        } ]
-                    });
+                        series: reportopts[curreport].getseries(data, months),
+                    }
+                    $.extend(chartsettings, reportopts[curreport].getsettings(data, months))
+                    chart = new Highcharts.Chart(chartsettings);
                 }
             },
             error: function() {
