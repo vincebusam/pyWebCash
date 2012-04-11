@@ -205,7 +205,11 @@ elif action == "summary":
                             json.loads(form.getfirst("filterout") or "{}"),
                             form.getfirst("key") or "category",
                             form.getfirst("keydef") or "Uncategorized",
+                            form.getfirst("keysort") or "amount",
+                            json.loads(form.getfirst("keysortrev") or "true"),
                             form.getfirst("subkey") or "subcategory",
-                            form.getfirst("subkeydef") or "None"))
+                            form.getfirst("subkeydef") or "None",
+                            form.getfirst("subkekysort") or "amount",
+                            json.loads(form.getfirst("subkeysortrev") or "true")))
 else:
     exit_error(404,"Method not found")
