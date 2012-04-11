@@ -981,7 +981,7 @@ $(document).ready(function () {
         } else {
             linkchildren.push(loadedtransactions[t]["id"])
         }
-        $(this).append(loadedtransactions[t]["date"] + " " + loadedtransactions[t]["amount"] + " " + loadedtransactions[t]["desc"] + "<br>");
+        $(this).append(loadedtransactions[t]["date"] + " " + (loadedtransactions[t]["amount"]<0?"-":"") + dollarstr(loadedtransactions[t]["amount"]) + " " + loadedtransactions[t]["desc"] + "<br>");
         $("#reports").css("top", $("#linktransactions").offset().top+$("#linktransactions").height()+10)
     },
     tolerance: "touch",

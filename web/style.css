@@ -41,7 +41,7 @@
 #tagslist li { margin: 3px; padding: 0.4em; font-size: 1.4em; height: 18px; }
 
 #linktransactions { position: absolute; right: 5px; top: 300px; }
-#linktransactions div { border-style: solid; border-width: 2px; width: 100%; min-height: 30px; margin-bottom: 20px;}
+#linktransactions div { border-style: solid; border-width: 2px; width: 100%; min-height: 30px; margin-bottom: 20px; overflow: hidden; white-space: nowrap}
 #linktransactions button { font-size: 62.5%; }
 
 #reports { position: absolute; z-index: 10; background: white; }
