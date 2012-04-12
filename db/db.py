@@ -338,7 +338,7 @@ class DB(object):
             trans["amount"] = parse_amount(trans["amount"])
             trans["orig_amount"] = trans["amount"]
             if trans.get("parents"):
-                p = self.search({"id": trans["parents"][0]})
+                p = self.search({"id": "$eq:"+trans["parents"][0]})
                 for t in p:
                     self.updatetransaction(trans["parents"][0], {"amount": t["amount"]-trans["amount"]}, False)
 
@@ -417,10 +417,10 @@ class DB(object):
 
     def link(self, parent, children, type, save=True):
         # Make sure we can find parent and children
-        parenttrans = (self.search({"id": parent}) or [{}])[0]
+        parenttrans = (self.search({"id": "$eq:"+parent}) or [{}])[0]
         if not parenttrans:
             return False
-        childtrans = [(self.search({"id": x}) or [{}])[0] for x in children]
+        childtrans = [(self.search({"id": "$eq:"+x}) or [{}])[0] for x in children]
         if [x for x in childtrans if not x]:
             return False
         parenttrans.setdefault("children", []).append(children)
@@ -439,7 +439,7 @@ class DB(object):
         return True
 
     def getimage(self, id):
-        trans = self.search({"id": id})
+        trans = self.search({"id": "$eq:"+id})
         if trans:
             return aespckfile.dec(open(self.getimgfn(trans[0])).read(), trans[0]["filekey"])
         return False
