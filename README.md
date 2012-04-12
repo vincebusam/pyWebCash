@@ -64,9 +64,10 @@ Edit/create the database, image, session directories specified in config.py,
 make them writable by the http user (www-data?)
 If not using SSL, edit api.py to remove the secure cookies setting.
 
-Create a cron file to clean dead session files:
+Create a cron file to clean dead session files and reminde you to re-scrape:
 
-`*/5 * * * * root find /my/installdir/session/ -type f -mmin +20 -exec rm \{} \;`
+`*/5 * * * * root find /my/installdir/session/ -type f -mmin +20 -exec rm \{} \;
+0 6 * * * * www-data /my/srcdir/db/emailreminder.py`
 
 ### Scraper (client)
 

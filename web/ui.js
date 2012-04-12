@@ -370,6 +370,8 @@ function loadaccounts() {
     url: apiurl,
     data: { "action": "accounts" },
     success: function(data) {
+      var olddate = new Date();
+      olddate.setDate(olddate.getDate()-7);
       accountsearches = accountsearches.slice(0,1);
       $("#accounts > #bankaccounts").html("");
       for (i in data) {
@@ -383,6 +385,10 @@ function loadaccounts() {
           newaccount += "<div class='accountupdate'>"+data[i]["subaccounts"][j]["date"]+"</div>";
           newaccount += "</div>";
           $("#accounts > #bankaccounts").append(newaccount);
+          var date = data[i]["subaccounts"][j]["date"];
+          var acctdate = new Date(parseInt(date.substr(0,4), 10), parseInt(date.substr(5,2), 10), parseInt(date.substr(8,2), 10))
+          if (acctdate < olddate)
+            $("#accounts account"+accountsearches.length).addClass("ui-state-error");
           accountsearches.push({"account":data[i]["name"], "subaccount": data[i]["subaccounts"][j]["name"]});
         }
       }
