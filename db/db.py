@@ -541,7 +541,7 @@ if __name__ == "__main__":
             newtrans.pop("parents", None)
             newtrans["amount"] = int(arg.split()[1])
             newtrans["parents"] = [ results[0]["id"] ]
-            results[0].setdefault("parents", []).append(results[0]["id"])
+            results[0].setdefault("children", []).append(newtrans["id"])
             db.newtransactions({"transactions": [newtrans]}, autoprocess=False)
         elif arg.startswith("{"):
             print "Query for %s" % (arg)
