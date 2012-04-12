@@ -338,9 +338,9 @@ class DB(object):
             trans["amount"] = parse_amount(trans["amount"])
             trans["orig_amount"] = trans["amount"]
             if trans.get("parents"):
-                p = self.search({"id": trans["parent"]})
+                p = self.search({"id": trans["parents"][0]})
                 for t in p:
-                    self.updatetransaction(trans["parent"], {"amount": t["amount"]-trans["amount"]}, False)
+                    self.updatetransaction(trans["parents"][0], {"amount": t["amount"]-trans["amount"]}, False)
 
             # Auto re-name, categorize, then match up transfers
             if autoprocess:
