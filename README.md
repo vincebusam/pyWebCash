@@ -75,6 +75,11 @@ This has been tested on a Mac, but should also work on Linux.  By default it
 uses Chrome, which requires the chrome webdriver binary in the path.  It
 can be easily edited to use other browsers.
 
+I couldn't find a better way to re-enable SSL certificate warnings in Chrome
+beyond binary patching chromedriver:
+
+`sed -i -e 's/ignore-certificate-errors/nogood-certificate-errors/' /usr/local/bin/chromedriver`
+
  ---
 
 ## Usage
