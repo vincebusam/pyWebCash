@@ -64,71 +64,23 @@ var reportopts = {
         "title": "Spending Trend",
         "type": "column",
         getseries: function (data, months) { return []; },
-        getsettings: function(data, months) {
-            var monthnames = [];
-            var series = [];
-            for (i in data) {
-                for (j in data[i]["subs"])
-                    if (monthnames.indexOf(data[i]["subs"][j]["name"]) == -1)
-                        monthnames.push(data[i]["subs"][j]["name"]);
-            }
-            monthnames.sort();
-            for (i in data) {
-                data[i].data = [];
-                for (j in monthnames)
-                    data[i].data.push(0);
-                for (j in data[i]["subs"])
-                    data[i].data[monthnames.indexOf(data[i]["subs"][j]["name"])] = data[i]["subs"][j]["amount"];
-            }
-            return {
-                series: data,
-                plotOptions: {
-                    column: {
-                        stacking: 'normal',
-                        events: {
-                            click: function(event) {
-                                $("#searchoptions #category").val(this.name);
-                                $("#searchoptions #subcategory").val("");
-                                $("#searchoptions #startdate").val(event.point.series.data[event.point.x].category + "-01")
-                                $("#searchoptions #enddate").val(event.point.series.data[event.point.x].category + "-31")
-                                loadtransactions();
-                                $("#reports #close").click();
-                            }
-                        }
-                    },
-                },
-                xAxis: {
-                    categories: monthnames
-                },
-                yAxis: {
-                    stackLabels: {
-                        enabled: true,
-                        style: {
-                            fontWeight: 'bold'
-                        },
-                        formatter: function() {
-                            return dollarstr(this.total);
-                        }
-                    },
-                    title: {
-                        text: null
-                    },
-                    labels: {
-                        formatter: function() {
-                            return dollarstr(this.value);
-                        }
-                    }
-                },
-                tooltip: {
-                    formatter: function() {
-                        return this.series.name +': '+ dollarstr(this.y);
-                    }
-                },
-                legend: {
-                    enabled: false
-                }
-            };
-        },
+        getsettings: gettrendsettings,
+    },
+    "incometrend": {
+        "filter": {"amount": "$gt:0"},
+        "filterout": {},
+        "key": "category",
+        "keydef": "Uncategorized",
+        "keysort": "amount",
+        "keysortrev": "false",
+        "subkey": "month",
+        "subkeydef": "",
+        "subkeysort": "name",
+        "subkeysortrev": false,
+        "title": "Income Trend",
+        "type": "column",
+        getseries: function (data, months) { return []; },
+        getsettings: gettrendsettings,
     }
 }
 
@@ -704,6 +656,72 @@ function getpiedata(data, months) {
             }
         }
     } ]
+}
+
+function gettrendsettings(data, months) {
+    var monthnames = [];
+    var series = [];
+    for (i in data) {
+        for (j in data[i]["subs"])
+            if (monthnames.indexOf(data[i]["subs"][j]["name"]) == -1)
+                monthnames.push(data[i]["subs"][j]["name"]);
+    }
+    monthnames.sort();
+    for (i in data) {
+        data[i].data = [];
+        for (j in monthnames)
+            data[i].data.push(0);
+        for (j in data[i]["subs"])
+            data[i].data[monthnames.indexOf(data[i]["subs"][j]["name"])] = data[i]["subs"][j]["amount"];
+    }
+    return {
+        series: data,
+        plotOptions: {
+            column: {
+                stacking: 'normal',
+                events: {
+                    click: function(event) {
+                        $("#searchoptions #category").val(this.name);
+                        $("#searchoptions #subcategory").val("");
+                        $("#searchoptions #startdate").val(event.point.series.data[event.point.x].category + "-01")
+                        $("#searchoptions #enddate").val(event.point.series.data[event.point.x].category + "-31")
+                        loadtransactions();
+                        $("#reports #close").click();
+                    }
+                }
+            },
+        },
+        xAxis: {
+            categories: monthnames
+        },
+        yAxis: {
+            stackLabels: {
+                enabled: true,
+                style: {
+                    fontWeight: 'bold'
+                },
+                formatter: function() {
+                    return dollarstr(this.total);
+                }
+            },
+            title: {
+                text: null
+            },
+            labels: {
+                formatter: function() {
+                    return dollarstr(this.value);
+                }
+            }
+        },
+        tooltip: {
+            formatter: function() {
+                return this.series.name +': '+ dollarstr(this.y);
+            }
+        },
+        legend: {
+            enabled: false
+        }
+    };
 }
 
 $(document).ready(function () {
