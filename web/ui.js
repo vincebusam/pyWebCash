@@ -337,8 +337,7 @@ function loadaccounts() {
           newaccount += "<div class='accountupdate'>"+data[i]["subaccounts"][j]["date"]+"</div>";
           newaccount += "</div>";
           $("#accounts > #bankaccounts").append(newaccount);
-          var date = data[i]["subaccounts"][j]["date"];
-          var acctdate = new Date(parseInt(date.substr(0,4), 10), parseInt(date.substr(5,2), 10), parseInt(date.substr(8,2), 10))
+          var acctdate = new Date(data[i]["subaccounts"][j]["date"]);
           if (acctdate < olddate)
             $("#accounts account"+accountsearches.length).addClass("ui-state-error");
           accountsearches.push({"account":data[i]["name"], "subaccount": data[i]["subaccounts"][j]["name"]});
