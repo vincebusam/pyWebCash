@@ -19,6 +19,8 @@ var curreport = -1;
 
 var reportopts = {
     "spendcategory": {
+        "defstart": (new Date((new Date()).getFullYear(),(new Date()).getMonth()-1,1)).toISOString().substr(0,10),
+        "defend": (new Date((new Date()).getFullYear(),(new Date()).getMonth(),0)).toISOString().substr(0,10),
         "filter": {"amount": "$lt:0"},
         "filterout": {},
         "key": "category",
@@ -35,6 +37,8 @@ var reportopts = {
         getsettings: function(data, months) { return {}; },
     },
     "incomecategory": {
+        "defstart": (new Date((new Date()).getFullYear(),(new Date()).getMonth()-1,1)).toISOString().substr(0,10),
+        "defend": (new Date((new Date()).getFullYear(),(new Date()).getMonth(),0)).toISOString().substr(0,10),
         "filter": {"amount": "$gt:0"},
         "filterout": {},
         "key": "category",
@@ -51,6 +55,8 @@ var reportopts = {
         getsettings: function(data, months) { return {}; },
     },
     "spendingtrend": {
+        "defstart": (new Date((new Date()).getFullYear(),0,1)).toISOString().substr(0,10),
+        "defend": (new Date((new Date()).getFullYear(),(new Date()).getMonth(),0)).toISOString().substr(0,10),
         "filter": {"amount": "$lt:0"},
         "filterout": {},
         "key": "category",
@@ -67,6 +73,8 @@ var reportopts = {
         getsettings: gettrendsettings,
     },
     "incometrend": {
+        "defstart": (new Date((new Date()).getFullYear(),0,1)).toISOString().substr(0,10),
+        "defend": (new Date((new Date()).getFullYear(),(new Date()).getMonth(),0)).toISOString().substr(0,10),
         "filter": {"amount": "$gt:0"},
         "filterout": {},
         "key": "category",
@@ -1068,8 +1076,8 @@ $(document).ready(function () {
             type: "POST",
             url: apiurl,
             data: {"action": "summary",
-                   "startdate": $("#searchoptions #startdate").val(),
-                   "enddate": $("#searchoptions #enddate").val(),
+                   "startdate": $("#searchoptions #startdate").val() || reportopts[curreport]["defstart"],
+                   "enddate": $("#searchoptions #enddate").val() || reportopts[curreport]["defend"],
                    "filter": JSON.stringify(filteropts),
                    "filterout": JSON.stringify(reportopts[curreport]["filterout"]),
                    "key": reportopts[curreport]["key"],
