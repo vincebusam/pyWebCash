@@ -18,6 +18,8 @@ pyWebCash is a web-based personal finance management program.
  * Scraping can be run automatically or interactively based on willingness to
    store password in the database.
 
+### [Screenshots](http://sixpak.org/pywebcash/screenshots.html)
+
  ---
 
 ## Architecture
