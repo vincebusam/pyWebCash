@@ -528,6 +528,21 @@ if __name__ == "__main__":
             for t in results:
                 db.updatetransaction(t["id"], update, save=False)
             db.save()
+        elif arg.startswith("split"):
+            if len(results) != 1:
+                print "Narrow search to 1 result"
+                continue
+            newtrans = copy.deepcopy(results[0])
+            for newid in range(10):
+                if "%s-%s" % (newtrans["id"],newid) not in results[0].get("children",[]):
+                    newtrans["id"] += "-%s" % (newid)
+                    break
+            newtrans.pop("children", None)
+            newtrans.pop("parents", None)
+            newtrans["amount"] = int(arg.split()[1])
+            newtrans["parents"] = [ results[0]["id"] ]
+            results[0].setdefault("parents", []).append(results[0]["id"])
+            db.newtransactions({"transactions": [newtrans]}, autoprocess=False)
         elif arg.startswith("{"):
             print "Query for %s" % (arg)
             try:
