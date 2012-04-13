@@ -600,9 +600,9 @@ function loadtransactions() {
                 $("#transtablebody > #trans"+t+" .dollar").text(data[t]["amount"]);
                 $("#transtablebody > #trans"+t+" .centertd").text(data[t]["center"]);
                 $("#transtablebody > #trans"+t+" .category").text("");
-                if (data[t]["subcategory"] != undefined)
+                if (data[t]["subcategory"])
                     $("#transtablebody > #trans"+t+" .category").text(data[t]["subcategory"]);
-                else if (data[t]["category"] != undefined)
+                else if (data[t]["category"])
                     $("#transtablebody > #trans"+t+" .category").text(data[t]["category"]);
                 if (data[t]["state"] != "closed")
                     $("#trans"+t+" .close").button("enable");
