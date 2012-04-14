@@ -637,6 +637,7 @@ function loadtransactions() {
             });
             $("#transactions").show();
             $("#transtable").width($("#searchoptions").offset().left-$("#transtable").offset().left-5);
+            $("html, body").animate({ scrollTop: 0 }, 0);
         },
         error: function() {
             showerror("Transaction loading error");
