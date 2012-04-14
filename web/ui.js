@@ -560,6 +560,8 @@ function loadtransactions() {
         success: function(data) {
             total = 0;
             loadedtransactions = data;
+            $("#showlimit").text(skip);
+            $("#showmax").text(skip+data.length);
             for (t=0; t<data.length; t++) {
                 if ($("#transtablebody > #trans"+t).length == 0) {
                     $("#transtablebody").append("<tr class='transaction' id='trans"+t+"'>"+
