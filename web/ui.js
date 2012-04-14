@@ -559,6 +559,7 @@ function loadtransactions() {
         data: postdata,
         success: function(data) {
             total = 0;
+            orig_total = 0;
             loadedtransactions = data;
             $("#showlimit").text(skip);
             $("#showmax").text(skip+data.length);
@@ -612,10 +613,12 @@ function loadtransactions() {
                     $("#trans"+t+" .close").button("disable");
                 $("#transtablebody > #trans"+t).show();
                 total += data[t]["amount"];
+                orig_total += data[t]["orig_amount"];
             }
             for (t=data.length; $("#transtablebody > #trans"+t).length > 0; t++)
                 $("#transtablebody > #trans"+t).remove();
             $("#transactionsum").text(total);
+            $("#transactionorig").text(orig_total);
             $(".dollar").each(decoratedollar);
             $("#transtablebody td").addClass("ui-widget-content");
             $("#transtablebody td").removeClass("ui-state-hover");
