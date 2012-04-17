@@ -799,7 +799,7 @@ function gettrendsettings(data, months) {
                     fontWeight: 'bold'
                 },
                 formatter: function() {
-                    return dollarstr(this.total);
+                    return (this.total<0?"-":"") + dollarstr(this.total);
                 }
             },
             title: {
@@ -807,13 +807,13 @@ function gettrendsettings(data, months) {
             },
             labels: {
                 formatter: function() {
-                    return dollarstr(this.value);
+                    return (this.total<0?"-":"") + dollarstr(this.value);
                 }
             }
         },
         tooltip: {
             formatter: function() {
-                return this.series.name +': '+ dollarstr(this.y);
+                return this.series.name +': '+ (this.y<0?"-":"") + dollarstr(this.y);
             }
         },
         legend: {
