@@ -131,6 +131,49 @@ var reportopts = {
             return [];
         },
         getsettings: gettrendsettings,
+    },
+    "squashcenter": {
+        "defstart": (new Date((new Date()).getFullYear(),0,1)).toISOString().substr(0,10),
+        "defend": (new Date((new Date()).getFullYear(),(new Date()).getMonth(),0)).toISOString().substr(0,10),
+        "filter": {"amount": "$ne:0"},
+        "filterout": {},
+        "key": "category",
+        "keydef": "Uncategorized",
+        "keysort": "amount",
+        "keysortrev": "false",
+        "subkey": "month",
+        "subkeydef": "",
+        "subkeysort": "name",
+        "subkeysortrev": false,
+        "modify": "center",
+        "title": "Net Income Trend",
+        "type": "column",
+        getseries: function (data, months) {
+            var monthnames = [];
+            var monthtotals = [];
+            var series = [];
+            for (i in data) {
+                for (j in data[i]["subs"])
+                    if (monthnames.indexOf(data[i]["subs"][j]["name"]) == -1) {
+                        monthnames.push(data[i]["subs"][j]["name"]);
+                    }
+            }
+            monthnames.sort();
+            for (i in monthnames)
+                monthtotals.push({"name": monthnames[i], "amount": 0})
+            for (i in data) {
+                data[i].data = [];
+                for (j in monthnames)
+                    data[i].data.push(0);
+                for (j in data[i]["subs"]) {
+                    data[i].data[monthnames.indexOf(data[i]["subs"][j]["name"])] = data[i]["subs"][j]["amount"];
+                    monthtotals[monthnames.indexOf(data[i]["subs"][j]["name"])]["amount"] += data[i]["subs"][j]["amount"];
+                }
+            }
+            data.push({type: 'spline', name: 'Total', subs: monthtotals});
+            return [];
+        },
+        getsettings: gettrendsettings,
     }
 }
 
@@ -1136,6 +1179,7 @@ $(document).ready(function () {
                     "subkeydef": reportopts[curreport]["subkeydef"],
                     "subkeysort": reportopts[curreport]["subkeysort"],
                     "subkeysortrev": reportopts[curreport]["subkeysortrev"],
+                    "modify": reportopts[curreport]["modify"] || "",
                 },
                 success: function(data) {
                     if (data.length == 0)

@@ -238,6 +238,10 @@ class DB(object):
         "month": lambda x: x["date"][:7],
         "year": lambda x: x["date"][:4]
     }
+    
+    modifyfunc = {
+        "center": lambda trans, filter: trans.update({"center": filter.get("center"), "category": trans["center"]}) if trans["center"] != filter.get("center") else None
+    }
 
     def summary(self, startdate=str((datetime.date.today().replace(day=1)-datetime.timedelta(days=1)).replace(day=1)),
                       enddate=str(datetime.date.today().replace(day=1)-datetime.timedelta(days=1)),
@@ -250,7 +254,8 @@ class DB(object):
                       subkey="subcategory",
                       subkeydef="",
                       subkeysort="amount",
-                      subkeysortrev=True):
+                      subkeysortrev=True,
+                      modify=None):
         """Summarize transactions for a report (& chart)
            params:
              startdate, enddate - date range
@@ -262,6 +267,9 @@ class DB(object):
         suminfo = {"startdate": startdate, "enddate": enddate, "filter": filter, "filterout": filterout, "key": [key, subkey]}
         count = 0
         for trans in self.db["transactions"]:
+            trans = copy.deepcopy(trans)
+            if modify:
+                self.modifyfunc[modify](trans, filter)
             if trans["date"] > enddate:
                 continue
             if trans["date"] < startdate:
