@@ -13,6 +13,7 @@
   [ {"desc": "^Vonage"}, {"category": "Bills & Utilities", "subcategory": "Home Phone" } ],
   [ {"desc": "^Interest Paid"}, {"category": "Income", "subcategory": "Interest Income" }],
   [ {"attr_Merchant Category": "GROCERY STORE,SUPERMARKET"}, {"category": "Food & Dining", "subcategory": "Groceries"} ],
+  [ {"attr_Merchant Category": "BAKERIES"}, {"category": "Food & Dining", "subcategory": "Groceries"} ],
   [ {"attr_Merchant Category": "FAST FOOD RESTAURANTS"}, {"category": "Food & Dining", "subcategory": "Fast Food"} ],
   [ {"attr_Merchant Category": "EATING PLACE,RESTAURANT"}, {"category": "Food & Dining", "subcategory": "Restaurants"} ],
   [ {"attr_Merchant Category": "SHOE STORE"}, {"category": "Shopping", "subcategory": "Clothing"} ],
