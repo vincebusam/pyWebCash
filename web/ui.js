@@ -516,7 +516,10 @@ function showtransaction(t) {
     }
     editedfields = [];
     $("#transactiondetail #save").button("disable");
-    $("#transactiondetail #saveclose").button("enable");
+    if (showtrans["state"] == "open")
+        $("#transactiondetail #saveclose").button("enable");
+    else
+        $("#transactiondetail #saveclose").button("disable");
     $("#transactiondetail > #file").hide();
     $("#transactiondetail .transdata").each(function () {
         name = $(this).attr("id");
