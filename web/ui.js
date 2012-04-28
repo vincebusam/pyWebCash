@@ -1137,6 +1137,22 @@ $(document).ready(function () {
         });
     });
 
+    $(".download").click(function (e) {
+        e.preventDefault();
+        transquery = JSON.parse(JSON.stringify(query))
+        for (i=0; i<$("#searchoptions .queryoption").length; i++) {
+            if ($("#searchoptions .queryoption").eq(i).val())
+                transquery[$("#searchoptions .queryoption").eq(i).attr("id")] = $("#searchoptions .queryoption").eq(i).val()
+        }
+        postdata = { "action": "search", "limit": limit, "skip": skip, "query": JSON.stringify(transquery) }
+        for (i=0; i<$("#searchoptions .searchoption").length; i++) {
+            if ($("#searchoptions .searchoption").eq(i).val() != "")
+                postdata[$("#searchoptions .searchoption").eq(i).attr("id")] = $("#searchoptions .searchoption").eq(i).val()
+        }
+        postdata["format"] = $(this).text();
+        document.location = apiurl + "?" + $.param(postdata);
+    });
+
     $(".doreport").click(function (e) {
         e.preventDefault();
         if ($(this).attr("id") != "reopen") {
