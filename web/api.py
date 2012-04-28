@@ -7,6 +7,7 @@ import json
 import random
 import string
 import Cookie
+import locale
 import urlparse
 import datetime
 
@@ -156,11 +157,26 @@ elif action == "accounts":
     json_print(mydb.accounts())
 elif action == "search":
     try:
-        json_print(mydb.search(json.loads(form.getfirst("query") or "{}"),
+        results = mydb.search(json.loads(form.getfirst("query") or "{}"),
                                form.getfirst("startdate") or "0",
                                form.getfirst("enddate") or "9",
                                int(form.getfirst("limit") or 100),
-                               int(form.getfirst("skip") or 0)))
+                               int(form.getfirst("skip") or 0))
+        if (form.getfirst("format")):
+            locale.setlocale(locale.LC_ALL, 'en_US.UTF8')
+            if form.getfirst("format") == "text":
+                print "Content-type: text/plain"
+                print
+                for res in results:
+                    print "{0} {1:20} {2:40} {3:>12}".format(res["date"], (res.get("subcategory") or res.get("category",""))[:20], res["desc"][:40].encode("ascii","ignore"), locale.currency(float(res["amount"])/100, grouping=True))
+                print "%s Transactions, Total %s" % (len(results), locale.currency(float(sum([x["amount"] for x in results]))/100, grouping=True))
+            elif form.getfirst("format") == "csv":
+                print "Content-type: text/csv"
+                print
+                for res in results:
+                    print "{0},{1},{2},{3}".format(res["date"], (res.get("subcategory") or res.get("category","")), res["desc"].encode("ascii","ignore"), locale.currency(float(res["amount"])/100, grouping=True))
+        else:
+            json_print(results)
     except Exception, e:
         exit_error(400, "Bad search: %s" % (e))
 elif action == "updatetransaction":
