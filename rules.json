@@ -43,5 +43,6 @@
   [ {"attr_Merchant Category": "TRAVEL AGENCY AND TOUR OPERATORS"}, {"category": "Travel"} ],
   [ {"attr_Merchant Category": "MISC FOOD STORE,SPECIALTY,CONVENIENCE"}, {"category": "Food & Dining"} ],
   [ {"attr_Merchant Category": "HOBBY,TOY / GAME SHOPS"}, {"category": "Kids", "subcategory": "Toys"} ],
-  [ {"attr_Merchant Category": "Gasoline"}, {"category": "Auto & Transport", "subcategory": "Gas & Fuel"} ]
+  [ {"attr_Merchant Category": "Gasoline"}, {"category": "Auto & Transport", "subcategory": "Gas & Fuel"} ],
+  [ {"attr_Merchant Category": "DRY CLEANERS"}, {"category": "Personal Care", "subcategory": "Laundry"} ]
 ]
