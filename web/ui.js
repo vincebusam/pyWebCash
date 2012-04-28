@@ -860,7 +860,7 @@ $(document).ready(function () {
     $("#transactiondetail > #date").click(function() {
         $("#transactiondetail > #dateselect").datepicker("show");
     });
-    $("#transactiondetail select").change(function () {
+    $("#transactiondetail select,input").change(function () {
         if (editedfields.indexOf($(this).attr("id")) == -1) {
             editedfields.push($(this).attr("id"));
             $("#transactiondetail .savebutton").button("enable");
