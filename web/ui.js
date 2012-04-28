@@ -1150,7 +1150,7 @@ $(document).ready(function () {
                 postdata[$("#searchoptions .searchoption").eq(i).attr("id")] = $("#searchoptions .searchoption").eq(i).val()
         }
         postdata["format"] = $(this).text();
-        document.location = apiurl + "?" + $.param(postdata);
+        window.open(apiurl + "?" + $.param(postdata), "_newtab");
     });
 
     $(".doreport").click(function (e) {
