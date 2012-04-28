@@ -445,6 +445,7 @@ function loadaccounts() {
                 loadtransactions();
             });
             $("#accounts").show();
+            $("#accounts").height($(window).height()-20);
             $("#account0").addClass("ui-state-active");
             query = accountsearches[0];
             loadtransactions();
@@ -683,7 +684,8 @@ function loadtransactions() {
             });
             $("#transactions").show();
             $("#transtable").width($("#searchoptions").offset().left-$("#transtable").offset().left-5);
-            $("html, body").animate({ scrollTop: 0 }, 0);
+            $("#transactions").animate({ scrollTop: 0 }, 0);
+            $("#transactions").height($(window).height()-20);
         },
         error: function() {
             showerror("Transaction loading error");
