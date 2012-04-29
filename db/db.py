@@ -464,6 +464,17 @@ class DB(object):
     def gettags(self):
         return self.db["tags"]
 
+    def balancehistory(self):
+        ret = []
+        for acct in self.db["balances"]:
+            for subacct in self.db["balances"][acct]:
+                data = [(int(time.mktime(parsedate(b["lastdate"]).timetuple()))*1000, b["amount"]) for b in self.db["balances"][acct][subacct]]
+                data.append(((int(time.mktime(parsedate(self.db["balances"][acct][subacct][-1]["firstdate"]).timetuple())))*1000, self.db["balances"][acct][subacct][-1]["amount"]))
+                data.reverse()
+                ret.append({"name": "%s/%s" % (acct, subacct),
+                            "data": data})
+        return ret
+
 if __name__ == "__main__":
     import readline, fcntl, termios, struct
     try:
