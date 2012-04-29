@@ -532,6 +532,8 @@ if __name__ == "__main__":
                     print "    %s %s" % (sub["name"], locale.currency(float(sub["amount"])/100, grouping=True))
         elif arg == "summary":
             print json.dumps(db.summary(), indent=2)
+        elif arg == "balancehistory":
+            print json.dumps(db.balancehistory(), indent=2)
         elif arg.isdigit():
             if len(results) >= int(arg):
                 res = results[int(arg)-1]
