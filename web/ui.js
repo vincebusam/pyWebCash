@@ -738,6 +738,7 @@ function getpiedata(data, months) {
         data: data,
         dataLabels: {
             formatter: function() {
+                var total = sumarray($.map(this.series.data, function(val, i) { return val.y; }));
                 return this.y/total > .05 ? this.point.name : null;
             },
             distance: 50,
