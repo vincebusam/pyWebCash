@@ -602,6 +602,13 @@ function getsearchdata() {
     return postdata;
 }
 
+function sumarray(arr) {
+    var total = 0;
+    for (i in arr)
+        total += arr[i];
+    return total;
+}
+
 // Search, load transactions to main table
 function loadtransactions() {
     $.ajax({
@@ -609,11 +616,7 @@ function loadtransactions() {
         url: apiurl,
         data: getsearchdata(),
         success: function(data) {
-            total = 0;
-            orig_total = 0;
             loadedtransactions = data;
-            $("#showlimit").text(skip);
-            $("#showmax").text(skip+data.length);
             for (t=0; t<data.length; t++) {
                 if ($("#transtablebody > #trans"+t).length == 0) {
                     $("#transtablebody").append("<tr class='transaction' id='trans"+t+"'>"+
@@ -663,14 +666,9 @@ function loadtransactions() {
                 else
                     $("#trans"+t+" .close").button("disable");
                 $("#transtablebody > #trans"+t).show();
-                total += data[t]["amount"];
-                orig_total += data[t]["orig_amount"];
             }
             for (t=data.length; $("#transtablebody > #trans"+t).length > 0; t++)
                 $("#transtablebody > #trans"+t).remove();
-            $("#transactionsum").text(total);
-            $("#transactionorig").text(orig_total);
-            $(".dollar").each(decoratedollar);
             $("#transtablebody td").addClass("ui-widget-content");
             $("#transtablebody td").removeClass("ui-state-hover");
             $("#transtablebody button").removeClass("ui-state-hover");
@@ -689,7 +687,23 @@ function loadtransactions() {
             $("#transactions").show();
             $("#transtable").width($("#searchoptions").offset().left-$("#transtable").offset().left-5);
             $("#transactions").animate({ scrollTop: 0 }, 0);
-            $("#transactions").height($(window).height()-20);
+            if (limit <= 25) {
+                $("#transactions").height("");
+                while (limit >= 0) {
+                    if ($("#transactions").height() <= ($(window).height()-20))
+                        break;
+                    $("#transtablebody > #trans"+(limit-1)).remove();
+                    limit -= 1;
+                    data.pop();
+                }
+            } else {
+                $("#transactions").height($(window).height()-20);
+            }
+            $("#transactionsum").text(sumarray($.map(loadedtransactions, function(val, i) { return val["amount"] })));
+            $("#transactionorig").text(sumarray($.map(loadedtransactions, function(val, i) { return val["orig_amount"] })));
+            $(".dollar").each(decoratedollar);
+            $("#showlimit").text(skip);
+            $("#showmax").text(skip+data.length);
         },
         error: function() {
             showerror("Transaction loading error");
