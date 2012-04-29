@@ -174,6 +174,34 @@ var reportopts = {
             return [];
         },
         getsettings: gettrendsettings,
+    },
+    "balancehistory": {
+        "filter": {},
+        "type": "spline",
+        getapiquery: function () { return { "action": "balancehistory" }; },
+        getseries: function (data, months) { return data; },
+        getsettings: function (data, months) {
+            return {
+                title: { text: "Account Balance Histories" },
+                subtitle: { text: "" },
+                tooltip: {
+                    formatter: function() {
+                        return this.series.name + " " + dollarstr(this.y);
+                    }
+                },
+                xAxis: {
+                    type: "datetime",
+                    //dateTimeLabelFormats: {
+                    //    month: '%e. %b',
+                    //    year: '%b'
+                    //}
+                },
+                yAxis: {
+                    title: { text: "Balance" },
+                    labels: { formatter: function() { return dollarstr(this.value); } }
+                }
+            }
+        }
     }
 }
 
@@ -1192,10 +1220,11 @@ $(document).ready(function () {
             $("#reports #summary").html("");
             if (chart != null)
                 chart.destroy();
-            $.ajax({
-                type: "POST",
-                url: apiurl,
-                data: {"action": "summary",
+            var querydata = {};
+            if (reportopts[curreport].getapiquery != undefined)
+                querydata = reportopts[curreport].getapiquery();
+            else
+                querydata = {"action": "summary",
                     "startdate": $("#searchoptions #startdate").val() || reportopts[curreport]["defstart"],
                     "enddate": $("#searchoptions #enddate").val() || reportopts[curreport]["defend"],
                     "filter": JSON.stringify(filteropts),
@@ -1209,31 +1238,37 @@ $(document).ready(function () {
                     "subkeysort": reportopts[curreport]["subkeysort"],
                     "subkeysortrev": reportopts[curreport]["subkeysortrev"],
                     "modify": reportopts[curreport]["modify"] || "",
-                },
+                }
+            $.ajax({
+                type: "POST",
+                url: apiurl,
+                data: querydata,
                 success: function(data) {
                     if (data.length == 0)
                         return;
-                    var months = parseInt(data[0]["enddate"].substr(6,2)) - parseInt(data[0]["startdate"].substr(6,2)) + 1;
-                    var total = 0;
-                    for (i in data) {
-                        keyhtml = "<div class='summaryline'>"+data[i]["name"]+" <span class='dollar'>"+(data[i]["amount"]/months)+"</span></div>";
-                        keyhtml += "<div class='detail'>"
-                        for (j in data[i]["subs"]) {
-                            keyhtml += data[i]["subs"][j]["name"] + " <span class='dollar'>" + (data[i]["subs"][j]["amount"]/months) + "</span><br>";
+                    if (reportopts[curreport].getapiquery == undefined) {
+                        var months = parseInt(data[0]["enddate"].substr(6,2)) - parseInt(data[0]["startdate"].substr(6,2)) + 1;
+                        var total = 0;
+                        for (i in data) {
+                            keyhtml = "<div class='summaryline'>"+data[i]["name"]+" <span class='dollar'>"+(data[i]["amount"]/months)+"</span></div>";
+                            keyhtml += "<div class='detail'>"
+                            for (j in data[i]["subs"]) {
+                                keyhtml += data[i]["subs"][j]["name"] + " <span class='dollar'>" + (data[i]["subs"][j]["amount"]/months) + "</span><br>";
+                            }
+                            keyhtml += "</div>"
+                            $("#reports #summary").append(keyhtml);
+                            total += data[i]["amount"];
                         }
-                        keyhtml += "</div>"
-                        $("#reports #summary").append(keyhtml);
-                        total += data[i]["amount"];
+                        $("#reports #summary").append("<b>Total: <span class='dollar'>"+(total/months)+"</span></b>");
+                        $("#reports #summary .detail").hide();
+                        $("#reports #summary .dollar").each(decoratedollar);
+                        $("#reports #summary .summaryline").click(function () {
+                            if ($(this).next().is(":hidden"))
+                                $(this).next().slideDown();
+                            else
+                                $(this).next().slideUp();
+                        });
                     }
-                    $("#reports #summary").append("<b>Total: <span class='dollar'>"+(total/months)+"</span></b>");
-                    $("#reports #summary .detail").hide();
-                    $("#reports #summary .dollar").each(decoratedollar);
-                    $("#reports #summary .summaryline").click(function () {
-                        if ($(this).next().is(":hidden"))
-                            $(this).next().slideDown();
-                        else
-                            $(this).next().slideUp();
-                    });
                     if (typeof Highcharts != "undefined") {
                         $("#reports #reportgraph").height($(window).height());
                         var subdata = [];
