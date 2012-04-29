@@ -210,6 +210,8 @@ elif action == "getcenters":
     json_print(mydb.getcenters())
 elif action == "gettags":
     json_print(mydb.gettags())
+elif action == "balancehistory":
+    json_print(mydb.balancehistory())
 elif action == "link":
     json_print(mydb.link(form.getfirst("parent") or "null",
                          json.loads(form.getfirst("children") or "[]"),
