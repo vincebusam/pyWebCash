@@ -25,8 +25,10 @@ def downloadaccount(b, params):
     b.find_element_by_id("ctl00_ctl00_cphCenter_cphContent_txtPassword").send_keys(params["password"])
     b.find_element_by_id("ctl00_ctl00_cphCenter_cphContent_btnLogin").click()
     b.find_element_by_id("ctl00_ctl00_cphCenter_cphContent_LoanServicedByPFDataGrid_ctl02_ClickButton").click()
+    while not b.find_elements_by_id("ctl00_ctl00_cphCenter_cphContent__propertyStreetAddressLabel"):
+        time.sleep(1)
     subaccount = b.find_element_by_id("ctl00_ctl00_cphCenter_cphContent__propertyStreetAddressLabel").text
-    balance = b.find_element_by_id("ctl00_ctl00_cphCenter_cphContent__currLoanBalLabel").text
+    balance = "-" + b.find_element_by_id("ctl00_ctl00_cphCenter_cphContent__currLoanBalLabel").text
     balances = [{"account": params["name"], "subaccount": subaccount, "balance": balance, "date": datetime.date.today()}]
     b.find_element_by_link_text("Logout").click()
     return {"balances": balances}
