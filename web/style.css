@@ -12,8 +12,8 @@
 .transaction { cursor: pointer; }
 
 #accounts { max-width: 220px; overflow: scroll; }
-.account { margin-bottom: 10px; cursor: pointer; position: relative; }
-.account .accountbalance { position: absolute; top: 0px; right: 0px; background: white; }
+.account { margin-bottom: 10px; cursor: pointer; position: relative; white-space: nowrap; overflow: hidden; text-overflow: ''; }
+.account .accountbalance { position: absolute; bottom: 0px; right: 0px; background: white; }
 
 #transactiondetail { position: relative; }
 #transactiondetail > #file { max-width: 560px; }
