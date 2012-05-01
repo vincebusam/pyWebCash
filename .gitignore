@@ -8,3 +8,4 @@ chromedriver.log
 *.csv
 ._*
 *.xcworkspace
+*.pem
