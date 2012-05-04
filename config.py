@@ -5,4 +5,16 @@ sessiondir = "/usr/local/finance/session"
 sessiontimeout = (60*15) # 15 minutes
 certfile = None
 
-banks = [ "bankofamerica", "citicards", "wellsfargo", "chase", "paypal", "gap", "fecu", "csvurl", "imap", "uesp", "provident" ]
+banks = [ "bankofamerica",
+          "citicards",
+          "wellsfargo",
+          "chase",
+          "paypal",
+          "gap",
+          "fecu",
+          "csvurl",
+          "imap",
+          "uesp",
+          "provident",
+          "janus"
+        ]
