@@ -16,5 +16,6 @@ banks = [ "bankofamerica",
           "imap",
           "uesp",
           "provident",
-          "janus"
+          "janus",
+          "fidelity"
         ]
