@@ -17,8 +17,12 @@ def editfile(fn, password):
     f = tempfile.NamedTemporaryFile()
     json.dump(db, f, indent=2)
     f.flush()
+    mtime = os.path.getmtime(f.name)
     while True:
         subprocess.call([os.getenv("EDITOR") or "editor", f.name])
+        if os.path.getmtime(f.name) == mtime:
+            print "Not updated"
+            break
         try:
             f.seek(0)
             db = json.load(f)
@@ -31,6 +35,7 @@ def editfile(fn, password):
             input = raw_input()
             if not input.lower().startswith("y"):
                 break
+    # Over-write our temp file
     f.seek(0,2)
     len = f.tell()
     f.seek(0)
