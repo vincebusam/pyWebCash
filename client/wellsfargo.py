@@ -36,7 +36,7 @@ def downloadaccount(b, params):
             if row.text[0].isalpha():
                 continue
             trans = { "account": params["name"], "subaccount": account}
-            trans["date"] = datetime.datetime.strptime(row.find_element_by_class_name("date").text,"%m/%d/%y").date()
+            trans["date"] = datetime.datetime.strptime(row.text.split()[0],"%m/%d/%y").date()
             trans["desc"] = row.find_element_by_class_name("text").text
             trans["amount"] = row.find_elements_by_class_name("amount")[0].text.strip()
             if not trans["amount"]:
