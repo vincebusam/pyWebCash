@@ -35,6 +35,11 @@ def downloadaccount(b, params):
         time.sleep(2)
     b.find_element_by_id("tlpvt-passcode-input").send_keys(params["password"])
     b.find_element_by_name("confirm-sitekey-submit").click()
+
+    # Wait for user to continue to main screen
+    while not b.find_elements_by_xpath("//div[contains(@class,'image-account')]/a"):
+        time.sleep(1)
+
     accounts = []
     for a in b.find_elements_by_xpath("//div[contains(@class,'image-account')]/a"):
         if a.get_attribute("id") not in accounts:
