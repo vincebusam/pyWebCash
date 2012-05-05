@@ -1,9 +1,9 @@
 dbdir = "/usr/local/finance/db"
 imgdir = "/usr/local/finance/img"
-apiurl = "https://example.com/pywebfinance/api.py"
+apiurl = "https://sixpak.org/finance/api.py"
 sessiondir = "/usr/local/finance/session"
 sessiontimeout = (60*15) # 15 minutes
-certfile = None
+certfile = "/Users/vince/src/pyfinance/sixpakcert.pem"
 
 banks = [ "bankofamerica",
           "citicards",
@@ -17,5 +17,6 @@ banks = [ "bankofamerica",
           "uesp",
           "provident",
           "janus",
-          "fidelity"
+          "fidelity",
+          "vanguard"
         ]
