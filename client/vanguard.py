@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# Scraper template
+import os
 import re
 import sys
 import time

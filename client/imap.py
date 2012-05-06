@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# Scraper template
 import re
 import api
 import sys
