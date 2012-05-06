@@ -12,6 +12,7 @@ import getpass
 import imaplib
 import StringIO
 import datetime
+import email.utils
 
 def uploaditems(parent, items, siblings):
     [x.update({"parents": [parent]}) for x in items]
@@ -58,9 +59,75 @@ def downloadaccount(b, params):
         params["lastcheck"] = common.parsedate(params["lastcheck"])
     params["lastcheck"] -= datetime.timedelta(days=4)
 
+    matchtransactions = api.callapi("search", {"query": json.dumps({"desc": "amzn.com/bill", "amount": "$lt:0"}), "startdate": str(datetime.date.today()-datetime.timedelta(days=14))})
+
+    if not matchtransactions:
+        print "No Amazon transactions open"
+        return
+
+    print "Searching for"
+    for match in matchtransactions:
+        print "%s %s" % (match["date"], match["amount"])
+
     imap = imaplib.IMAP4_SSL(params["server"])
     imap.login(params["username"],params["password"])
     imap.select(params["mailbox"])
+
+    keepsearching = True
+    for msg in sorted(map(int,imap.search(None, "FROM", "ship-confirm@amazon.com")[1][0].split()),reverse=True):
+        out = StringIO.StringIO()
+        messagetext = quopri.decode(StringIO.StringIO(imap.fetch(str(msg), "(RFC822)")[1][0][1]), out)
+        out.seek(0)
+        initems = False
+        desc = ""
+        amount = 0
+        items = []
+        for line in out.read().split("\n"):
+            line = line.rstrip()
+            if line.startswith("Date:"):
+                date = str(datetime.datetime(*email.utils.parsedate_tz(line[7:])[:6]).date())
+                if common.parsedate(date) < (common.parsedate(min([x["date"] for x in matchtransactions]))-datetime.timedelta(days=3)):
+                    keepsearching = False
+                    break
+            if "Shipment Total" in line:
+                amount = -int(line.split()[-1].replace("$","").replace(",","").replace(".",""))
+                if amount in [x["amount"] for x in matchtransactions]:
+                    print "Matched up!"
+                    if amount == sum([x["amount"] for x in items]):
+                        index = [x["amount"] for x in matchtransactions].index(amount)
+                        matched = matchtransactions.pop(index)
+                        [x.update({"parents": [matched["id"]]}) for x in items]
+                        api.callapi("newtransactions", {"data": json.dumps({"transactions": items}, default=str)})
+                        api.callapi("updatetransaction", {"id": matched["id"], "data": json.dumps({"amount":0, "children": [x["id"] for x in items]})})
+                    else:
+                        print "Items don't add up!!"
+                break
+            if line.startswith("======"):
+                initems = True
+                continue
+            if line.startswith("------"):
+                initems = False
+                continue
+            if initems and line.strip() and not line.strip().startswith(line):
+                if line.strip().startswith("$"):
+                    amount = -int(line.strip().replace("$","").replace(",","").replace(".",""))
+                    items.append({
+                                    "date": date,
+                                    "id": "%s-%s-Amazon-%s" % (date, params["name"], hashlib.sha1(desc).hexdigest()),
+                                    "amount": amount,
+                                    "desc": desc,
+                                    "account": params["name"],
+                                    "subaccount": "Amazon"
+                                })
+                    desc = ""
+                else:
+                    desc += (" " if desc else "") + line.strip()
+        if not matchtransactions:
+            print "Matched up all Amazon transactions"
+            break
+        if not keepsearching:
+            print "Gone too far back in email"
+            break
 
     amazontrans = api.callapi("search",{"query": json.dumps({"desc": "amazon", "amount": "$ne:0"})})
     msgs = sorted(map(int,imap.search(None, "FROM", "auto-confirm@amazon.com")[1][0].split()),reverse=True)
