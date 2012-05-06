@@ -24,9 +24,16 @@ def downloadaccount(b, params):
     b.get("https://personal.vanguard.com/us/home?fromPage=portal")
 
     b.find_element_by_id("USER").send_keys(params["username"] + Keys.ENTER)
-    
+
     while not b.find_elements_by_id("PASSWORD"):
-        time.sleep(1)
+        if b.find_elements_by_class_name("summaryTable"):
+            question_text = b.find_element_by_class_name("summaryTable").text.lower()
+            for question, answer in params.get("security_questions", {}).iteritems():
+                if question.lower() in question_text:
+                    b.find_element_by_name("ANSWER").send_keys(answer + Keys.ENTER)
+                    break
+        else:
+            time.sleep(1)
 
     b.find_element_by_id("PASSWORD").send_keys(params["password"] + Keys.ENTER)
     
@@ -52,6 +59,8 @@ if __name__ == "__main__":
     params["username"] = sys.argv[1]
     params["lastcheck"] = datetime.date.today()-datetime.timedelta(days=14)
     params["seenids"] = []
+    if os.path.exists("questions.json"):
+        params["security_questions"] = json.load(open("questions.json"))
     b = webdriver.Chrome()
     data = downloadaccount(b, params)
     b.quit()
