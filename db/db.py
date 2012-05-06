@@ -464,6 +464,9 @@ class DB(object):
     def gettags(self):
         return self.db["tags"]
 
+    def getquestions(self):
+        return self.db.get("questions", {})
+
     def balancehistory(self):
         ret = []
         for acct in self.db["balances"]:
