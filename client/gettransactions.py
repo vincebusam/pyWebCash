@@ -28,8 +28,10 @@ if not api.callapi("login",{"username": username, "password": password}):
     sys.exit(1)
 
 todo = api.callapi("accountstodo")
+questions = api.callapi("getquestions")
 
 for account in todo:
+    account.setdefault("security_questions", questions)
     if account.get("username") and "password" not in account:
         account["password"] = getpass.getpass("Password for %s (%s): " % (account["name"], account["username"]))
 
