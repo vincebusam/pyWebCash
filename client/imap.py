@@ -63,7 +63,7 @@ def downloadaccount(b, params):
 
     if not matchtransactions:
         print "No Amazon transactions open"
-        return
+        return {}
 
     print "Searching for"
     for match in matchtransactions:
@@ -124,7 +124,7 @@ def downloadaccount(b, params):
                     desc += (" " if desc else "") + line.strip()
         if not matchtransactions:
             print "Matched up all Amazon transactions"
-            break
+            return {}
         if not keepsearching:
             print "Gone too far back in email"
             break
