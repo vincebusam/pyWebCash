@@ -4,6 +4,7 @@ apiurl = "https://sixpak.org/finance/api.py"
 sessiondir = "/usr/local/finance/session"
 sessiontimeout = (60*15) # 15 minutes
 certfile = "/Users/vince/src/pyfinance/sixpakcert.pem"
+threads = 4
 
 banks = [ "bankofamerica",
           "citicards",

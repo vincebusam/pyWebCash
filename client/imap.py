@@ -14,6 +14,8 @@ import StringIO
 import datetime
 import email.utils
 
+apilock = None
+
 def uploaditems(parent, items, siblings):
     [x.update({"parents": [parent]}) for x in items]
     api.callapi("newtransactions", {"data": json.dumps({"transactions": items}, default=str)})
@@ -97,8 +99,12 @@ def downloadaccount(b, params):
                         index = [x["amount"] for x in matchtransactions].index(amount)
                         matched = matchtransactions.pop(index)
                         [x.update({"parents": [matched["id"]]}) for x in items]
+                        if apilock:
+                            apilock.acquire()
                         api.callapi("newtransactions", {"data": json.dumps({"transactions": items}, default=str)})
                         api.callapi("updatetransaction", {"id": matched["id"], "data": json.dumps({"amount":0, "children": [x["id"] for x in items]})})
+                        if apilock:
+                            apilock.release()
                     else:
                         print "Items don't add up!!"
                 break

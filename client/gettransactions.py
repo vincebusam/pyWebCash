@@ -6,6 +6,7 @@ import sys
 import api
 import json
 import getpass
+import threading
 import traceback
 from selenium import webdriver
 
@@ -13,11 +14,35 @@ sys.path.append((os.path.dirname(__file__) or ".") + "/../")
 
 import config
 
+class scrapethread(threading.Thread):
+
+    def __init__(self, b, account):
+        self.b = b
+        self.account = account
+        threading.Thread.__init__(self)
+
+    def run(self):
+        try:
+            data = json.dumps(banks[account["bankname"]].downloadaccount(self.b, self.account), default=str)
+        except Exception, e:
+            print e
+            traceback.print_exc()
+            return
+        if os.getenv("DATAFILE"):
+            open(self.account["bankname"]+".json","w").write(data)
+        apilock.acquire()
+        if not api.callapi("newtransactions", {"data": data}):
+            print "Error uploading transactions for %s" % (self.account["bankname"])
+        apilock.release()
+
+apilock = threading.Lock()
+
 # Banks
 banks = {}
 for bank in config.banks:
     exec "import %s" % (bank)
     banks[bank] = eval(bank)
+    banks[bank].apilock = apilock
 
 print "Login"
 username = raw_input("Username: ")
@@ -35,26 +60,36 @@ for account in todo:
     if account.get("username") and "password" not in account:
         account["password"] = getpass.getpass("Password for %s (%s): " % (account["name"], account["username"]))
 
-b = webdriver.Chrome()
+b = [webdriver.Chrome() for x in range(config.threads)]
+threads = [None for x in range(config.threads)]
 
 for account in todo:
     if account["bankname"] not in banks:
         print "No scraper for %s!" % (account["bankname"])
         continue
     print "Scraping %s..." % (account["bankname"])
-    try:
-        if os.getenv("DATAFILE") and os.path.exists(account["bankname"]+".json"):
-            data = open(account["bankname"]+".json").read()
-        else:
-            data = json.dumps(banks[account["bankname"]].downloadaccount(b, account),default=str)
-            if os.getenv("DATAFILE"):
-                open(account["bankname"]+".json","w").write(data)
+    if os.getenv("DATAFILE") and os.path.exists(account["bankname"]+".json"):
+        data = open(account["bankname"]+".json").read()
+        apilock.acquire()
         if not api.callapi("newtransactions", {"data": data}):
             print "Error uploading transactions"
-    except Exception, e:
-        print e
-        traceback.print_exc()
+        apilock.release()
+    else:
+        for t in range(config.threads):
+            if threads[t] == None:
+                threads[t] = scrapethread(b[t], account)
+                threads[t].start()
+                break
+    while len([x for x in threads if x]) == config.threads:
+        for t in range(config.threads):
+            if threads[t] and not threads[t].is_alive():
+                threads[t].join()
+                threads[t] = None
 
-b.quit()
+print "Waiting for scrapers..."
+for t in range(config.threads):
+    if threads[t]:
+        threads[t].join()
+    b[t].quit()
 
 api.callapi("logout")
