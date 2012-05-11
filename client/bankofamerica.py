@@ -115,7 +115,7 @@ def downloadaccount(b, params):
         balances.append({"account": params["name"], "subaccount": acct, "balance": balance, "date": datetime.date.today()})
         b.find_element_by_link_text("Accounts Overview").click()
     b.find_element_by_link_text("Sign Off").click()
-    time.sleep(2.5)
+    time.sleep(0.5)
     return {"transactions": newtransactions, "balances": balances, "files": files}
 
 if __name__ == "__main__":
