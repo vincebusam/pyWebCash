@@ -48,7 +48,6 @@ def downloadaccount(b, params):
     balances = []
     files = {}
     for acct in accounts:
-        print "Download transactions from %s" % (acct)
         b.find_element_by_id(acct).click()
         for loop in range(1000):
             transaction = {"account": params["name"], "subaccount": acct}
@@ -65,7 +64,6 @@ def downloadaccount(b, params):
             transaction["amount"] = b.find_element_by_xpath("//tr[@id='row%s']/td[7]" % (loop)).text
             transaction["id"] = generateid(transaction)
             if transaction["id"] in params["seenids"]:
-                print "Already have %s" % (transaction["id"])
                 continue
             if common.scrolluntilclick(b,b.find_element_by_id("rtImg%i"%(loop))):
                 for line in b.find_element_by_id("exptd%s"%(loop)).text.split("\n"):
@@ -111,7 +109,6 @@ def downloadaccount(b, params):
                     newtransactions.append(subtrans)
                     transaction.setdefault("children",[]).append(subtrans["id"])
         balance = b.find_element_by_class_name("module1bkgd13").text
-        print "Balance %s %s" % (acct, balance)
         balances.append({"account": params["name"], "subaccount": acct, "balance": balance, "date": datetime.date.today()})
         b.find_element_by_link_text("Accounts Overview").click()
     b.find_element_by_link_text("Sign Off").click()
