@@ -60,6 +60,8 @@ for account in todo:
     if account.get("username") and "password" not in account:
         account["password"] = getpass.getpass("Password for %s (%s): " % (account["name"], account["username"]))
 
+config.threads = min(config.threads, len(todo))
+
 b = [webdriver.Chrome() for x in range(config.threads)]
 threads = [None for x in range(config.threads)]
 
