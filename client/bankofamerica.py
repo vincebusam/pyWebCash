@@ -38,6 +38,8 @@ def downloadaccount(b, params):
 
     # Wait for user to continue to main screen
     while not b.find_elements_by_xpath("//div[contains(@class,'image-account')]/a"):
+        if b.find_elements_by_link_text("Continue to Online Banking"):
+            b.find_element_by_link_text("Continue to Online Banking").click()
         time.sleep(1)
 
     accounts = []
