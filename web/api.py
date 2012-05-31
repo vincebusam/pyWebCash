@@ -169,6 +169,8 @@ elif action == "search":
                 print
                 for res in results:
                     print "{0} {1:20} {2:40} {3:>12}".format(res["date"], (res.get("subcategory") or res.get("category",""))[:20], res["desc"][:40].encode("ascii","ignore"), locale.currency(float(res["amount"])/100, grouping=True))
+                    if form.getfirst("details"):
+                        print res.get("orig_desc")
                 print "%s Transactions, Total %s" % (len(results), locale.currency(float(sum([x["amount"] for x in results]))/100, grouping=True))
             elif form.getfirst("format") == "csv":
                 print "Content-type: text/csv"
