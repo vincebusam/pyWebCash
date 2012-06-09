@@ -26,6 +26,12 @@ def downloadaccount(b, params):
     b.find_element_by_name("PASSWORD").send_keys(params["password"])
     b.find_element_by_tag_name("button").click()
 
+    # Check for security questions...
+    if b.find_elements_by_id("MCWSUBMIT"):
+        b.find_element_by_id("MCWSUBMIT").click()
+        b.find_element_by_id("MCWSUBMITCANCEL").click()
+        b.find_element_by_link_text("here").click()
+
     # Get balances
     tables = ["mainShare", "mainLoan"]
     balances = []
