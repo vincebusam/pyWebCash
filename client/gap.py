@@ -23,6 +23,15 @@ def downloadaccount(b, params):
     b.get("https://www3.onlinecreditcenter6.com/consumergen2/login.do?subActionId=1000&clientId=gap&accountType=generic")
     b.find_element_by_name("userId").send_keys(params["username"])
     b.find_element_by_id("btn_login").click()
+
+    if b.find_elements_by_name("challengeAnswer1"):
+        question_text = b.find_element_by_tag_name("tbody").text
+        for question, answer in params.get("security_questions", {}).iteritems():
+            if question.lower() in question_text:
+                b.find_element_by_name("challengeAnswer1").send_keys(answer)
+                b.find_element_by_id("btn_secure_Login").click()
+                break
+
     b.find_element_by_name("password").send_keys(params["password"])
     b.find_element_by_id("btn_secure_Login").click()
 
