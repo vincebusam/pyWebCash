@@ -49,7 +49,7 @@ def downloadaccount(b, params):
         if loop:
             Select(b.find_element_by_name("billingCombo")).select_by_index(loop)
             b.find_element_by_link_text("View").click()
-            time.sleep(2)
+            time.sleep(4)
         trans = {}
         if not b.find_elements_by_id("transactionDetailsTable"):
             continue
