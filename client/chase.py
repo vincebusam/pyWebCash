@@ -33,7 +33,7 @@ def downloadaccount(b, params):
         balance = "-" + balance
     account = "Visa"
     balances = [{"account": params["name"], "subaccount": account, "balance": balance, "date": datetime.date.today()}]
-    [x.click() for x in b.find_elements_by_class_name("expander") if "closed" in x.get_attribute("class")]
+    [common.scrolluntilclick(b,x) for x in b.find_elements_by_class_name("expander") if "closed" in x.get_attribute("class")]
     alltext = b.find_element_by_id("Posted").text + "\n"
     Select(b.find_element_by_id("StatementPeriodQuick")).select_by_value("LAST_STATEMENT")
     time.sleep(2)
