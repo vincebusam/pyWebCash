@@ -20,7 +20,9 @@ def downloadaccount(b, params):
         params["lastcheck"] = common.parsedate(params["lastcheck"])
     params["lastcheck"] -= datetime.timedelta(days=4)
     subaccount = "PayPal"
-    b.get("https://www.paypal.com/")
+    b.get("https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-submit")
+    while not b.find_elements_by_id("login_email"):
+        time.sleep(1)
     b.find_element_by_id("login_email").send_keys(params["username"])
     b.find_element_by_id("login_password").send_keys(params["password"])
     b.find_element_by_class_name("primary").click()
