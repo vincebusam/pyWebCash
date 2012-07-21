@@ -13,6 +13,7 @@
   [ {"desc": "^Netflix"}, {"category": "Entertainment", "subcategory": "Movies & DVDs" } ],
   [ {"desc": "^Vonage"}, {"category": "Bills & Utilities", "subcategory": "Home Phone" } ],
   [ {"desc": "^Interest Paid"}, {"category": "Income", "subcategory": "Interest Income" }],
+  [ {"desc": "^Interest Earned"}, {"category": "Income", "subcategory": "Interest Income" }],
   [ {"attr_Merchant Category": "GROCERY STORE,SUPERMARKET"}, {"category": "Food & Dining", "subcategory": "Groceries"} ],
   [ {"attr_Merchant Category": "BAKERIES"}, {"category": "Food & Dining", "subcategory": "Groceries"} ],
   [ {"attr_Merchant Category": "FAST FOOD RESTAURANTS"}, {"category": "Food & Dining", "subcategory": "Fast Food"} ],
