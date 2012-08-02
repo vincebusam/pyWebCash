@@ -37,7 +37,7 @@ def downloadaccount(b, params):
     alltext = b.find_element_by_id("Posted").text + "\n"
     Select(b.find_element_by_id("StatementPeriodQuick")).select_by_value("LAST_STATEMENT")
     time.sleep(2)
-    [x.click() for x in b.find_elements_by_class_name("expander") if "closed" in x.get_attribute("class")]
+    [common.scrolluntilclick(b,x) for x in b.find_elements_by_class_name("expander") if "closed" in x.get_attribute("class")]
     alltext += b.find_element_by_id("Posted").text + "\n"
     b.find_element_by_partial_link_text("LOG OFF").click()
     
