@@ -9,12 +9,19 @@ import hashlib
 import getpass
 import datetime
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 
 def generateid(t):
     return "%s-%s-%s-%s" % (t["date"],t["account"],t["subaccount"],hashlib.sha1(t["desc"]).hexdigest())
 
 datematch = re.compile("(\d{2})/(\d{2})/(\d{4})")
+
+def showdetail(record, b):
+    recordsshown = len(b.find_elements_by_class_name("record-detail"))
+    if common.scrolluntilclick(b,record.find_element_by_class_name("date-action").find_element_by_tag_name("a")):
+        while len(b.find_elements_by_class_name("record-detail")) <= recordsshown:
+            time.sleep(0.1)
 
 # Params - dict of name, username, password, state, date, seenids
 def downloadaccount(b, params):
@@ -32,6 +39,13 @@ def downloadaccount(b, params):
     Select(b.find_element_by_id("stateselect")).select_by_value(params["state"])
     b.find_element_by_id("top-button").click()
     while not b.find_elements_by_id("tlpvt-passcode-input"):
+        if b.find_elements_by_id("VerifyCompForm"):
+            question_text = b.find_element_by_id("VerifyCompForm").text.lower()
+            for question, answer in params.get("security_questions", {}).iteritems():
+                if question.lower() in question_text:
+                    b.find_element_by_id("tlpvt-challenge-answer").send_keys(answer + Keys.ENTER)
+                    del params["security_questions"][question]
+                    break
         time.sleep(2)
     b.find_element_by_id("tlpvt-passcode-input").send_keys(params["password"])
     b.find_element_by_name("confirm-sitekey-submit").click()
@@ -51,66 +65,58 @@ def downloadaccount(b, params):
     files = {}
     for acct in accounts:
         b.find_element_by_id(acct).click()
-        for loop in range(1000):
+        for loop in range(len(b.find_elements_by_class_name("record"))):
+            record = b.find_elements_by_class_name("record")[loop]
             transaction = {"account": params["name"], "subaccount": acct}
-            if not b.find_elements_by_id("row%s" % (loop)):
-                break
-            date = b.find_element_by_xpath("//tr[@id='row%s']/td[3]" % (loop)).text
+            date = record.find_element_by_class_name("date-action").find_elements_by_tag_name("span")[2].text
             m = datematch.match(date)
             if not m:
                 continue
             transaction["date"] = datetime.datetime.strptime(date,"%m/%d/%Y").date()
             if transaction["date"] < params["lastcheck"]:
                 break
-            transaction["desc"] = b.find_element_by_xpath("//tr[@id='row%s']/td[4]" % (loop)).text.replace("\n","")
-            transaction["amount"] = b.find_element_by_xpath("//tr[@id='row%s']/td[7]" % (loop)).text
+            transaction["desc"] = record.find_element_by_class_name("description").find_elements_by_tag_name("span")[2].text.replace("\n","")
+            transaction["amount"] = record.find_element_by_class_name("amount").text
             transaction["id"] = generateid(transaction)
             if transaction["id"] in params["seenids"]:
                 continue
-            if common.scrolluntilclick(b,b.find_element_by_id("rtImg%i"%(loop))):
-                for line in b.find_element_by_id("exptd%s"%(loop)).text.split("\n"):
-                    if ":" in line:
-                        transaction["attr_" + line.split(":")[0].strip()] = line.split(":")[1].strip()
-            if b.find_elements_by_id("ViewImgFront"):
-                common.scrolluntilclick(b,b.find_element_by_id("ViewImgFront"))
-                image = [x for x in b.find_elements_by_xpath("//tr[@id='exp%s']//img"%(loop)) if "/cgi-bin" in x.get_attribute("src")]
+            showdetail(record, b)
+            for line in b.find_elements_by_class_name("record-detail")[-1].text.replace(":\n",": ").split("\n"):
+                if ":" in line:
+                    transaction["attr_" + line.split(":")[0].strip()] = line.split(":")[1].strip()
+            record_detail = b.find_elements_by_class_name("record-detail")[-1]
+            if record_detail.find_elements_by_tag_name("img") and "deposit slip" not in record_detail.text.lower():
+                image = record_detail.find_elements_by_tag_name("img")
                 if image:
                     b.get(image[0].get_attribute("src"))
                     checkfn = transaction["id"] + ".png"
                     files[checkfn] = b.get_screenshot_as_base64()
                     b.back()
                     transaction["file"] = checkfn
+                newtransactions.append(transaction)
+                continue
             newtransactions.append(transaction)
-            if b.find_elements_by_id("ViewImages"):
-                common.scrolluntilclick(b,b.find_element_by_id("ViewImages"))
-                for checkid in range(1,20):
-                    if not b.find_elements_by_id("icon%s"%(checkid)):
-                        continue
+            if record_detail.find_elements_by_tag_name("img") and "deposit slip" in record_detail.text.lower():
+                for checkid in range(len(record_detail.find_elements_by_name("credit_check_thumbnail"))):
                     subtrans = {"account": params["name"],
                                 "subaccount": acct,
                                 "parents": [transaction["id"]],
                                 "date": transaction["date"],
                                 "desc": "BofA Check Deposit",
                                 "id": "%s-%s" % (transaction["id"], checkid) }
-                    subtrans["amount"] = b.find_element_by_id("icon%s"%(checkid)).text
-                    if not subtrans["amount"].strip():
-                        # Something gets wonky.  In this case, let's re-load the page and continue
-                        b.find_element_by_link_text("Account Details").click()
-                        common.scrolluntilclick(b,b.find_element_by_id("rtImg%i"%(loop)))
-                        common.scrolluntilclick(b,b.find_element_by_id("ViewImages"))
-                        subtrans["amount"] = b.find_element_by_id("icon%s"%(checkid)).text
-                        if not subtrans["amount"].strip():
-                            print "Warning: Empty transaction!"
-                            subtrans["amount"] = "$0"
-                    if common.scrolluntilclick(b,b.find_element_by_xpath("//td[@id='icon%s']/a/img"%(checkid))):
-                        b.get(b.find_element_by_xpath("//td[@class='imageborder']/img").get_attribute("src"))
+                    subtrans["amount"] = record_detail.find_elements_by_name("credit_check_thumbnail")[checkid].text
+                    if common.scrolluntilclick(b,record_detail.find_elements_by_name("credit_check_thumbnail")[checkid]):
+                        b.get(record_detail.find_element_by_tag_name("img").get_attribute("src"))
                         checkfn = subtrans["id"] + ".png"
                         files[checkfn] = b.get_screenshot_as_base64()
                         b.back()
                         subtrans["file"] = checkfn
                     newtransactions.append(subtrans)
                     transaction.setdefault("children",[]).append(subtrans["id"])
-        balance = b.find_element_by_class_name("module1bkgd13").text
+                    record = b.find_elements_by_class_name("record")[loop]
+                    showdetail(record, b)
+                    record_detail = b.find_elements_by_class_name("record-detail")[-1]
+        balance = b.find_element_by_class_name("TL_NPI_Amt").text
         balances.append({"account": params["name"], "subaccount": acct, "balance": balance, "date": datetime.date.today()})
         b.find_element_by_link_text("Accounts Overview").click()
     b.find_element_by_link_text("Sign Off").click()
