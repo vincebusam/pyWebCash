@@ -68,7 +68,7 @@ def downloadaccount(b, params):
                 Select(b.find_element_by_id("date-select")).select_by_value(str(page))
                 b.find_elements_by_xpath("//table[@id='transaction-details-search']//input")[-1].click()
                 time.sleep(4)
-            activators = b.find_elements_by_class_name("activator")
+            activators = b.find_element_by_xpath("//table[@id='transaction-details-detail']").find_elements_by_class_name("activator")
             for i in range(min(2,len(activators))):
                 activators.pop(0).click()
             skipped = 0
