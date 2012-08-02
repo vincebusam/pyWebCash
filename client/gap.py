@@ -30,6 +30,7 @@ def downloadaccount(b, params):
             if question.lower() in question_text:
                 b.find_element_by_name("challengeAnswer1").send_keys(answer)
                 b.find_element_by_id("btn_secure_Login").click()
+                del params["security_questions"][question]
                 break
 
     b.find_element_by_name("password").send_keys(params["password"])

@@ -31,6 +31,7 @@ def downloadaccount(b, params):
             for question, answer in params.get("security_questions", {}).iteritems():
                 if question.lower() in question_text:
                     b.find_element_by_name("ANSWER").send_keys(answer + Keys.ENTER)
+                    del params["security_questions"][question]
                     break
         else:
             time.sleep(1)
