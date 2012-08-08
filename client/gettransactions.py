@@ -5,6 +5,7 @@ import os
 import sys
 import api
 import json
+import time
 import getpass
 import threading
 import traceback
@@ -87,6 +88,8 @@ for account in todo:
             if threads[t] and not threads[t].is_alive():
                 threads[t].join()
                 threads[t] = None
+        if len([x for x in threads if x]) == config.threads:
+            time.sleep(1)
 
 print "Waiting for scrapers..."
 for t in range(config.threads):
