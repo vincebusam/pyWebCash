@@ -57,6 +57,14 @@ def downloadaccount(b, params):
                 if common.parsedate(date) < (common.parsedate(min([x["date"] for x in matchtransactions]))-datetime.timedelta(days=3)):
                     keepsearching = False
                     break
+            if "Shipping and Handling" in line:
+                amount = -int(line.split()[-1].replace("$","").replace(",","").replace(".",""))
+                if items:
+                    items[0]["amount"] += amount
+            if "Sales Tax Collected" in line:
+                amount = -int(line.split()[-1].replace("$","").replace(",","").replace(".",""))
+                if items:
+                    items[0]["amount"] += amount
             if "Shipment Total" in line:
                 amount = -int(line.split()[-1].replace("$","").replace(",","").replace(".",""))
                 if amount in [x["amount"] for x in matchtransactions]:
