@@ -31,7 +31,10 @@ def downloadaccount(b, params):
     balance = "-" + b.find_element_by_id("ctl00_ctl00_cphCenter_cphContent__currLoanBalLabel").text
     balances = [{"account": params["name"], "subaccount": subaccount, "balance": balance, "date": datetime.date.today()}]
     if b.find_elements_by_id("ctl00_ctl00_cphCenter_cphContent_lnkSignUpLater"):
-        b.find_elements_by_id("ctl00_ctl00_cphCenter_cphContent_lnkSignUpLater").click()
+        try:
+            b.find_element_by_id("ctl00_ctl00_cphCenter_cphContent_lnkSignUpLater").click()
+        except:
+            pass
     b.find_element_by_link_text("Logout").click()
     return {"balances": balances}
 
