@@ -20,9 +20,14 @@ def downloadaccount(b, params):
         params["lastcheck"] = common.parsedate(params["lastcheck"])
     params["lastcheck"] -= datetime.timedelta(days=4)
     b.get("https://www.chase.com/")
-    b.find_element_by_id("usr_name").send_keys(params["username"])
-    b.find_element_by_id("usr_password").send_keys(params["password"])
-    b.find_element_by_xpath("//div[@class='home_logon_button']/input").click()
+
+    b.find_elements_by_id("usr_name")[-1].send_keys(params["username"])
+    b.find_elements_by_id("usr_password")[-1].send_keys(params["password"])
+    b.find_elements_by_class_name("loginBtn")[-1].click()
+
+    if b.find_elements_by_id("show_go_to_my_accounts_img"):
+        b.find_element_by_id("show_go_to_my_accounts_img").click()
+
     while not b.find_elements_by_partial_link_text("See activity"):
         time.sleep(1)
     b.find_element_by_partial_link_text("See activity").click()
