@@ -31,7 +31,7 @@ def downloadaccount(b, params):
     while not b.find_elements_by_partial_link_text("See activity"):
         time.sleep(1)
     b.find_element_by_partial_link_text("See activity").click()
-    balance = b.find_element_by_class_name("first").text.split()[-1]
+    balance = b.find_elements_by_class_name("first")[1].text.split()[-1]
     if balance.startswith("-"):
         balance = balance.lstrip("-")
     else:
