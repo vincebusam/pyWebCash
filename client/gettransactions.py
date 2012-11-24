@@ -32,8 +32,12 @@ class scrapethread(threading.Thread):
         if os.getenv("DATAFILE"):
             open(self.account["bankname"]+".json","w").write(data)
         apilock.acquire()
-        if not api.callapi("newtransactions", {"data": data}):
-            print "Error uploading transactions for %s" % (self.account["bankname"])
+        try:
+            if not api.callapi("newtransactions", {"data": data}):
+                print "Error uploading transactions for %s" % (self.account["bankname"])
+        except Exception, e:
+            print "Error uploading transacionts for %s" % (self.account["bankname"])
+            print e
         apilock.release()
 
 apilock = threading.Lock()
@@ -74,8 +78,12 @@ for account in todo:
     if os.getenv("DATAFILE") and os.path.exists(account["bankname"]+".json"):
         data = open(account["bankname"]+".json").read()
         apilock.acquire()
-        if not api.callapi("newtransactions", {"data": data}):
-            print "Error uploading transactions"
+        try:
+            if not api.callapi("newtransactions", {"data": data}):
+                print "Error uploading transactions"
+        except Exception, e:
+            print "Error uploading transactions for %s" % (account["bankname"])
+            print e
         apilock.release()
     else:
         for t in range(config.threads):
