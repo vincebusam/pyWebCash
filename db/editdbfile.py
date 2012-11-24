@@ -2,12 +2,15 @@
 # Edit an AES encrypted json/pickle file.
 import os
 import sys
-import json
 import getpass
 import tempfile
 import subprocess
 import aespckfile
 import aesjsonfile
+try:
+    import simplejson as json
+except:
+    import json
 
 def editfile(fn, password):
     filetype = aespckfile

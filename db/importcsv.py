@@ -4,10 +4,13 @@ import os
 import db
 import sys
 import csv
-import json
 import hashlib
 import getpass
 import datetime
+try:
+    import simplejson as json
+except:
+    import json
 
 def parsedate(date):
     if "/" in date:

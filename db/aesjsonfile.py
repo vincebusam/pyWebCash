@@ -2,9 +2,12 @@
 # AES encrypt/decrypt JSON files.  Base64 encode to disk.
 import os
 import sys
-import json
 import base64
 from Crypto.Cipher import AES
+try:
+    import simplejson as json
+except:
+    import json
 
 BLOCK_SIZE = 32
 PADDING = ' '

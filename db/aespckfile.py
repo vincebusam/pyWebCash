@@ -2,10 +2,13 @@
 # AES encrypt/decrypt Pickle files.  Base64 encode before writing to disk.
 import os
 import sys
-import json
 import base64
 import cPickle
 from Crypto.Cipher import AES
+try:
+    import simplejson as json
+except:
+    import json
 
 BLOCK_SIZE = 32
 PADDING = ' '

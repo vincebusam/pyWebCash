@@ -3,13 +3,16 @@ import os
 import sys
 import cgi
 import time
-import json
 import random
 import string
 import Cookie
 import locale
 import urlparse
 import datetime
+try:
+    import simplejson as json
+except:
+    import json
 
 sys.path.append((os.path.dirname(__file__) or ".") + "/../db")
 sys.path.append((os.path.dirname(__file__) or ".") + "/../")

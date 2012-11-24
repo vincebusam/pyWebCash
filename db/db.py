@@ -5,7 +5,6 @@ import re
 import sys
 import time
 import copy
-import json
 import numpy
 import shutil
 import base64
@@ -17,6 +16,10 @@ import datetime
 import StringIO
 import aespckfile
 from PIL import Image
+try:
+    import simplejson as json
+except:
+    import json
 
 sys.path.append((os.path.dirname(__file__) or ".") + "/../")
 
