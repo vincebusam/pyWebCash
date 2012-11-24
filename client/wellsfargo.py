@@ -8,7 +8,6 @@ import hashlib
 import getpass
 import datetime
 from selenium import webdriver
-from selenium.webdriver.support.ui import Select
 
 def downloadaccount(b, params):
     if "password" not in params:
