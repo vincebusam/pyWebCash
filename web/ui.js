@@ -278,6 +278,7 @@ function loginsuccess() {
                     if ((catval == "") || (categories[catval] == undefined) || (categories[catval].indexOf(ui.item.value) == -1)) {
                         if (categories[ui.item.value] != undefined) {
                             $(this).parent().children(".category").val(ui.item.value);
+                            $(this).autocomplete("option", "source", categories[ui.item.value]);
                             $(this).val("");
                             return false;
                         }
