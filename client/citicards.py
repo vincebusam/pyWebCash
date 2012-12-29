@@ -46,7 +46,7 @@ def downloadaccount(b, params):
     b.find_element_by_id("id").send_keys(params["username"])
     b.find_element_by_id("pw").send_keys(params["password"])
     b.find_element_by_class_name("login-submit").click()
-    cards = [x.text for x in b.find_elements_by_class_name("card_info")]
+    cards = [x.text for x in b.find_elements_by_class_name("cT-accountName") if x.find_elements_by_tag_name("a")]
     transactions = []
     balances = []
     for card in cards:
@@ -95,7 +95,7 @@ def downloadaccount(b, params):
                 break
         b.back()
         time.sleep(1)
-    b.find_element_by_xpath("//img[@alt='logout']").click()
+    b.find_element_by_class_name("signOffBtn").click()
     time.sleep(2)
     return {"transactions": transactions, "balances": balances}
 

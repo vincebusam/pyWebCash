@@ -25,7 +25,7 @@ def downloadaccount(b, params):
 
     b.find_element_by_id("USER").send_keys(params["username"] + Keys.ENTER)
 
-    while not b.find_elements_by_id("PASSWORD"):
+    while not b.find_elements_by_id("LoginForm:PASSWORD"):
         if b.find_elements_by_class_name("summaryTable"):
             question_text = b.find_element_by_class_name("summaryTable").text.lower()
             for question, answer in params.get("security_questions", {}).iteritems():
@@ -36,7 +36,7 @@ def downloadaccount(b, params):
         else:
             time.sleep(1)
 
-    b.find_element_by_id("PASSWORD").send_keys(params["password"] + Keys.ENTER)
+    b.find_element_by_id("LoginForm:PASSWORD").send_keys(params["password"] + Keys.ENTER)
     
     balances = []
 
