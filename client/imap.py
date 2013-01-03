@@ -50,6 +50,7 @@ def downloadaccount(b, params):
         desc = ""
         amount = 0
         items = []
+        date = None
         for line in out.read().split("\n"):
             line = line.rstrip()
             if line.startswith("Date:"):
@@ -91,6 +92,9 @@ def downloadaccount(b, params):
             if initems and line.strip() and not line.strip().startswith(line):
                 if line.strip().startswith("$"):
                     amount = -int(line.strip().replace("$","").replace(",","").replace(".",""))
+                    if not date:
+                        line = [x for x in imap.fetch(str(msg), "(RFC822)")[1][0][1].split("\n") if x.startswith("Date:")][0]
+                        date = str(datetime.datetime(*email.utils.parsedate_tz(line[7:])[:6]).date())
                     items.append({
                                     "date": date,
                                     "id": "%s-%s-Amazon-%s" % (date, params["name"], hashlib.sha1(desc).hexdigest()),
