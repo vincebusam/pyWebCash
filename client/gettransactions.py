@@ -69,6 +69,7 @@ config.threads = min(config.threads, len(todo))
 
 b = [webdriver.Chrome() for x in range(config.threads)]
 threads = [None for x in range(config.threads)]
+threadaccounts = [None for x in range(config.threads)]
 
 for account in todo:
     if account["bankname"] not in banks:
@@ -89,6 +90,7 @@ for account in todo:
         for t in range(config.threads):
             if threads[t] == None:
                 threads[t] = scrapethread(b[t], account)
+                threadaccounts[t] = account["bankname"]
                 threads[t].start()
                 break
     while len([x for x in threads if x]) == config.threads:
@@ -99,7 +101,7 @@ for account in todo:
         if len([x for x in threads if x]) == config.threads:
             time.sleep(1)
 
-print "Waiting for scrapers..."
+print "Waiting for scrapers (%s)..." % (",".join([threadaccounts[x] for x in range(config.threads) if threads[x]]))
 for t in range(config.threads):
     if threads[t]:
         threads[t].join()
