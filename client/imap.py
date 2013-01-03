@@ -27,7 +27,7 @@ def downloadaccount(b, params):
         params["lastcheck"] = common.parsedate(params["lastcheck"])
     params["lastcheck"] -= datetime.timedelta(days=4)
 
-    matchtransactions = api.callapi("search", {"query": json.dumps({"desc": "amzn.com/bill", "amount": "$lt:0"}), "startdate": str(datetime.date.today()-datetime.timedelta(days=14))})
+    matchtransactions = api.callapi("search", {"query": json.dumps({"desc": "amzn.com/bill", "amount": "$lt:0"}), "startdate": str(datetime.date.today()-datetime.timedelta(days=90))})
 
     if not matchtransactions:
         print "No Amazon transactions open"
