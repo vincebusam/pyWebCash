@@ -25,7 +25,10 @@ def downloadaccount(b, params):
     if b.find_elements_by_id("selimg4"):
         b.find_element_by_id("selimg4").click()
         b.find_element_by_link_text("Log in to My Account").click()
-    
+    if b.find_elements_by_id("top-nav-item4"):
+        b.find_element_by_id("top-nav-item4").click()
+        b.find_element_by_link_text("Log in to My Account").click()
+
     b.find_element_by_id("ssn").send_keys(params["username"] + Keys.TAB + params["password"] + Keys.ENTER)
     
     balances = []
