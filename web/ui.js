@@ -999,7 +999,7 @@ $(document).ready(function () {
     $(".limit").click(function(event) {
         event.preventDefault();
         if ($(this).text() == "all")
-            limit = Number.MAX_VALUE;
+            limit = 10000000;
         else
             limit = parseInt($(this).text());
         loadtransactions();
