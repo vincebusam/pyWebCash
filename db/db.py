@@ -434,7 +434,7 @@ class DB(object):
         childtrans = [(self.search({"id": "$eq:"+x}) or [{}])[0] for x in children]
         if [x for x in childtrans if not x]:
             return False
-        parenttrans.setdefault("children", []).append(children)
+        parenttrans.setdefault("children", []).extend(children)
         [x.setdefault("parents",[]).append(parent) for x in childtrans]
         if type == "dup":
             [x.update({"amount": 0}) for x in childtrans]
