@@ -449,6 +449,26 @@ class DB(object):
             self.save()
         return True
 
+    def unlink(self, parentid, childid, type, save=True):
+        parent = (self.search({"id": "$eq:"+parentid}) or [{}])[0]
+        if not parent or childid not in parent.get("children",[]):
+            return False
+        child = (self.search({"id": "$eq:"+childid}) or [{}])[0]
+        if not child or parentid not in child.get("parents",[]):
+            return False
+        parent["children"].remove(childid)
+        child["parents"].remove(parentid)
+        if type == "dup":
+            child["amount"] = child["orig_amount"]
+        elif type == "combine":
+            child["amount"] = child["orig_amount"]
+            parent["amount"] -= child["amount"]
+        elif type == "split":
+            parent["amount"] += child["amount"]
+        if save:
+            self.save()
+        return True
+
     def getimage(self, id):
         trans = self.search({"id": "$eq:"+id})
         if trans:
@@ -599,5 +619,17 @@ if __name__ == "__main__":
                             olddate = newdate
                     except Exception, e:
                         print e
+        elif arg.startswith("unlink"):
+            if not results or len(results[0].get("parents",[])) != 1:
+                print "Not unlinkable"
+                continue
+            type = arg[len("unlink "):]
+            if not type:
+                print "Type needed"
+                continue
+            if not db.unlink(results[0]["parents"][0],results[0]["id"],type,False):
+                print "Unlink failed"
+        elif arg.startswith("save"):
+            db.save()
         else:
             print "Unknown command %s" % (arg)
