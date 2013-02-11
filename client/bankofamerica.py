@@ -35,9 +35,16 @@ def downloadaccount(b, params):
     if not params.get("password"):
         params["password"] = getpass.getpass("BofA Password for %s: " % (params["username"]))
     b.get("https://www.bankofamerica.com/")
-    b.find_element_by_id("id").send_keys(params["username"])
-    Select(b.find_element_by_id("stateselect")).select_by_value(params["state"])
-    b.find_element_by_id("top-button").click()
+    if not b.find_elements_by_id("id"):
+        if b.find_elements_by_name("olb-sign-in"):
+            b.find_element_by_name("olb-sign-in").click()
+        if b.find_elements_by_link_text("Continue to Online Banking"):
+            b.find_element_by_link_text("Continue to Online Banking").click()
+            b.find_element_by_id("enterID-input").send_keys(params["username"] + Keys.ENTER)
+    else:
+        b.find_element_by_id("id").send_keys(params["username"])
+        Select(b.find_element_by_id("stateselect")).select_by_value(params["state"])
+        b.find_element_by_id("top-button").click()
     while not b.find_elements_by_id("tlpvt-passcode-input"):
         if b.find_elements_by_id("VerifyCompForm"):
             question_text = b.find_element_by_id("VerifyCompForm").text.lower()
