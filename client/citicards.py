@@ -69,14 +69,17 @@ def downloadaccount(b, params):
                 b.find_elements_by_xpath("//table[@id='transaction-details-search']//input")[-1].click()
                 time.sleep(4)
             activators = b.find_element_by_xpath("//table[@id='transaction-details-detail']").find_elements_by_class_name("activator")
-            for i in range(min(2,len(activators))):
-                activators.pop(0).click()
+            common.scrolluntilclick(b,b.find_element_by_id("transaction-title"))
             skipped = 0
             for entry in b.find_elements_by_xpath("//table[@id='transaction-details-detail']//tbody"):
-                if activators:
-                    activators.pop(0).click()
                 if not entry.text:
                     continue
+                if activators:
+                    b.execute_script("document.body.scrollTop=document.body.scrollTop+40;")
+                    act = activators.pop(0)
+                    while "Transaction" not in entry.text:
+                        b.execute_script("document.body.scrollTop=document.body.scrollTop+40;")
+                        act.click()
                 trans = {"account": params["name"], "subaccount": cardname(card)}
                 if not entry or not entry.text[0].isdigit():
                     continue
