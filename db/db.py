@@ -188,7 +188,7 @@ class DB(object):
                 if not [x for x in trans.values() if query[k].lower() in unicode(x).lower()]:
                     return False
                 continue
-            if k not in trans or not trans[k] and query.lower() in [ "uncategorized", "none" ]:
+            if (k not in trans or not trans[k]) and type(query) in [ str, unicode ] and query.lower() in [ "uncategorized", "none" ]:
                 return True
             if k not in trans and not query[k].startswith("$ne:"):
                 return False
