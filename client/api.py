@@ -34,6 +34,17 @@ def callapi(action, postdata={}):
     else:
         opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
     opener.addheaders = [("User-Agent", "pyWebCash Scraper")]
-    f = opener.open(config.apiurl,urllib.urlencode(postdata))
+    try:
+        f = opener.open(config.apiurl,urllib.urlencode(postdata))
+    except urllib2.HTTPError, e:
+        print e.code
+        print e.msg
+        d = e.read()
+        print d
+        try:
+            print json.loads(d)["error"]
+        except:
+            pass
+        raise
     data = f.read()
     return json.loads(data)
