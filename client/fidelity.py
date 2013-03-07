@@ -23,8 +23,8 @@ def downloadaccount(b, params):
     b.get("https://www.fidelity.com/")
 
     b.find_element_by_link_text("Log In").click()
-    b.find_element_by_id("ssnt").send_keys(params["username"])
-    b.find_element_by_id("PIN").send_keys(params["password"] + Keys.ENTER)
+    b.find_element_by_id("userId").send_keys(params["username"])
+    b.find_element_by_id("password").send_keys(params["password"] + Keys.ENTER)
 
     balances = []
 
