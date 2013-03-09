@@ -736,7 +736,7 @@ function getpiedata(data, months) {
     var subdata = [];
     var colors = Highcharts.getOptions().colors;
     for (var i in data) {
-        data[i].y = data[i].amount;
+        data[i].y = data[i].amount/months;
         data[i].color = colors[i];
         for (j in data[i]["subs"]) {
             subdata.push({
