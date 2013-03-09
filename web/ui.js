@@ -1,21 +1,7 @@
 var apiurl = "api.py";
-var loadedtransactions = [];
-var accountsearches = [ {} ];
-var showing = -1;
-var showtrans = {};
-var editedfields = []
-var limit = 25;
-var skip = 0;
-var query = accountsearches[0];
-var sessioncheckinterval = null;
-var categories = {};
-var allcategories = [];
-var centers = [];
-var tags = [];
-var linkparent = "";
-var linkchildren = [];
-var chart = null;
-var curreport = -1;
+var loadedtransactions, accountsearches, showing, showtrans, editedfields;
+var limit, skip, query, sessioncheckinterval, categories, allcategories;
+var centers, tags, linkparent, linkchildren, chart, curreport;
 
 var reportopts = {
     "spendcategory": {
@@ -369,6 +355,24 @@ function clearpage() {
         clearInterval(sessioncheckinterval);
         sessioncheckinterval = null;
     }
+
+    loadedtransactions = [];
+    accountsearches = [ {} ];
+    showing = -1;
+    showtrans = {};
+    editedfields = []
+    limit = 25;
+    skip = 0;
+    query = accountsearches[0];
+    sessioncheckinterval = null;
+    categories = {};
+    allcategories = [];
+    centers = [];
+    tags = [];
+    linkparent = "";
+    linkchildren = [];
+    chart = null;
+    curreport = -1;
 
     $.ajax({
         data: { "action": "checklogin" },
