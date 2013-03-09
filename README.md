@@ -35,6 +35,13 @@ user's password, so don't lose it!  Check images, and HTTP session files
 requires the database to be entirely re-loaded for each HTTP request, but
 I've found it easily fast enough for unloaded servers to handle.
 
+### Security
+
+ * AES encrypted data files
+ * prctl (optional) protects againts ptrace() attach
+ * All POST calls to prevent details being stored in http logs
+ * HTTPS with client certificates recommended for two-factor authentication
+
  ---
 
 ## Installation
