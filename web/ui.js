@@ -1219,7 +1219,7 @@ $(document).ready(function () {
                     if (data.length == 0)
                         return;
                     if (reportopts[curreport].getapiquery == undefined) {
-                        var months = parseInt(data[0]["enddate"].substr(6,2)) - parseInt(data[0]["startdate"].substr(6,2)) + 1;
+                        var months = (parseInt(data[0]["enddate"].substr(0,4).replace("-","")) - parseInt(data[0]["startdate"].substr(0,4).replace("-","")))*12 + (parseInt(data[0]["enddate"].substr(5,2).replace("-","")) - parseInt(data[0]["startdate"].substr(5,2).replace("-",""))) + 1;
                         var total = 0;
                         for (i in data) {
                             keyhtml = "<div class='summaryline'>"+data[i]["name"]+" <span class='dollar'>"+(data[i]["amount"]/months)+"</span></div>";
