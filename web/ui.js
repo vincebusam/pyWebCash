@@ -205,6 +205,11 @@ var reportopts = {
     }
 }
 
+$.ajaxSetup({
+    type: "POST",
+    url: apiurl
+});
+
 // "nice" jQueryUI popup message
 function showerror(err) {
     $("#errormsg").text(err);
@@ -232,8 +237,6 @@ function loginsuccess() {
     loadaccounts();
     // Get user's categories and configure everywhere
     $.ajax({
-        type: "POST",
-        url: apiurl,
         data: { "action": "getcategories" },
         success: function (data) {
             categories = data;
@@ -303,8 +306,6 @@ function loginsuccess() {
     });
     // Get user's cost centers, load up elements.
     $.ajax({
-        type: "POST",
-        url: apiurl,
         data: { "action": "getcenters" },
         success: function(data) {
             centers = data;
@@ -321,8 +322,6 @@ function loginsuccess() {
         }
     });
     $.ajax({
-        type: "POST",
-        url: apiurl,
         data: { "action": "gettags" },
         success: function(data) {
             tags = data;
@@ -372,8 +371,6 @@ function clearpage() {
     }
 
     $.ajax({
-        type: "POST",
-        url: apiurl,
         data: { "action": "checklogin" },
         success: function(data) {
             if (data) {
@@ -395,8 +392,6 @@ function clearpage() {
 // Clear page if our session is bad.
 function checksession() {
     $.ajax({
-        type: "POST",
-        url: apiurl,
         data: { "action": "checklogin" },
         success: function(data) {
             if (data) {
@@ -440,8 +435,6 @@ function decoratedollar() {
 // Get accounts and balances, load up table and search options
 function loadaccounts() {
     $.ajax({
-        type: "POST",
-        url: apiurl,
         data: { "action": "accounts" },
         success: function(data) {
             var olddate = new Date();
@@ -513,8 +506,6 @@ function savetransaction() {
             updatejson["tags"] = showtrans["tags"];
         }
         $.ajax({
-            type: "POST",
-            url: apiurl,
             data: { "action": "updatetransaction", "id": showtrans["id"], "data" : JSON.stringify(updatejson) },
             success: function(data) {
                 if (data) {
@@ -598,8 +589,6 @@ function showtransaction(t) {
     $(".translink").click(function (event) {
         event.preventDefault();
         $.ajax({
-            type: "POST",
-            url: apiurl,
             data: { "action": "search", "query": JSON.stringify({"id": "$eq:" + $(this).text()}) },
             success: function(data) {
                 if (data && data.length) {
@@ -641,8 +630,6 @@ function sumarray(arr) {
 // Search, load transactions to main table
 function loadtransactions() {
     $.ajax({
-        type: "POST",
-        url: apiurl,
         data: getsearchdata(),
         success: function(data) {
             loadedtransactions = data;
@@ -662,8 +649,6 @@ function loadtransactions() {
                     $("#trans"+t+" .close").click(function() {
                         transid = parseInt($(this).parent().parent().attr("id").substring(5));
                         $.ajax({
-                            type: "POST",
-                            url: apiurl,
                             data: { "action": "updatetransaction", "id": loadedtransactions[transid]["id"], "data" : JSON.stringify({"state": "closed"}) },
                             context: this,
                             success: function(data) {
@@ -751,7 +736,7 @@ function getpiedata(data, months) {
     var subdata = [];
     var colors = Highcharts.getOptions().colors;
     for (var i in data) {
-        data[i].y = data[i].amount;
+        data[i].y = data[i].amount/months;
         data[i].color = colors[i];
         for (j in data[i]["subs"]) {
             subdata.push({
@@ -1025,8 +1010,6 @@ $(document).ready(function () {
     $("#logout").click(function(event) {
         event.preventDefault();
         $.ajax({
-            type: "POST",
-            url: apiurl,
             data: { "action": "logout" },
             success: function() {
                 clearpage();
@@ -1052,8 +1035,6 @@ $(document).ready(function () {
 
     $("#loginform").submit(function () {
         $.ajax({
-            type: "POST",
-            url: apiurl,
             data: { "action": "login", "username": $("#username").val(), "password": $("#password").val() },
             success: function(data) {
                 if (data) {
@@ -1070,8 +1051,6 @@ $(document).ready(function () {
 
     $("#newuser").click(function () {
         $.ajax({
-            type: "POST",
-            url: apiurl,
             data: { "action": "newuser", "username": $("#username").val(), "password": $("#password").val() },
             success: function(data) {
                 if (data) {
@@ -1095,8 +1074,6 @@ $(document).ready(function () {
     $("#addaccount").click(function (event) {
         event.preventDefault();
         $.ajax({
-            type: "POST",
-            url: apiurl,
             data: { "action": "getbanks" },
             success: function(data) {
                 newhtml = "<option value=''>Select a bank</option>";
@@ -1130,8 +1107,6 @@ $(document).ready(function () {
                 account[$(this).attr("id")] = $(this).val();
         });
         $.ajax({
-            type: "POST",
-            url: apiurl,
             data: { "action": "editaccount", "account": JSON.stringify(account) },
             success: function(data) {
                 if (data) {
@@ -1166,8 +1141,6 @@ $(document).ready(function () {
     $("#linktransactions #clear").click(clearlink);
     $("#linktransactions #combine,#split,#dup").click(function () {
         $.ajax({
-            type: "POST",
-            url: apiurl,
             data: { "action": "link",
                 "parent": linkparent,
                 "children": JSON.stringify(linkchildren),
@@ -1241,14 +1214,12 @@ $(document).ready(function () {
                     "modify": reportopts[curreport]["modify"] || "",
                 }
             $.ajax({
-                type: "POST",
-                url: apiurl,
                 data: querydata,
                 success: function(data) {
                     if (data.length == 0)
                         return;
                     if (reportopts[curreport].getapiquery == undefined) {
-                        var months = parseInt(data[0]["enddate"].substr(6,2)) - parseInt(data[0]["startdate"].substr(6,2)) + 1;
+                        var months = (parseInt(data[0]["enddate"].substr(0,4).replace("-","")) - parseInt(data[0]["startdate"].substr(0,4).replace("-","")))*12 + (parseInt(data[0]["enddate"].substr(5,2).replace("-","")) - parseInt(data[0]["startdate"].substr(5,2).replace("-",""))) + 1;
                         var total = 0;
                         for (i in data) {
                             keyhtml = "<div class='summaryline'>"+data[i]["name"]+" <span class='dollar'>"+(data[i]["amount"]/months)+"</span></div>";
