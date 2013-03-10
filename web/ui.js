@@ -58,6 +58,35 @@ var reportopts = {
         getseries: function (data, months) { return []; },
         getsettings: gettrendsettings,
     },
+    "subcategorytrend": {
+        "defstart": (new Date((new Date()).getFullYear(),0,1)).toISOString().substr(0,10),
+        "defend": (new Date((new Date()).getFullYear(),(new Date()).getMonth(),0)).toISOString().substr(0,10),
+        "filter": {},
+        "filterout": {},
+        "key": "subcategory",
+        "keydef": "None",
+        "keysort": "amount",
+        "keysortrev": "false",
+        "subkey": "month",
+        "subkeydef": "",
+        "subkeysort": "name",
+        "subkeysortrev": false,
+        "title": "Subcategory Trend",
+        "type": "spline",
+        getseries: function (data, months) { return []; },
+        getsettings: function (data, months) {
+            settings = gettrendsettings(data, months);
+            delete settings.plotOptions;
+            settings.tooltip = {
+                formatter: function() {
+                    return this.series.name +': '+ this.x + ", " + (this.y<0?"-":"") + dollarstr(this.y);
+                }
+            };
+            settings.yAxis.reversed = true;
+            settings.xAxis.reversed = false;
+            return settings;
+        },
+    },
     "incometrend": {
         "defstart": (new Date((new Date()).getFullYear(),0,1)).toISOString().substr(0,10),
         "defend": (new Date((new Date()).getFullYear(),(new Date()).getMonth(),0)).toISOString().substr(0,10),
@@ -177,10 +206,6 @@ var reportopts = {
                 },
                 xAxis: {
                     type: "datetime",
-                    //dateTimeLabelFormats: {
-                    //    month: '%e. %b',
-                    //    year: '%b'
-                    //}
                 },
                 yAxis: {
                     title: { text: "Balance" },
