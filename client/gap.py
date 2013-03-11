@@ -70,8 +70,6 @@ def downloadaccount(b, params):
             if data[4] != "CR":
                 trans["amount"] = "-" + trans["amount"]
             trans["id"] = "%s-%s-%s-%s" % (trans["date"], params["name"], subaccount, hashlib.sha1(trans["desc"]).hexdigest())
-            if trans["date"] < params["lastcheck"]:
-                break
             if trans["id"] in params["seenids"]:
                 continue
             transactions.append(trans)
@@ -86,7 +84,7 @@ if __name__ == "__main__":
 
     params = {}
     params["username"] = sys.argv[1]
-    params["lastcheck"] = datetime.date.today()-datetime.timedelta(days=14)
+    params["lastcheck"] = datetime.date.today()-datetime.timedelta(days=90)
     params["seenids"] = []
     b = webdriver.Chrome()
     data = downloadaccount(b, params)
