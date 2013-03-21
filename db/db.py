@@ -192,7 +192,7 @@ class DB(object):
                 return True
             if k not in trans and not query[k].startswith("$ne:"):
                 return False
-            if not query[k].startswith("$") and query[k].lower() not in trans[k].lower():
+            if not query[k].startswith("$") and query[k].lower() not in unicode(trans[k]).lower():
                 return False
             if query[k].startswith("$eq:"):
                 if query[k].split(":")[1].lower() != unicode(trans[k]).lower():
