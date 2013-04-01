@@ -632,6 +632,15 @@ if __name__ == "__main__":
                 continue
             if not db.unlink(results[0]["parents"][0],results[0]["id"],type,False):
                 print "Unlink failed"
+        elif arg.startswith("tagyear"):
+            tags = {}
+            lastyear = arg[len("tagyear "):] or str(datetime.datetime.today().year-1)
+            for t in db.search(startdate=lastyear+"-01-01",enddate=lastyear+"-12-31",limit=sys.maxint):
+                for tag in t.get("tags",[]):
+                    tags.setdefault(tag,0)
+                    tags[tag] += t["amount"]
+            for tag in tags:
+                print "%s: %s" % (tag, prettyformat(tags[tag]))
         elif arg.startswith("save"):
             db.save()
         else:
