@@ -27,6 +27,8 @@ def downloadaccount(b, params):
     b.find_element_by_id("login_password").send_keys(params["password"])
     b.find_element_by_class_name("primary").click()
 
+    if b.find_elements_by_link_text("my account"):
+        b.find_element_by_link_text("my account").click()
     # Get balance
     while not b.find_elements_by_xpath("//span[@class='balance']"):
         time.sleep(1)
