@@ -43,8 +43,14 @@ def downloadaccount(b, params):
         params["lastcheck"] = common.parsedate(params["lastcheck"])
     params["lastcheck"] -= datetime.timedelta(days=4)
     b.get("https://creditcards.citi.com/")
-    b.find_element_by_id("id").send_keys(params["username"])
-    b.find_element_by_id("pw").send_keys(params["password"])
+    if b.find_elements_by_id("id"):
+        b.find_element_by_id("id").send_keys(params["username"])
+    elif b.find_elements_by_id("cA-cardsUseridMasked"):
+        b.find_element_by_id("cA-cardsUseridMasked").send_keys(params["username"])
+    if b.find_elements_by_id("pw"):
+        b.find_element_by_id("pw").send_keys(params["password"])
+    elif b.find_elements_by_name("PASSWORD"):
+        b.find_element_by_name("PASSWORD").send_keys(params["password"])
     b.find_element_by_class_name("login-submit").click()
     cards = [x.text for x in b.find_elements_by_class_name("cT-accountName") if x.find_elements_by_tag_name("a")]
     transactions = []
