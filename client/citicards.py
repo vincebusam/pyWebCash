@@ -94,6 +94,10 @@ def downloadaccount(b, params):
                     print "Dup Reference Number!!"
                     trans["id"] += "-" + str(abs(trans["amount"]))
                 transactions.append(trans)
+                if len(transactions) == 5:
+                    if len([x for x in transactions if "attr_Merchant Category" in x]) == 0:
+                        print "Warning, not enough Merchant Categories found!!!"
+                        raise Exception("No merchant categories found!")
             if skipped > 3:
                 break
         b.back()
