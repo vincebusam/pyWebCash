@@ -128,7 +128,10 @@ def downloadaccount(b, params):
                     record_detail = b.find_elements_by_class_name("record-detail")[-1]
         balance = b.find_element_by_class_name("TL_NPI_Amt").text
         balances.append({"account": params["name"], "subaccount": acct, "balance": balance, "date": datetime.date.today()})
-        b.find_element_by_link_text("Accounts Overview").click()
+        if b.find_elements_by_link_text("Accounts Overview"):
+            b.find_element_by_link_text("Accounts Overview").click()
+        else:
+            b.execute_script("fsdgoto('accountsoverview')")
     b.find_element_by_link_text("Sign Off").click()
     time.sleep(0.5)
     return {"transactions": newtransactions, "balances": balances, "files": files}
