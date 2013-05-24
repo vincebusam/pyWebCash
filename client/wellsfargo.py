@@ -22,6 +22,8 @@ def downloadaccount(b, params):
     b.find_element_by_id("userid").send_keys(params["username"])
     b.find_element_by_id("password").send_keys(params["password"])
     b.find_element_by_id("btnSignon").click()
+    if b.find_elements_by_name("Decline"):
+        b.find_element_by_name("Decline")
     while not b.find_elements_by_class_name("account"):
         time.sleep(1)
     transactions = []
