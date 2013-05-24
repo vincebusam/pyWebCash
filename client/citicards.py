@@ -51,7 +51,10 @@ def downloadaccount(b, params):
         b.find_element_by_id("pw").send_keys(params["password"])
     elif b.find_elements_by_name("PASSWORD"):
         b.find_element_by_name("PASSWORD").send_keys(params["password"])
-    b.find_element_by_class_name("login-submit").click()
+    if b.find_elements_by_class_name("login-submit"):
+        b.find_element_by_class_name("login-submit").click()
+    elif b.find_element_by_class_name("cA-cardsLoginSubmit"):
+        b.find_element_by_class_name("cA-cardsLoginSubmit").click()
     cards = [x.text for x in b.find_elements_by_class_name("cT-accountName") if x.find_elements_by_tag_name("a")]
     transactions = []
     balances = []
@@ -61,6 +64,9 @@ def downloadaccount(b, params):
                 break
             time.sleep(1)
         b.find_element_by_link_text(card).click()
+        while b.find_elements_by_id("cmlink_NoClosedAccountOverlay"):
+            print "citicards: Go manually say no"
+            time.sleep(1)
         if not b.find_elements_by_class_name("curr_balance"):
             b.back()
             continue
@@ -71,7 +77,10 @@ def downloadaccount(b, params):
         balances.append({"account": params["name"], "subaccount": cardname(card), "balance": -int(balance.replace("$","").replace(".","").replace(",","")), "date": datetime.date.today()})
         for page in range(3):
             if page:
-                Select(b.find_element_by_id("date-select")).select_by_value(str(page))
+                try:
+                    Select(b.find_element_by_id("date-select")).select_by_value(str(page))
+                except:
+                    break
                 b.find_elements_by_xpath("//table[@id='transaction-details-search']//input")[-1].click()
                 time.sleep(4)
             activators = b.find_element_by_xpath("//table[@id='transaction-details-detail']").find_elements_by_class_name("activator")
