@@ -44,7 +44,7 @@ def downloadaccount(b, params):
     time.sleep(2)
     [common.scrolluntilclick(b,x) for x in b.find_elements_by_class_name("expander") if "closed" in x.get_attribute("class")]
     alltext += b.find_element_by_id("Posted").text + "\n"
-    b.find_element_by_partial_link_text("LOG OFF").click()
+    b.find_element_by_partial_link_text("Log Off").click()
     
     transactions = []
     trans = {}
