@@ -34,6 +34,7 @@ except ImportError:
 locale.setlocale(locale.LC_ALL, '')
 
 parsedate = lambda x: datetime.datetime.strptime(x,"%Y-%m-%d").date()
+prettyformat = lambda x: locale.currency(float(x)/100, grouping=True)
 
 digitre = re.compile("^#?\d{2,}$")
 
@@ -188,11 +189,11 @@ class DB(object):
                 if not [x for x in trans.values() if query[k].lower() in unicode(x).lower()]:
                     return False
                 continue
-            if (k not in trans or not trans[k]) and type(query) in [ str, unicode ] and query.lower() in [ "uncategorized", "none" ]:
-                return True
+            if (k not in trans or not trans[k]) and type(query[k]) in [ str, unicode ] and query[k].lower() in [ "uncategorized", "none" ]:
+                continue
             if k not in trans and not query[k].startswith("$ne:"):
                 return False
-            if not query[k].startswith("$") and query[k].lower() not in trans[k].lower():
+            if not query[k].startswith("$") and query[k].lower() not in unicode(trans[k]).lower():
                 return False
             if query[k].startswith("$eq:"):
                 if query[k].split(":")[1].lower() != unicode(trans[k]).lower():
@@ -557,7 +558,7 @@ if __name__ == "__main__":
             for acct in accounts:
                 print "  %s %s" % (acct["name"], acct.get("username"))
                 for sub in acct.get("subaccounts",[]):
-                    print "    %s %s" % (sub["name"], locale.currency(float(sub["amount"])/100, grouping=True))
+                    print "    %s %s" % (sub["name"], prettyformat(sub["amount"]))
         elif arg == "summary":
             print json.dumps(db.summary(), indent=2)
         elif arg == "balancehistory":
@@ -567,7 +568,7 @@ if __name__ == "__main__":
                 res = results[int(arg)-1]
                 mainkeys = ["date", "account", "subaccount", "desc", "orig_desc", "amount", "category", "subcategory"]
                 for key in mainkeys:
-                    print "%s: %s" % (key, res.get(key) if key != "amount" else locale.currency(float(res["amount"])/100, grouping=True))
+                    print "%s: %s" % (key, res.get(key) if key != "amount" else prettyformat(res["amount"]))
                 for key in res.keys():
                     if key not in mainkeys:
                         print "%s: %s" % (key, res[key])
@@ -602,8 +603,8 @@ if __name__ == "__main__":
             h, w, hp, wp = struct.unpack('HHHH',fcntl.ioctl(0, termios.TIOCGWINSZ,struct.pack('HHHH', 0, 0, 0, 0)))
             descwidth = w - 35
             for res in results:
-                print ("{0} {1:10} {2:%s} {3:>12}" % (descwidth)).format(res["date"], (res.get("subaccount") or res["account"])[:10], res["desc"][:descwidth].encode("ascii","ignore"), locale.currency(float(res["amount"])/100, grouping=True))
-            print "%s Transactions, Total %s" % (len(results), locale.currency(float(sum([x["amount"] for x in results]))/100, grouping=True))
+                print ("{0} {1:10} {2:%s} {3:>12}" % (descwidth)).format(res["date"], (res.get("subaccount") or res["account"])[:10], res["desc"][:descwidth].encode("ascii","ignore"), prettyformat(res["amount"]))
+            print "%s Transactions, Total %s" % (len(results), prettyformat(sum([x["amount"] for x in results])))
         elif arg.startswith("missing"):
             accounts = db.accounts()
             for acct in accounts:
@@ -631,6 +632,15 @@ if __name__ == "__main__":
                 continue
             if not db.unlink(results[0]["parents"][0],results[0]["id"],type,False):
                 print "Unlink failed"
+        elif arg.startswith("tagyear"):
+            tags = {}
+            lastyear = arg[len("tagyear "):] or str(datetime.datetime.today().year-1)
+            for t in db.search(startdate=lastyear+"-01-01",enddate=lastyear+"-12-31",limit=sys.maxint):
+                for tag in t.get("tags",[]):
+                    tags.setdefault(tag,0)
+                    tags[tag] += t["amount"]
+            for tag in tags:
+                print "%s: %s" % (tag, prettyformat(tags[tag]))
         elif arg.startswith("save"):
             db.save()
         else:

@@ -1,21 +1,7 @@
 var apiurl = "api.py";
-var loadedtransactions = [];
-var accountsearches = [ {} ];
-var showing = -1;
-var showtrans = {};
-var editedfields = []
-var limit = 25;
-var skip = 0;
-var query = accountsearches[0];
-var sessioncheckinterval = null;
-var categories = {};
-var allcategories = [];
-var centers = [];
-var tags = [];
-var linkparent = "";
-var linkchildren = [];
-var chart = null;
-var curreport = -1;
+var loadedtransactions, accountsearches, showing, showtrans, editedfields;
+var limit, skip, query, sessioncheckinterval, categories, allcategories;
+var centers, tags, linkparent, linkchildren, chart, curreport;
 
 var reportopts = {
     "spendcategory": {
@@ -71,6 +57,35 @@ var reportopts = {
         "type": "column",
         getseries: function (data, months) { return []; },
         getsettings: gettrendsettings,
+    },
+    "subcategorytrend": {
+        "defstart": (new Date((new Date()).getFullYear(),0,1)).toISOString().substr(0,10),
+        "defend": (new Date((new Date()).getFullYear(),(new Date()).getMonth(),0)).toISOString().substr(0,10),
+        "filter": {},
+        "filterout": {},
+        "key": "subcategory",
+        "keydef": "None",
+        "keysort": "amount",
+        "keysortrev": "false",
+        "subkey": "month",
+        "subkeydef": "",
+        "subkeysort": "name",
+        "subkeysortrev": false,
+        "title": "Subcategory Trend",
+        "type": "spline",
+        getseries: function (data, months) { return []; },
+        getsettings: function (data, months) {
+            settings = gettrendsettings(data, months);
+            delete settings.plotOptions;
+            settings.tooltip = {
+                formatter: function() {
+                    return this.series.name +': '+ this.x + ", " + (this.y<0?"-":"") + dollarstr(this.y);
+                }
+            };
+            settings.yAxis.reversed = true;
+            settings.xAxis.reversed = false;
+            return settings;
+        },
     },
     "incometrend": {
         "defstart": (new Date((new Date()).getFullYear(),0,1)).toISOString().substr(0,10),
@@ -191,10 +206,6 @@ var reportopts = {
                 },
                 xAxis: {
                     type: "datetime",
-                    //dateTimeLabelFormats: {
-                    //    month: '%e. %b',
-                    //    year: '%b'
-                    //}
                 },
                 yAxis: {
                     title: { text: "Balance" },
@@ -369,6 +380,24 @@ function clearpage() {
         clearInterval(sessioncheckinterval);
         sessioncheckinterval = null;
     }
+
+    loadedtransactions = [];
+    accountsearches = [ {} ];
+    showing = -1;
+    showtrans = {};
+    editedfields = []
+    limit = 25;
+    skip = 0;
+    query = accountsearches[0];
+    sessioncheckinterval = null;
+    categories = {};
+    allcategories = [];
+    centers = [];
+    tags = [];
+    linkparent = "";
+    linkchildren = [];
+    chart = null;
+    curreport = -1;
 
     $.ajax({
         data: { "action": "checklogin" },
