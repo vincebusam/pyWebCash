@@ -219,6 +219,16 @@ elif action == "getquestions":
     json_print(mydb.getquestions())
 elif action == "balancehistory":
     json_print(mydb.balancehistory())
+elif action == "getcookies":
+    json_print(mydb.getcookies())
+elif action == "setcookies":
+    try:
+        data = json.loads(form.getfirst("data") or "{}")
+        if not data:
+            exit_error(400, "Bad transactions: no data")
+    except Exception, e:
+        exit_error(400, "Bad transactions: %s %s" % (e, form.getfirst("data")[:20]))
+    json_print(mydb.setcookies(data, save=True))
 elif action == "link":
     json_print(mydb.link(form.getfirst("parent") or "null",
                          json.loads(form.getfirst("children") or "[]"),
