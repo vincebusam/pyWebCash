@@ -16,7 +16,6 @@ banks = [ "bankofamerica",
           "csvurl",
           "imap",
           "uesp",
-          "provident",
           "janus",
           "fidelity",
           "vanguard"
