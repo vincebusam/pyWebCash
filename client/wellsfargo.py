@@ -33,6 +33,13 @@ def downloadaccount(b, params):
     for i in range(len(b.find_elements_by_class_name("account"))):
         account = b.find_elements_by_class_name("account")[i].text
         b.find_elements_by_class_name("account")[i].click()
+        if not b.find_elements_by_class_name("availableBalanceTotalAmount"):
+            try:
+                balance = "-" + b.find_elements_by_tag_name("table")[2].find_elements_by_tag_name("tr")[2].text.split("$")[1]
+                balances.append({"account": params["name"], "subaccount": account, "balance": balance, "date": datetime.date.today()})
+            except:
+                pass
+            continue
         balance = b.find_element_by_class_name("availableBalanceTotalAmount").text
         balances.append({"account": params["name"], "subaccount": account, "balance": balance, "date": datetime.date.today()})
         for row in b.find_elements_by_xpath("//table[@id='DDATransactionTable']/tbody/tr"):
