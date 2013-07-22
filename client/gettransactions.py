@@ -59,6 +59,8 @@ if not api.callapi("login",{"username": username, "password": password}):
 
 todo = api.callapi("accountstodo")
 questions = api.callapi("getquestions")
+cookies = api.callapi("getcookies")
+[x.setdefault("cookies", cookies) for x in todo]
 
 for account in todo:
     account.setdefault("security_questions", questions)
@@ -103,8 +105,22 @@ for account in todo:
 
 print "Waiting for scrapers (%s)..." % (",".join([threadaccounts[x] for x in range(config.threads) if threads[x]]))
 for t in range(config.threads):
+    try:
+        for cookie in b[t].get_cookies():
+            if not cookie.get("expiry"):
+                continue
+            for oldcookie in cookies:
+                if oldcookie["domain"] == cookie["domain"] and oldcookie["name"] == cookie["name"] and oldcookie["path"] == cookie["path"] and cookie["expiry"] > oldcookie["expiry"]:
+                    oldcookie.update(cookie)
+                    break
+            else:
+                cookies.append(cookie)
+    except:
+        pass
     if threads[t]:
         threads[t].join()
     b[t].quit()
 
+if cookies:
+    api.callapi("setcookies", {"data": json.dumps(cookies)})
 api.callapi("logout")
