@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import os
 import re
 import sys
 import time
@@ -43,6 +44,7 @@ def downloadaccount(b, params):
         params["lastcheck"] = common.parsedate(params["lastcheck"])
     params["lastcheck"] -= datetime.timedelta(days=4)
     b.get("https://creditcards.citi.com/")
+    common.loadcookies(b, params.get("cookies",[]))
     if b.find_elements_by_id("id"):
         b.find_element_by_id("id").send_keys(params["username"])
     elif b.find_elements_by_id("cA-cardsUseridMasked"):
@@ -130,7 +132,9 @@ if __name__ == "__main__":
     params["username"] = sys.argv[1]
     params["lastcheck"] = datetime.date.today()-datetime.timedelta(days=14)
     params["seenids"] = []
+    params["cookies"] = json.load(open("cookies.json")) if os.path.exists("cookies.json") else []
     b = webdriver.Chrome()
     data = downloadaccount(b, params)
+    common.savecookies(b)
     b.quit()
     json.dump(data, open("citicards.json","w"), indent=2, default=str)

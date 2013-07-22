@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import re
+import os
 import sys
 import time
 import json
@@ -19,6 +20,7 @@ def downloadaccount(b, params):
         params["lastcheck"] = common.parsedate(params["lastcheck"])
     params["lastcheck"] -= datetime.timedelta(days=4)
     b.get("https://www.wellsfargo.com/")
+    common.loadcookies(b, params.get("cookies",[]))
     b.find_element_by_id("userid").send_keys(params["username"])
     b.find_element_by_id("password").send_keys(params["password"])
     b.find_element_by_id("btnSignon").click()
@@ -61,7 +63,9 @@ if __name__ == "__main__":
     params["username"] = sys.argv[1]
     params["lastcheck"] = datetime.date.today()-datetime.timedelta(days=14)
     params["seenids"] = []
+    params["cookies"] = json.load(open("cookies.json")) if os.path.exists("cookies.json") else []
     b = webdriver.Chrome()
     data = downloadaccount(b, params)
+    common.savecookies(b)
     b.quit()
     json.dump(data, open("wellsfargo.json","w"), indent=2, default=str)

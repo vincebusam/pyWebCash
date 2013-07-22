@@ -22,6 +22,7 @@ def downloadaccount(b, params):
         params["lastcheck"] = common.parsedate(params["lastcheck"])
     params["lastcheck"] -= datetime.timedelta(days=4)
     b.get("https://personal.vanguard.com/us/home?fromPage=portal")
+    common.loadcookies(b, params.get("cookies",[]))
 
     b.find_element_by_id("USER").send_keys(params["username"] + Keys.ENTER)
 
@@ -60,9 +61,11 @@ if __name__ == "__main__":
     params["username"] = sys.argv[1]
     params["lastcheck"] = datetime.date.today()-datetime.timedelta(days=14)
     params["seenids"] = []
+    params["cookies"] = json.load(open("cookies.json")) if os.path.exists("cookies.json") else []
     if os.path.exists("questions.json"):
         params["security_questions"] = json.load(open("questions.json"))
     b = webdriver.Chrome()
     data = downloadaccount(b, params)
+    common.savecookies(b)
     b.quit()
     json.dump(data, open("vanguard.json","w"), indent=2, default=str)

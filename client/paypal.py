@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import os
 import re
 import sys
 import time
@@ -21,6 +22,7 @@ def downloadaccount(b, params):
     params["lastcheck"] -= datetime.timedelta(days=4)
     subaccount = "PayPal"
     b.get("https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-submit")
+    common.loadcookies(b, params.get("cookies",[]))
     while not b.find_elements_by_id("login_email"):
         time.sleep(1)
     b.find_element_by_id("login_email").send_keys(params["username"])
@@ -69,7 +71,9 @@ if __name__ == "__main__":
     params["username"] = sys.argv[1]
     params["lastcheck"] = datetime.date.today()-datetime.timedelta(days=14)
     params["seenids"] = []
+    params["cookies"] = json.load(open("cookies.json")) if os.path.exists("cookies.json") else []
     b = webdriver.Chrome()
     data = downloadaccount(b, params)
+    common.savecookies(b)
     b.quit()
     json.dump(data, open("paypal.json","w"), indent=2, default=str)

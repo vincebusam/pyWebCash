@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import os
 import re
 import sys
 import time
@@ -21,6 +22,7 @@ def downloadaccount(b, params):
     params["lastcheck"] -= datetime.timedelta(days=4)
     subaccount = "GapCard"
     b.get("https://www3.onlinecreditcenter6.com/consumergen2/login.do?subActionId=1000&clientId=gap&accountType=generic")
+    common.loadcookies(b, params.get("cookies",[]))
     b.find_element_by_name("userId").send_keys(params["username"])
     b.find_element_by_id("btn_login").click()
 
@@ -86,7 +88,9 @@ if __name__ == "__main__":
     params["username"] = sys.argv[1]
     params["lastcheck"] = datetime.date.today()-datetime.timedelta(days=90)
     params["seenids"] = []
+    params["cookies"] = json.load(open("cookies.json")) if os.path.exists("cookies.json") else []
     b = webdriver.Chrome()
     data = downloadaccount(b, params)
+    common.savecookies(b)
     b.quit()
     json.dump(data, open("gap.json","w"), indent=2, default=str)

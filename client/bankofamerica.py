@@ -35,6 +35,7 @@ def downloadaccount(b, params):
     if not params.get("password"):
         params["password"] = getpass.getpass("BofA Password for %s: " % (params["username"]))
     b.get("https://www.bankofamerica.com/")
+    common.loadcookies(b, params.get("cookies",[]))
     if not b.find_elements_by_id("id"):
         if b.find_elements_by_name("olb-sign-in"):
             b.find_element_by_name("olb-sign-in").click()
@@ -145,7 +146,9 @@ if __name__ == "__main__":
     params["username"] = sys.argv[1]
     params["lastcheck"] = datetime.date.today()-datetime.timedelta(days=int(os.getenv("DAYSBACK") or 14))
     params["seenids"] = []
+    params["cookies"] = json.load(open("cookies.json")) if os.path.exists("cookies.json") else []
     b = webdriver.Chrome()
     data = downloadaccount(b, params)
+    common.savecookies(b)
     b.quit()
     json.dump(data, open("bofa.json","w"), indent=2, default=str)

@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import os
 import re
 import sys
 import time
@@ -20,6 +21,7 @@ def downloadaccount(b, params):
         params["lastcheck"] = common.parsedate(params["lastcheck"])
     params["lastcheck"] -= datetime.timedelta(days=4)
     b.get("https://www.chase.com/")
+    common.loadcookies(b, params.get("cookies",[]))
 
     b.find_element_by_id("usr_name_home").send_keys(params["username"])
     b.find_element_by_id("usr_password_home").send_keys(params["password"])
@@ -87,7 +89,9 @@ if __name__ == "__main__":
     params["username"] = sys.argv[1]
     params["lastcheck"] = datetime.date.today()-datetime.timedelta(days=14)
     params["seenids"] = []
+    params["cookies"] = json.load(open("cookies.json")) if os.path.exists("cookies.json") else []
     b = webdriver.Chrome()
     data = downloadaccount(b, params)
+    common.savecookies(b)
     b.quit()
     json.dump(data, open("chase.json","w"), indent=2, default=str)
