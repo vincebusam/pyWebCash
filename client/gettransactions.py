@@ -119,7 +119,10 @@ for t in range(config.threads):
         pass
     if threads[t]:
         threads[t].join()
-    b[t].quit()
+    try:
+        b[t].quit()
+    except:
+        pass
 
 if cookies:
     api.callapi("setcookies", {"data": json.dumps(cookies)})
