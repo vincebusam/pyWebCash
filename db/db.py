@@ -504,6 +504,15 @@ class DB(object):
                             "data": data})
         return ret
 
+    def getcookies(self):
+        return self.db.get("cookies", [])
+
+    def setcookies(self, cookies, save=True):
+        self.db["cookies"] = cookies
+        if save:
+            self.save()
+        return True
+
 if __name__ == "__main__":
     import readline, fcntl, termios, struct
     try:

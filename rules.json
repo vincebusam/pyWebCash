@@ -50,6 +50,7 @@
   [ {"attr_Merchant Category": "Gasoline"}, {"category": "Auto & Transport", "subcategory": "Gas & Fuel"} ],
   [ {"attr_Merchant Category": "DRY CLEANERS"}, {"category": "Personal Care", "subcategory": "Laundry"} ],
   [ {"attr_Merchant Category": "MASSAGE PARLORS"}, {"category": "Personal Care", "subcategory": "Spa & Massage"} ],
+  [ {"attr_Merchant Category": "HOME SUPPLY WAREHOUSE STORES"}, {"category": "Home", "subcategory": "Home Improvement"} ],
   [ {"attr_Merchant Category": "AUTOMOTIVE REPAIR SHOPS-NON-DEALERS"}, {"category": "Auto & Transport", "subcategory": "Service & Parts" }],
   [ {"attr_Merchant Category": "BUS LINES"}, {"category": "Auto & Transport", "subcategory": "Public Transportation"} ]
 ]
