@@ -45,7 +45,10 @@ def downloadaccount(b, params):
     else:
         b.find_element_by_id("id").send_keys(params["username"])
         Select(b.find_element_by_id("stateselect")).select_by_value(params["state"])
-        b.find_element_by_id("top-button").click()
+        if b.find_elements_by_link_text("Sign In"):
+            b.find_element_by_link_text("Sign In").click()
+        if b.find_elements_by_id("top-button"):
+            b.find_element_by_id("top-button").click()
     while not b.find_elements_by_id("tlpvt-passcode-input"):
         if b.find_elements_by_id("VerifyCompForm"):
             question_text = b.find_element_by_id("VerifyCompForm").text.lower()
