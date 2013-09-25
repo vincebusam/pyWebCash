@@ -24,7 +24,10 @@ def downloadaccount(b, params):
     b.get("https://www.fidelity.com/")
     common.loadcookies(b, params.get("cookies",[]))
 
-    b.find_element_by_link_text("Log In").click()
+    if b.find_elements_by_link_text("Log In"):
+        b.find_element_by_link_text("Log In").click()
+    elif b.find_element_by_link_text("LOG IN"):
+        b.find_element_by_link_text("LOG IN").click()
     b.find_element_by_id("userId").send_keys(params["username"])
     b.find_element_by_id("password").send_keys(params["password"] + Keys.ENTER)
 
@@ -33,7 +36,7 @@ def downloadaccount(b, params):
     for account in [x.text for x in b.find_elements_by_xpath("//table[@class='datatable-component']//tr") if '$' in x.text and "total" not in x.text.lower()]:
         balances.append({"account": params["name"], "subaccount": account.split("\n")[0], "balance": account.split("\n")[-1], "date": datetime.date.today()})
 
-    b.find_element_by_link_text("Log Out").click()
+    b.find_element_by_link_text("LOG OUT").click()
 
     return { "balances": balances }
             
