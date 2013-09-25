@@ -119,7 +119,10 @@ def downloadaccount(b, params):
                 break
         b.back()
         time.sleep(1)
-    b.find_element_by_class_name("signOffBtn").click()
+    if b.find_elements_by_class_name("signOffBtn"):
+        b.find_element_by_class_name("signOffBtn").click()
+    elif b.find_elements_by_link_text("Sign Off"):
+        b.find_element_by_link_text("Sign Off").click()
     time.sleep(2)
     return {"transactions": transactions, "balances": balances}
 
