@@ -47,7 +47,8 @@ def downloadaccount(b, params):
     for acct in accounts[2:-2]:
         balances.append({"account": params["name"], "subaccount": " ".join(acct.text.split()[:-1]), "balance": acct.text.split()[-1], "date": datetime.date.today()})
 
-    b.find_element_by_link_text("LOG OFF").click()
+    if b.find_elements_by_link_text("LOG OFF"):
+        b.find_element_by_link_text("LOG OFF").click()
 
     return { "balances": balances }
             
