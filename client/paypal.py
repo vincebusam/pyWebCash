@@ -22,10 +22,12 @@ def downloadaccount(b, params):
     params["lastcheck"] -= datetime.timedelta(days=4)
     subaccount = "PayPal"
     b.get("https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-submit")
-    common.loadcookies(b, params.get("cookies",[]))
+    #These break logging in for this site
+    #common.loadcookies(b, params.get("cookies",[]))
     while not b.find_elements_by_id("login_email"):
         time.sleep(1)
-    b.find_element_by_id("login_email").send_keys(params["username"])
+    if b.find_element_by_id("login_email").text != params["username"]:
+        b.find_element_by_id("login_email").send_keys(params["username"])
     b.find_element_by_id("login_password").send_keys(params["password"])
     b.find_element_by_class_name("primary").click()
 
@@ -46,6 +48,8 @@ def downloadaccount(b, params):
     time.sleep(5)
     for row in b.find_element_by_id("transactionTable").find_elements_by_class_name("primary"):
         data = [x.text for x in row.find_elements_by_tag_name("td")]
+        if "Bill From" in data:
+            continue
         trans = { "account": params["name"],
                   "subaccount": subaccount,
                   "date": datetime.datetime.strptime(data[2], "%b %d, %Y").date(),
