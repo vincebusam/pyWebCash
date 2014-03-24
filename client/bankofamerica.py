@@ -44,9 +44,12 @@ def downloadaccount(b, params):
             b.find_element_by_id("enterID-input").send_keys(params["username"] + Keys.ENTER)
     else:
         b.find_element_by_id("id").send_keys(params["username"])
-        Select(b.find_element_by_id("stateselect")).select_by_value(params["state"])
+        if b.find_elements_by_id("stateselect"):
+            Select(b.find_element_by_id("stateselect")).select_by_value(params["state"])
         if b.find_elements_by_link_text("Sign In"):
             b.find_element_by_link_text("Sign In").click()
+        if b.find_elements_by_id("hp-sign-in-btn"):
+            b.find_element_by_id("hp-sign-in-btn").click()
         if b.find_elements_by_id("top-button"):
             b.find_element_by_id("top-button").click()
     while not b.find_elements_by_id("tlpvt-passcode-input"):
@@ -80,6 +83,8 @@ def downloadaccount(b, params):
     for acct in accounts:
         b.find_element_by_id(acct).click()
         for loop in range(len(b.find_elements_by_class_name("record"))):
+            if loop > len(b.find_elements_by_class_name("record")):
+                continue
             record = b.find_elements_by_class_name("record")[loop]
             transaction = {"account": params["name"], "subaccount": acct}
             date = record.find_element_by_class_name("date-action").find_elements_by_tag_name("span")[2].text
