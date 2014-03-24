@@ -38,7 +38,7 @@ def savecookies(b):
         if not cookie.get("expiry"):
             continue
         for oldcookie in cookies:
-            if oldcookie["domain"] == cookie["domain"] and oldcookie["name"] == cookie["name"] and oldcookie["path"] == cookie["path"] and cookie["expiry"] > oldcookie["expiry"]:
+            if oldcookie["domain"] == cookie["domain"] and oldcookie["name"] == cookie["name"] and oldcookie["path"] == cookie["path"] and cookie["expiry"] > oldcookie.get("expiry"):
                 oldcookie.update(cookie)
                 break
         else:
