@@ -65,7 +65,12 @@ def downloadaccount(b, params):
             if b.find_elements_by_link_text(card):
                 break
             time.sleep(1)
-        b.find_element_by_link_text(card).click()
+        while True:
+            try:
+                b.find_element_by_link_text(card).click()
+                break
+            except:
+                b.execute_script("document.body.scrollTop=document.body.scrollTop+40;")
         while b.find_elements_by_id("cmlink_NoClosedAccountOverlay"):
             print "citicards: Go manually say no"
             time.sleep(1)
@@ -96,7 +101,10 @@ def downloadaccount(b, params):
                     act = activators.pop(0)
                     while "Transaction" not in entry.text:
                         b.execute_script("document.body.scrollTop=document.body.scrollTop+40;")
-                        act.click()
+                        try:
+                            act.click()
+                        except:
+                            continue
                 trans = {"account": params["name"], "subaccount": cardname(card)}
                 if not entry or not entry.text[0].isdigit():
                     continue
