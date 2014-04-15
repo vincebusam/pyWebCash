@@ -22,7 +22,8 @@ def downloadaccount(b, params):
     if type(params["lastcheck"]) in [ str, unicode ]:
         params["lastcheck"] = common.parsedate(params["lastcheck"])
     params["lastcheck"] -= datetime.timedelta(days=4)
-    b.get("https://www.janus.com/")
+    #b.get("https://www.janus.com/")
+    b.get("https://ww4.janus.com/Janus/Retail/AccountSummary?wt.svl=AccountBalance_nav")
     common.loadcookies(b, params.get("cookies",[]))
     if b.find_elements_by_id("selimg4"):
         b.find_element_by_id("selimg4").click()
