@@ -21,6 +21,9 @@ def scrolluntilclick(b,e):
 
 parsedate = lambda x: datetime.datetime.strptime(x,"%Y-%m-%d").date()
 
+# Run this here on import before starting threads to avoid strptime/thread problem
+parsedate("2010-01-01")
+
 def loadcookies(b, cookies):
     domain = urlparse.urlparse(b.current_url).netloc
     for cookie in cookies:
