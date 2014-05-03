@@ -29,7 +29,10 @@ def downloadaccount(b, params):
     if b.find_element_by_id("login_email").text != params["username"]:
         b.find_element_by_id("login_email").send_keys(params["username"])
     b.find_element_by_id("login_password").send_keys(params["password"])
-    b.find_element_by_class_name("primary").click()
+    if b.find_elements_by_class_name("primary"):
+        b.find_element_by_class_name("primary").click()
+    if b.find_elements_by_name("submit.x"):
+        b.find_element_by_name("submit.x").click()
 
     if b.find_elements_by_link_text("my account"):
         b.find_element_by_link_text("my account").click()
