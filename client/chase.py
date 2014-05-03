@@ -27,6 +27,9 @@ def downloadaccount(b, params):
     b.find_element_by_id("usr_password_home").send_keys(params["password"])
     b.find_elements_by_class_name("loginBtn")[-1].click()
 
+    if b.find_elements_by_class_name("chaseui-modal"):
+        b.find_element_by_class_name("chaseui-modal").click()
+
     if b.find_elements_by_id("show_go_to_my_accounts_img"):
         b.find_element_by_id("show_go_to_my_accounts_img").click()
 
