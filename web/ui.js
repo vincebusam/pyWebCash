@@ -1,7 +1,7 @@
 var apiurl = "api.py";
 var loadedtransactions, accountsearches, showing, showtrans, editedfields;
 var limit, skip, query, sessioncheckinterval, categories, allcategories;
-var centers, tags, linkparent, linkchildren, chart, curreport;
+var centers, tags, linkparent, linkchildren, chart, curreport, sortorder;
 
 var reportopts = {
     "spendcategory": {
@@ -245,6 +245,7 @@ function loginsuccess() {
     showing = -1;
     limit = 25;
     skip = 0;
+    sortorder = null;
     loadaccounts();
     // Get user's categories and configure everywhere
     $.ajax({
@@ -641,7 +642,7 @@ function getsearchdata() {
         if ($("#searchoptions .queryoption").eq(i).val())
             transquery[$("#searchoptions .queryoption").eq(i).attr("id")] = $("#searchoptions .queryoption").eq(i).val()
     }
-    var postdata = { "action": "search", "limit": limit, "skip": skip, "query": JSON.stringify(transquery) }
+    var postdata = { "action": "search", "limit": limit, "skip": skip, "query": JSON.stringify(transquery), "sort": sortorder }
     for (i=0; i<$("#searchoptions .searchoption").length; i++) {
         if ($("#searchoptions .searchoption").eq(i).val() != "")
             postdata[$("#searchoptions .searchoption").eq(i).attr("id")] = $("#searchoptions .searchoption").eq(i).val()
@@ -1332,6 +1333,17 @@ $(document).ready(function () {
             width: $("#searchoptions").width(),
             margin: "0px"
         });
+    });
+
+    $(".sortable").click(function (e) {
+        $(".sortable").removeClass("ui-state-active");
+        if (sortorder == $(this).attr("sortorder")) {
+            sortorder = null;
+        } else {
+            $(this).addClass("ui-state-active");
+            sortorder = $(this).attr("sortorder");
+        }
+        loadtransactions();
     });
 
     clearpage();

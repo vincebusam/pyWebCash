@@ -164,7 +164,8 @@ elif action == "search":
                                form.getfirst("startdate") or "0",
                                form.getfirst("enddate") or "9",
                                int(form.getfirst("limit") or 100),
-                               int(form.getfirst("skip") or 0))
+                               int(form.getfirst("skip") or 0),
+                               form.getfirst("sort") or None)
         if (form.getfirst("format")):
             locale.setlocale(locale.LC_ALL, 'en_US.UTF8')
             if form.getfirst("format") == "text":

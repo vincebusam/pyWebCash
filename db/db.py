@@ -228,9 +228,15 @@ class DB(object):
                 continue
         return True
 
-    def search(self, query={}, startdate="0", enddate = "9", limit=100, skip=0):
+    def search(self, query={}, startdate="0", enddate = "9", limit=100, skip=0, sort=None):
         ret = []
-        for trans in self.db["transactions"]:
+        if sort:
+            alltrans = copy.deepcopy(self.db["transactions"])
+            if sort == "absamount":
+                alltrans.sort(key = lambda x: abs(x.get("amount",0)), reverse=True)
+        else:
+            alltrans = self.db["transactions"]
+        for trans in alltrans:
             if trans["date"] < startdate or trans["date"] > enddate:
                 continue
             elif query and not self.matchtrans(trans, query):
