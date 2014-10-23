@@ -24,8 +24,9 @@ class scrapethread(threading.Thread):
 
     def run(self):
         try:
-            data = json.dumps(banks[account["bankname"]].downloadaccount(self.b, self.account), default=str)
+            data = json.dumps(banks[self.account["bankname"]].downloadaccount(self.b, self.account), default=str)
         except Exception, e:
+            print "Error uploding %s %s" % (self.account["bankname"], self.account["username"])
             print e
             traceback.print_exc()
             return
