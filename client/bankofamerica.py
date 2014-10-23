@@ -111,9 +111,11 @@ def downloadaccount(b, params):
                 image = record_detail.find_elements_by_tag_name("img")
                 if image:
                     b.get(image[0].get_attribute("src"))
+                    time.sleep(1.0)
                     checkfn = transaction["id"] + ".png"
                     files[checkfn] = b.get_screenshot_as_base64()
                     b.back()
+                    time.sleep(1.0)
                     transaction["file"] = checkfn
                 newtransactions.append(transaction)
                 continue
@@ -129,11 +131,11 @@ def downloadaccount(b, params):
                     subtrans["amount"] = record_detail.find_elements_by_name("credit_check_thumbnail")[checkid].text
                     if common.scrolluntilclick(b,record_detail.find_elements_by_name("credit_check_thumbnail")[checkid]):
                         b.get(record_detail.find_element_by_tag_name("img").get_attribute("src"))
-                        time.sleep(0.5)
+                        time.sleep(1.0)
                         checkfn = subtrans["id"] + ".png"
                         files[checkfn] = b.get_screenshot_as_base64()
                         b.back()
-                        time.sleep(0.5)
+                        time.sleep(1.0)
                         subtrans["file"] = checkfn
                     newtransactions.append(subtrans)
                     transaction.setdefault("children",[]).append(subtrans["id"])
