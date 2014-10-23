@@ -73,6 +73,9 @@ def downloadaccount(b, params):
     if b.find_elements_by_name("no_thanks"):
         b.find_element_by_name("no_thanks").click()
 
+    if b.find_elements_by_partial_link_text("close"):
+        b.find_element_by_partial_link_text("close").click()
+
     accounts = []
     for a in b.find_elements_by_xpath("//div[contains(@class,'image-account')]/a"):
         if a.get_attribute("id") not in accounts:
