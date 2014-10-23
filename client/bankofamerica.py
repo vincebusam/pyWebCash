@@ -90,7 +90,7 @@ def downloadaccount(b, params):
                 continue
             record = b.find_elements_by_class_name("record")[loop]
             transaction = {"account": params["name"], "subaccount": acct}
-            date = record.find_element_by_class_name("date-action").find_elements_by_tag_name("span")[2].text
+            date = record.find_element_by_class_name("date-action").find_elements_by_tag_name("span")[-1].text
             m = datematch.match(date)
             if not m:
                 continue
