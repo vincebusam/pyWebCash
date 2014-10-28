@@ -34,30 +34,39 @@ def downloadaccount(b, params):
     if b.find_elements_by_name("submit.x"):
         b.find_element_by_name("submit.x").click()
 
-    if b.find_elements_by_link_text("my account"):
-        b.find_element_by_link_text("my account").click()
-    # Get balance
-    while not b.find_elements_by_xpath("//span[@class='balance']"):
-        time.sleep(1)
-    balance = b.find_element_by_xpath("//span[@class='balance']").text.lstrip().rstrip(" USD")
+    balance = b.find_element_by_class_name("balanceNumeral").text.replace("Available","").strip()
+
     balances = [{"account": params["name"], "subaccount": subaccount, "balance": balance, "date": datetime.date.today()}]
+
+    b.find_element_by_link_text("Activity").click()
 
     # Go to transaction history
     transactions = []
-    b.find_element_by_link_text("History").click()
-    while not b.find_elements_by_id("dayoption"):
-        time.sleep(1)
-    Select(b.find_element_by_id("dayoption")).select_by_value("8")
-    time.sleep(5)
-    for row in b.find_element_by_id("transactionTable").find_elements_by_class_name("primary"):
-        data = [x.text for x in row.find_elements_by_tag_name("td")]
-        if "Bill From" in data:
-            continue
+
+    time.sleep(2)
+
+    for row in range(len(b.find_elements_by_class_name("activityRow"))):
+        b.find_elements_by_class_name("activityRow")[row].click()
+        if b.find_elements_by_id("transactionDetails"):
+            data = b.find_element_by_id("transactionDetails").text
+        elif b.find_elements_by_id("xptContentContainer"):
+            data = b.find_element_by_id("xptContentContainer").text
+        data = data.split("\n")
+        for i in range(len(data)):
+            line = data[i]
+            try:
+                date = datetime.datetime.strptime(" ".join(line.strip().split()[:3]), "%b %d, %Y").date()
+            except ValueError:
+                pass
+            if line.strip().endswith("Name:"):
+                desc = data[i+1]
+            if line.strip() == "Net amount:":
+                amount = data[i+1].rstrip(" USD")
         trans = { "account": params["name"],
                   "subaccount": subaccount,
-                  "date": datetime.datetime.strptime(data[2], "%b %d, %Y").date(),
-                  "desc": data[5],
-                  "amount": data[-1].rstrip(" USD")
+                  "date": date,
+                  "desc": desc,
+                  "amount": amount
                 }
         trans["id"] = "%s-%s-%s-%s" % (trans["date"], params["name"], subaccount, hashlib.sha1(trans["desc"]).hexdigest())
         if trans["date"] < params["lastcheck"]:
@@ -65,7 +74,12 @@ def downloadaccount(b, params):
         if trans["id"] in params["seenids"]:
             continue
         transactions.append(trans)
-    b.find_element_by_link_text("Log Out").click()
+        b.back()
+        time.sleep(2)
+    if b.find_elements_by_link_text("Log Out"):
+        b.find_element_by_link_text("Log Out").click()
+    if b.find_elements_by_class_name("logout"):
+        b.find_element_by_class_name("logout").click()
     time.sleep(2)
     return {"transactions": transactions, "balances": balances}
 
