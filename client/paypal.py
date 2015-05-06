@@ -46,6 +46,7 @@ def downloadaccount(b, params):
     time.sleep(2)
 
     for row in range(len(b.find_elements_by_class_name("activityRow"))):
+        time.sleep(2)
         b.find_elements_by_class_name("activityRow")[row].click()
         if b.find_elements_by_id("transactionDetails"):
             data = b.find_element_by_id("transactionDetails").text
@@ -59,7 +60,7 @@ def downloadaccount(b, params):
             except ValueError:
                 pass
             if line.strip().endswith("Name:"):
-                desc = data[i+1]
+                desc = data[i+1].replace("(The recipient of this payment is Verified)").strip()
             if line.strip() == "Net amount:":
                 amount = data[i+1].rstrip(" USD")
         trans = { "account": params["name"],
