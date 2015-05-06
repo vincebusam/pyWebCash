@@ -9,6 +9,7 @@
   [ {"desc": "Parking"}, {"category": "Auto & Transport", "subcategory": "Parking"} ],
   [ {"desc": "^THE GAS COMPANY"}, {"category": "Bills & Utilities", "subcategory": "Utilities"} ],
   [ {"desc": "^SO CALIF EDISON DES"}, {"category": "Bills & Utilities", "subcategory": "Utilities"} ],
+  [ {"desc": "^CALWATER"}, {"category": "Bills & Utilities", "subcategory": "Utilities"} ],
   [ {"desc": "^Old Navy"}, {"category": "Shopping", "subcategory": "Clothing" } ],
   [ {"desc": "^Gap Visa"}, {"category": "Shopping", "subcategory": "Clothing" } ],
   [ {"desc": "^Uesp Des"}, {"category": "Transfer" } ],
@@ -57,5 +58,7 @@
   [ {"attr_Merchant Category": "MASSAGE PARLORS"}, {"category": "Personal Care", "subcategory": "Spa & Massage"} ],
   [ {"attr_Merchant Category": "HOME SUPPLY WAREHOUSE STORES"}, {"category": "Home", "subcategory": "Home Improvement"} ],
   [ {"attr_Merchant Category": "AUTOMOTIVE REPAIR SHOPS-NON-DEALERS"}, {"category": "Auto & Transport", "subcategory": "Service & Parts" }],
-  [ {"attr_Merchant Category": "BUS LINES"}, {"category": "Auto & Transport", "subcategory": "Public Transportation"} ]
+  [ {"attr_Merchant Category": "BUS LINES"}, {"category": "Auto & Transport", "subcategory": "Public Transportation"} ],
+  [ {"attr_Merchant Category": "Other Travel - TAXICAB/LIMOUSINE"}, {"category": "Travel", "subcategory": "Rental Car & Taxi"} ],
+  [ {"attr_Merchant Category": "Services - CLEANING/MAINTENANCE,JANITORIAL SERVICES"}, {"category": "Home", "subcategory": "Home Services"} ]
 ]
