@@ -30,6 +30,8 @@
 .dollar { text-align: right; padding-left: 5px; }
 .posnum { color: green; }
 
+.sortable { cursor: pointer; }
+
 #bottomlinks { position: absolute; bottom: 5px; right: 5px; }
 
 [contenteditable]:hover { outline: 1px dotted #ccc; }

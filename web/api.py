@@ -9,6 +9,7 @@ import Cookie
 import locale
 import urlparse
 import datetime
+import traceback
 try:
     import simplejson as json
 except:
@@ -164,7 +165,8 @@ elif action == "search":
                                form.getfirst("startdate") or "0",
                                form.getfirst("enddate") or "9",
                                int(form.getfirst("limit") or 100),
-                               int(form.getfirst("skip") or 0))
+                               int(form.getfirst("skip") or 0),
+                               form.getfirst("sort") or None)
         if (form.getfirst("format")):
             locale.setlocale(locale.LC_ALL, 'en_US.UTF8')
             if form.getfirst("format") == "text":
@@ -179,11 +181,11 @@ elif action == "search":
                 print "Content-type: text/csv"
                 print
                 for res in results:
-                    print "{0},{1},{2},{3}".format(res["date"], (res.get("subcategory") or res.get("category","")), res["desc"].encode("ascii","ignore"), locale.currency(float(res["amount"])/100, grouping=True))
+                    print "{0},{1},\"{2}\",\"{3}\",\"{4}\",{5},{6}".format(res["date"], (res.get("subcategory") or res.get("category","")), res["desc"].encode("ascii","ignore"), locale.currency(float(res["amount"])/100, grouping=True), locale.currency(float(res["orig_amount"])/100, grouping=True), res["account"], res["subaccount"])
         else:
             json_print(results)
     except Exception, e:
-        exit_error(400, "Bad search: %s" % (e))
+        exit_error(400, "Bad search: %s, %s" % (e, traceback.format_exc()))
 elif action == "updatetransaction":
     try:
         data = json.loads(form.getfirst("data") or "{}")
