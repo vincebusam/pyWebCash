@@ -45,10 +45,10 @@ def imgtrim(img):
     pix = numpy.asarray(im)
     pix = pix[:,:,0:3]
     idx = numpy.where(pix-255)[0:2]
-    if idx:
+    try:
         box = map(min,idx)[::-1] + map(max,idx)[::-1]
         region = im.crop(box)
-    else:
+    except ValueError:
         region = im
     outio = StringIO.StringIO()
     region.save(outio, "png")
