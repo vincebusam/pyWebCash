@@ -35,29 +35,69 @@ def downloadaccount(b, params):
 
     while not b.find_elements_by_partial_link_text("See activity"):
         time.sleep(1)
-    b.find_element_by_partial_link_text("See activity").click()
-    balance = b.find_elements_by_class_name("first")[1].text.split()[-1]
+    common.scrolluntilclick(b, b.find_element_by_partial_link_text("See activity"))
+    while not b.find_elements_by_class_name("first"):
+        time.sleep(2)
+    balance = b.find_elements_by_class_name("first")[-1].text.split()[-1]
     if balance.startswith("-"):
         balance = balance.lstrip("-")
     else:
         balance = "-" + balance
+
+    # Remove this
+    common.savecookies(b)
+
     account = "Visa"
     balances = [{"account": params["name"], "subaccount": account, "balance": balance, "date": datetime.date.today()}]
     [common.scrolluntilclick(b,x) for x in b.find_elements_by_class_name("expander") if "closed" in x.get_attribute("class")]
     alltext = b.find_element_by_id("Posted").text + "\n"
-    Select(b.find_element_by_id("StatementPeriodQuick")).select_by_value("LAST_STATEMENT")
-    time.sleep(2)
-    [common.scrolluntilclick(b,x) for x in b.find_elements_by_class_name("expander") if "closed" in x.get_attribute("class")]
-    alltext += b.find_element_by_id("Posted").text + "\n"
-    b.find_element_by_partial_link_text("Log Off").click()
+    cats = []
+    if b.find_elements_by_name("categoryLabel0"):
+        for catloop in range(1000):
+            cats.append(Select(b.find_element_by_name("categoryLabel%i" % (catloop))).value)
+
+    if b.find_elements_by_class_name("chaseui-modalclose"):
+        b.find_element_by_class_name("chaseui-modalclose").click()
+    b.execute_script("document.body.scrollTop=document.body.scrollTop+80;")
+    for stmt in [ "LAST_STATEMENT", "TWO_STATEMENTS_PRIOR", "THREE_STATEMENTS_PRIOR" ]:
+        if len(Select(b.find_element_by_id("StatementPeriodQuick")).options) > 1:
+            for loop in range(10):
+                try:
+                    Select(b.find_element_by_id("StatementPeriodQuick")).select_by_value(stmt)
+                    break
+                except:
+                    b.execute_script("document.body.scrollTop=document.body.scrollTop+20;")
+            else:
+                raise Exception("Couldn't select statememt period")
+            time.sleep(2)
+            [common.scrolluntilclick(b,x) for x in b.find_elements_by_class_name("expander") if "closed" in x.get_attribute("class")]
+            alltext += b.find_element_by_id("Posted").text + "\n"
+    common.scrolluntilclick(b,b.find_element_by_partial_link_text("Log Off"))
+    #b.find_element_by_partial_link_text("Log Off").click()
     
     transactions = []
     trans = {}
     for line in alltext.split("\n"):
-        line = line.rstrip("Print").strip()
+        if line.strip().endswith("Print"):
+            line = line.replace("Print","").strip()
         if not line:
             continue
         if line.startswith("Trans Date"):
+            continue
+        if "Tag purchases with Jot" in alltext: # Business accounts
+            if re.match("\d\d/\d\d/\d\d\d\d",line.split()[0]):
+                trans = {"account": params["name"], "subaccount": account, "amount": 0}
+                trans["date"] = datetime.datetime.strptime(line.split()[0],"%m/%d/%Y").date()
+                trans["desc"] = line.split(" ",3)[3]
+            elif line == "Print" or line.startswith("Memo50") or line.startswith("MiscellaneousAuto RelatedClothingComputer"):
+                continue
+            elif line.lstrip().startswith("$"):
+                trans["amount"] = "-" + line.strip()
+            elif line.startswith("Tag purchases with"):
+                trans["id"] = "%s-%s-%s-%s" % (trans["date"], trans["account"], trans["subaccount"], hashlib.sha1(trans["desc"]).hexdigest())
+                transactions.append(trans)
+            elif "desc" in trans:
+                trans["desc"] += " " + line
             continue
         if re.match("\d\d/\d\d/\d\d\d\d",line.split()[0]):
             trans = {"account": params["name"], "subaccount": account}
@@ -90,7 +130,7 @@ if __name__ == "__main__":
 
     params = {}
     params["username"] = sys.argv[1]
-    params["lastcheck"] = datetime.date.today()-datetime.timedelta(days=14)
+    params["lastcheck"] = datetime.date.today()-datetime.timedelta(days=180)
     params["seenids"] = []
     params["cookies"] = json.load(open("cookies.json")) if os.path.exists("cookies.json") else []
     b = webdriver.Chrome()
