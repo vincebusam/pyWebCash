@@ -29,6 +29,7 @@ def downloadaccount(b, params):
     params.setdefault("lastcheck",datetime.date(2000,1,1))
     if type(params["lastcheck"]) in [ str, unicode ]:
         params["lastcheck"] = common.parsedate(params["lastcheck"])
+    params.setdefault("enddate",datetime.date(2050,1,1))
     params["lastcheck"] -= datetime.timedelta(days=4)
     params.setdefault("seenids",[])
     params.setdefault("name","BofA")
@@ -95,6 +96,8 @@ def downloadaccount(b, params):
             if not m:
                 continue
             transaction["date"] = datetime.datetime.strptime(date,"%m/%d/%Y").date()
+            if transaction["date"] > params["enddate"]:
+                continue
             if transaction["date"] < params["lastcheck"]:
                 break
             transaction["desc"] = record.find_element_by_class_name("description").find_elements_by_tag_name("span")[2].text.replace("\n","")
@@ -111,7 +114,7 @@ def downloadaccount(b, params):
                 image = record_detail.find_elements_by_tag_name("img")
                 if image:
                     b.get(image[0].get_attribute("src"))
-                    time.sleep(1.0)
+                    time.sleep(2.0)
                     checkfn = transaction["id"] + ".png"
                     files[checkfn] = b.get_screenshot_as_base64()
                     b.back()
@@ -148,7 +151,8 @@ def downloadaccount(b, params):
             b.find_element_by_link_text("Accounts Overview").click()
         else:
             b.execute_script("fsdgoto('accountsoverview')")
-    b.find_element_by_link_text("Sign Off").click()
+    if b.find_elements_by_link_text("Sign Off"):
+        b.find_element_by_link_text("Sign Off").click()
     time.sleep(0.5)
     return {"transactions": newtransactions, "balances": balances, "files": files}
 
@@ -160,6 +164,10 @@ if __name__ == "__main__":
     params = { "state": "CA" }
     params["username"] = sys.argv[1]
     params["lastcheck"] = datetime.date.today()-datetime.timedelta(days=int(os.getenv("DAYSBACK") or 14))
+    if os.getenv("ENDDATE"):
+        params["enddate"] = common.parsedate(os.getenv("ENDDATE"))
+    if os.getenv("STARTDATE"):
+        params["lastcheck"] = common.parsedate(os.getenv("STARTDATE"))
     params["seenids"] = []
     params["cookies"] = json.load(open("cookies.json")) if os.path.exists("cookies.json") else []
     b = webdriver.Chrome()
