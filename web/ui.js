@@ -891,11 +891,11 @@ function gettrendsettings(data, months) {
 }
 
 $(document).ready(function () {
-    $('[contenteditable]').live('focus', function() {
+    $('[contenteditable]').on('focus', function() {
         var $this = $(this);
         $this.data('before', $this.text());
             return $this;
-    }).live('blur keyup paste', function() {
+    }).on('blur keyup paste', function() {
         var $this = $(this);
         if ($this.data('before') !== $this.text()) {
             $this.data('before', $this.text());
