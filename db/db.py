@@ -62,7 +62,7 @@ def parse_amount(amount):
     if "." not in amount:
         amount += ".00"
     amount += "0" * (2-len(amount.split(".")[1]))
-    return int(amount.replace("$","").replace(",","").replace(".",""))
+    return int(amount.replace("$","").replace(",","").replace(".","").replace("USD",""))
 
 def create_db(username, password):
     """Make a new database"""
