@@ -9,6 +9,7 @@ import Cookie
 import locale
 import urlparse
 import datetime
+import traceback
 try:
     import simplejson as json
 except:
@@ -184,7 +185,7 @@ elif action == "search":
         else:
             json_print(results)
     except Exception, e:
-        exit_error(400, "Bad search: %s" % (e))
+        exit_error(400, "Bad search: %s, %s" % (e, traceback.format_exc()))
 elif action == "updatetransaction":
     try:
         data = json.loads(form.getfirst("data") or "{}")
