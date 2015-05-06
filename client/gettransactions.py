@@ -90,13 +90,18 @@ for account in todo:
             print e
         apilock.release()
     else:
+        if not config.threads:
+            b = webdriver.Chrome()
+            t = scrapethread(b, account)
+            t.run()
+            b.quit()
         for t in range(config.threads):
             if threads[t] == None:
                 threads[t] = scrapethread(b[t], account)
                 threadaccounts[t] = account["bankname"]
                 threads[t].start()
                 break
-    while len([x for x in threads if x]) == config.threads:
+    while config.threads and len([x for x in threads if x]) == config.threads:
         for t in range(config.threads):
             if threads[t] and not threads[t].is_alive():
                 threads[t].join()
