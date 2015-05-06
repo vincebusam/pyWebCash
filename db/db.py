@@ -356,7 +356,7 @@ class DB(object):
             if trans["id"] in self.getallids():
                 continue
             trans.setdefault("state", "open")
-            trans.setdefault("center", self.db["centers"][0])
+            trans.setdefault("center", ([x for x in self.db["accounts"] if x["name"] == trans.get("account")] or [{}])[0].get("center") or self.db["centers"][0])
             trans.setdefault("orig_amount_str", trans["amount"])
             trans["amount"] = parse_amount(trans["amount"])
             trans["orig_amount"] = trans["amount"]
