@@ -22,16 +22,14 @@ def cardname(card):
         return "AmEx"
 
 def parsetransaction(trans, lines):
-    trans["date"] = datetime.datetime.strptime(lines[0].split()[0],"%m/%d/%Y").date()
-    trans["orig_amount_str"] = lines[0].split()[-1]
-    trans["desc"] = " ".join(lines[0].split()[1:-1])
+    trans["date"] = datetime.datetime.strptime(lines[0],"%m-%d-%Y").date()
+    trans["orig_amount_str"] = lines[-1]
+    trans["desc"] = lines[1]
+    trans["attr_Merchant Category"] = lines[2]
     # Need to negate amount!
+    if trans["orig_amount_str"].startswith("("):
+        trans["orig_amount_str"] = "-" + trans["orig_amount_str"].strip("()")
     trans["amount"] = -int(trans["orig_amount_str"].replace("$","").replace(".","").replace(",",""))
-    for line in lines[1:]:
-        if ":" in line:
-            l = line.split(":",1)
-            trans["attr_"+l[0]] = l[1].strip()
-    trans["id"] = "%s-%s-%s-%s" % (trans["date"], trans["account"], trans["subaccount"], trans.get("attr_Reference Number",hashlib.sha1(trans["desc"]).hexdigest()))
     return trans
 
 def downloadaccount(b, params):
@@ -64,51 +62,48 @@ def downloadaccount(b, params):
         for loop in range(5):
             if b.find_elements_by_link_text(card):
                 break
-            time.sleep(1)
+            time.sleep(2)
+        else:
+            raise Exception("Couldn't find card %s" % (card))
         while True:
             try:
                 b.find_element_by_link_text(card).click()
                 break
             except:
                 b.execute_script("document.body.scrollTop=document.body.scrollTop+40;")
+        time.sleep(4)
         while b.find_elements_by_id("cmlink_NoClosedAccountOverlay"):
-            print "citicards: Go manually say no"
+            b.find_element_by_link_text("Cancel and Continue to Account Details").click()
             time.sleep(1)
-        if not b.find_elements_by_class_name("curr_balance"):
-            b.back()
-            continue
-        balance = b.find_element_by_class_name("curr_balance").text
-        if balance == "$0.00":
-            b.back()
-            continue
-        balances.append({"account": params["name"], "subaccount": cardname(card), "balance": -int(balance.replace("$","").replace(".","").replace(",","")), "date": datetime.date.today()})
-        for page in range(3):
+        if b.find_elements_by_class_name("cT-labelItem")and "Current Balance" in b.find_elements_by_class_name("cT-labelItem")[0].text:
+            balance = b.find_elements_by_class_name("cT-valueItem")[0].text.replace(" ","")
+            if balance != "$0.00":
+                balances.append({"account": params["name"], "subaccount": cardname(card), "balance": -int(balance.replace("$","").replace(".","").replace(",","")), "date": datetime.date.today()})
+        for page in range(6):
             if page:
-                try:
-                    Select(b.find_element_by_id("date-select")).select_by_value(str(page))
-                except:
+                common.scrolluntilclick(b,b.find_elements_by_class_name("ui-selectmenu")[-1])
+                b.execute_script("document.body.scrollTop=document.body.scrollTop+40;")
+                if not b.find_elements_by_id("filterDropDown-menu-option-%s" % (page)):
                     break
-                b.find_elements_by_xpath("//table[@id='transaction-details-search']//input")[-1].click()
+                common.scrolluntilclick(b.find_element_by_id("filterDropDown-menu-option-%s" % (page)))
                 time.sleep(4)
-            activators = b.find_element_by_xpath("//table[@id='transaction-details-detail']").find_elements_by_class_name("activator")
-            common.scrolluntilclick(b,b.find_element_by_id("transaction-title"))
+
             skipped = 0
-            for entry in b.find_elements_by_xpath("//table[@id='transaction-details-detail']//tbody"):
-                if not entry.text:
-                    continue
-                if activators:
-                    b.execute_script("document.body.scrollTop=document.body.scrollTop+40;")
-                    act = activators.pop(0)
-                    while "Transaction" not in entry.text:
+            for entry in b.find_elements_by_class_name("purchase"):
+                while True:
+                    try:
+                        entry.find_element_by_class_name("cM-maximizeButton").click()
+                        break
+                    except:
                         b.execute_script("document.body.scrollTop=document.body.scrollTop+40;")
-                        try:
-                            act.click()
-                        except:
-                            continue
+                else:
+                    print "ERROR"
                 trans = {"account": params["name"], "subaccount": cardname(card)}
-                if not entry or not entry.text[0].isdigit():
-                    continue
                 parsetransaction(trans, entry.text.split("\n"))
+                details = b.find_element_by_id(entry.get_attribute("id").replace("-","Ext-"))
+                for i in range(len(details.find_elements_by_class_name("cT-labelItem"))):
+                    trans["attr_"+details.find_elements_by_class_name("cT-labelItem")[i].text] = details.find_elements_by_class_name("cT-valueItem")[i].text
+                trans["id"] = "%s-%s-%s-%s" % (trans["date"], trans["account"], trans["subaccount"], trans.get("attr_Reference Number",hashlib.sha1(trans["desc"]).hexdigest()))
                 if trans["date"] < params["lastcheck"]:
                     skipped += 1
                     continue
@@ -116,7 +111,6 @@ def downloadaccount(b, params):
                     skipped += 1
                     continue
                 if trans["id"] in [x["id"] for x in transactions]:
-                    print "Dup Reference Number!!"
                     trans["id"] += "-" + str(abs(trans["amount"]))
                 transactions.append(trans)
                 if len(transactions) == 5:
@@ -127,11 +121,14 @@ def downloadaccount(b, params):
                 break
         b.back()
         time.sleep(1)
+    b.execute_script("document.body.scrollTop=0;")
     if b.find_elements_by_class_name("signOffBtn"):
-        b.find_element_by_class_name("signOffBtn").click()
+        common.scrolluntilclick(b,b.find_element_by_class_name("signOffBtn"))
     elif b.find_elements_by_link_text("Sign Off"):
-        b.find_element_by_link_text("Sign Off").click()
+        common.scrolluntilclick(b,b.find_element_by_link_text("Sign Off"))
     time.sleep(2)
+    if not transactions or not balances:
+        print "!!! citicards - No balances or transactions found !!!"
     return {"transactions": transactions, "balances": balances}
 
 if __name__ == "__main__":
@@ -141,7 +138,7 @@ if __name__ == "__main__":
 
     params = {}
     params["username"] = sys.argv[1]
-    params["lastcheck"] = datetime.date.today()-datetime.timedelta(days=14)
+    params["lastcheck"] = datetime.date.today()-datetime.timedelta(days=120)
     params["seenids"] = []
     params["cookies"] = json.load(open("cookies.json")) if os.path.exists("cookies.json") else []
     b = webdriver.Chrome()
