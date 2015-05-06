@@ -544,6 +544,8 @@ if __name__ == "__main__":
     sys.argv.pop(0)
     sys.argv.pop(0)
     results = []
+    year = ""
+    searchquery = {}
     while True:
         if len(sys.argv):
             arg = sys.argv.pop(0)
@@ -611,6 +613,40 @@ if __name__ == "__main__":
             newtrans["parents"] = [ results[0]["id"] ]
             results[0].setdefault("children", []).append(newtrans["id"])
             db.newtransactions({"transactions": [newtrans]}, autoprocess=False)
+        elif arg.startswith("year"):
+            year = arg[len("year "):]
+            print "Year %s set" % (year)
+        elif arg.startswith("search"):
+            if "clear" in arg:
+                searchquery = {}
+            else:
+                try:
+                    searchquery.update(json.loads(arg[len("search "):]))
+                except Exception, e:
+                    print e
+                    continue
+            try:
+                results = db.search(query=searchquery,startdate=year+"-01-01" if year else "0",enddate=year+"-12-31" if year else "9",limit=sys.maxint)
+            except Exception, e:
+                print e
+                continue
+            print "%s transactions" % (len(results))
+        elif arg.startswith("csv"):
+            f = None
+            if len(arg) > len("csv "):
+                f = open(arg[len("csv "):], "w")
+            header = "Id,Date,Description,Orig Desc,Bank,Account,Amount,Category,Subcategory"
+            print header
+            if f:
+                f.write(header + "\n")
+            csvescape = lambda s: "\"" + s.replace("\"","\"\"") + "\"" if "\"" in s or "," in s else s
+            for res in results:
+                line = ",".join([csvescape(res[x]) if type(res.setdefault(x,"")) in [ str, unicode ] else csvescape(prettyformat(res[x])) for x in ["id", "date", "desc", "orig_desc", "account", "subaccount", "amount", "category", "subcategory"]])
+                print line
+                if f:
+                    f.write(line + "\n")
+            if f:
+                f.close()
         elif arg.startswith("{"):
             print "Query for %s" % (arg)
             try:
@@ -659,6 +695,18 @@ if __name__ == "__main__":
                     tags[tag] += t["amount"]
             for tag in tags:
                 print "%s: %s" % (tag, prettyformat(tags[tag]))
+        elif arg.startswith("1099exp"):
+            # This helps find expenses that were reimbursed, but counted as income on a 1099.
+            cats = {}
+            lastyear = str(datetime.datetime.today().year-1)
+            for t in db.search(query={"amount":"$gt:0","desc":arg[8:]},startdate=lastyear+"-01-01",enddate=lastyear+"-12-31",limit=sys.maxint):
+                for child in t.get("children",[]):
+                    subt = db.search({"id":child})[0]
+                    sumcat = subt["subcategory"] or subt["category"]
+                    cats.setdefault(sumcat,0)
+                    cats[sumcat] += subt["orig_amount"]
+            for cat in cats:
+                print "%s %s" % (cat, prettyformat(cats[cat]))
         elif arg.startswith("save"):
             db.save()
         else:
