@@ -34,8 +34,8 @@ def downloadaccount(b, params):
 
     b.find_element_by_id("ctl00_ctl00_Content_Content_userNameTextBox").send_keys(params["username"])
     b.find_element_by_id("ctl00_ctl00_Content_Content_loginButton").click()
-    b.find_element_by_id("ctl00_ctl00_Content_Content_passwordTextBox").send_keys(params["password"])
-    b.find_element_by_id("ctl00_ctl00_Content_Content_loginButton").click()
+    b.find_element_by_id("ctl00_ctl00_Content_Content_txtPassword").send_keys(params["password"])
+    b.find_element_by_id("ctl00_ctl00_Content_Content_btnContinue").click()
 
     balances = []
     for child in b.find_elements_by_class_name("groupOutlines"):
