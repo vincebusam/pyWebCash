@@ -20,6 +20,10 @@ datematch = re.compile("(\d{2})/(\d{2})/(\d{4})")
 def showdetail(record, b):
     recordsshown = len(b.find_elements_by_class_name("record-detail"))
     if common.scrolluntilclick(b,record.find_element_by_class_name("date-action").find_element_by_tag_name("a")):
+        #for i in range(5):
+        #    if b.find_elements_by_class_name("record-detail"):
+        #        break
+        #    time.sleep(1)
         while len(b.find_elements_by_class_name("record-detail")) <= recordsshown:
             time.sleep(0.1)
 
@@ -37,36 +41,51 @@ def downloadaccount(b, params):
         params["password"] = getpass.getpass("BofA Password for %s: " % (params["username"]))
     b.get("https://www.bankofamerica.com/")
     common.loadcookies(b, params.get("cookies",[]))
-    if not b.find_elements_by_id("id"):
-        if b.find_elements_by_name("olb-sign-in"):
-            b.find_element_by_name("olb-sign-in").click()
-        if b.find_elements_by_link_text("Continue to Online Banking"):
-            b.find_element_by_link_text("Continue to Online Banking").click()
-            b.find_element_by_id("enterID-input").send_keys(params["username"] + Keys.ENTER)
+    if b.find_elements_by_id("onlineId1"):
+        b.find_element_by_id("onlineId1").send_keys(params["username"])
+        b.find_element_by_id("passcode1").send_keys(params["password"] + Keys.ENTER)
     else:
-        b.find_element_by_id("id").send_keys(params["username"])
-        if b.find_elements_by_id("stateselect"):
-            Select(b.find_element_by_id("stateselect")).select_by_value(params["state"])
-        if b.find_elements_by_link_text("Sign In"):
-            b.find_element_by_link_text("Sign In").click()
-        if b.find_elements_by_id("hp-sign-in-btn"):
-            b.find_element_by_id("hp-sign-in-btn").click()
-        if b.find_elements_by_id("top-button"):
-            b.find_element_by_id("top-button").click()
-    while not b.find_elements_by_id("tlpvt-passcode-input"):
-        if b.find_elements_by_id("VerifyCompForm"):
-            question_text = b.find_element_by_id("VerifyCompForm").text.lower()
-            for question, answer in params.get("security_questions", {}).iteritems():
-                if question.lower() in question_text:
-                    b.find_element_by_id("tlpvt-challenge-answer").send_keys(answer + Keys.ENTER)
-                    del params["security_questions"][question]
-                    break
-        time.sleep(2)
-    b.find_element_by_id("tlpvt-passcode-input").send_keys(params["password"])
-    b.find_element_by_name("confirm-sitekey-submit").click()
+        if not b.find_elements_by_id("id"):
+            if b.find_elements_by_name("olb-sign-in"):
+                b.find_element_by_name("olb-sign-in").click()
+            if b.find_elements_by_link_text("Continue to Online Banking"):
+                b.find_element_by_link_text("Continue to Online Banking").click()
+                b.find_element_by_id("enterID-input").send_keys(params["username"] + Keys.ENTER)
+        else:
+            b.find_element_by_id("id").send_keys(params["username"])
+            if b.find_elements_by_id("stateselect"):
+                Select(b.find_element_by_id("stateselect")).select_by_value(params["state"])
+            if b.find_elements_by_link_text("Sign In"):
+                b.find_element_by_link_text("Sign In").click()
+            if b.find_elements_by_id("hp-sign-in-btn"):
+                b.find_element_by_id("hp-sign-in-btn").click()
+            if b.find_elements_by_id("top-button"):
+                b.find_element_by_id("top-button").click()
+        while not b.find_elements_by_id("tlpvt-passcode-input"):
+            if b.find_elements_by_id("VerifyCompForm"):
+                question_text = b.find_element_by_id("VerifyCompForm").text.lower()
+                for question, answer in params.get("security_questions", {}).iteritems():
+                    if question.lower() in question_text:
+                        b.find_element_by_id("tlpvt-challenge-answer").send_keys(answer + Keys.ENTER)
+                        del params["security_questions"][question]
+                        break
+            time.sleep(2)
+        b.find_element_by_id("tlpvt-passcode-input").send_keys(params["password"])
+        b.find_element_by_name("confirm-sitekey-submit").click()
+
+    if b.find_elements_by_id("VerifyCompForm"):
+        if b.find_elements_by_id("yes-recognize"):
+            b.find_element_by_id("yes-recognize").click()
+        question_text = b.find_element_by_id("VerifyCompForm").text.lower()
+        for question, answer in params.get("security_questions", {}).iteritems():
+            if question.lower() in question_text:
+                b.find_element_by_id("tlpvt-challenge-answer").send_keys(answer + Keys.ENTER)
+                del params["security_questions"][question]
+                break
+    time.sleep(2)
 
     # Wait for user to continue to main screen
-    while not b.find_elements_by_xpath("//div[contains(@class,'image-account')]/a"):
+    while not b.find_elements_by_class_name("AccountName"):
         if b.find_elements_by_link_text("Continue to Online Banking"):
             b.find_element_by_link_text("Continue to Online Banking").click()
         time.sleep(1)
@@ -78,73 +97,84 @@ def downloadaccount(b, params):
         b.find_element_by_partial_link_text("close").click()
 
     accounts = []
-    for a in b.find_elements_by_xpath("//div[contains(@class,'image-account')]/a"):
-        if a.get_attribute("id") not in accounts:
-            accounts.append(a.get_attribute("id"))
+    for a in b.find_elements_by_class_name("AccountName"):
+        if a.text not in accounts:
+            accounts.append(a.text)
     newtransactions = []
     balances = []
     files = {}
     for acct in accounts:
-        b.find_element_by_id(acct).click()
-        for loop in range(len(b.find_elements_by_class_name("record"))):
-            if loop > len(b.find_elements_by_class_name("record")):
-                continue
-            record = b.find_elements_by_class_name("record")[loop]
-            transaction = {"account": params["name"], "subaccount": acct}
-            date = record.find_element_by_class_name("date-action").find_elements_by_tag_name("span")[-1].text
-            m = datematch.match(date)
-            if not m:
-                continue
-            transaction["date"] = datetime.datetime.strptime(date,"%m/%d/%Y").date()
-            if transaction["date"] > params["enddate"]:
-                continue
-            if transaction["date"] < params["lastcheck"]:
-                break
-            transaction["desc"] = record.find_element_by_class_name("description").find_elements_by_tag_name("span")[2].text.replace("\n","")
-            transaction["amount"] = record.find_element_by_class_name("amount").text
-            transaction["id"] = generateid(transaction)
-            if transaction["id"] in params["seenids"]:
-                continue
-            showdetail(record, b)
-            for line in b.find_elements_by_class_name("record-detail")[-1].text.replace(":\n",": ").split("\n"):
-                if ":" in line:
-                    transaction["attr_" + line.split(":")[0].strip()] = line.split(":")[1].strip()
-            record_detail = b.find_elements_by_class_name("record-detail")[-1]
-            if record_detail.find_elements_by_tag_name("img") and "deposit slip" not in record_detail.text.lower():
-                image = record_detail.find_elements_by_tag_name("img")
-                if image:
-                    b.get(image[0].get_attribute("src"))
-                    time.sleep(2.0)
-                    checkfn = transaction["id"] + ".png"
-                    files[checkfn] = b.get_screenshot_as_base64()
-                    b.back()
-                    time.sleep(1.0)
-                    transaction["file"] = checkfn
-                newtransactions.append(transaction)
-                continue
-            newtransactions.append(transaction)
-            if record_detail.find_elements_by_tag_name("img") and "deposit slip" in record_detail.text.lower():
-                for checkid in range(len(record_detail.find_elements_by_name("credit_check_thumbnail"))):
-                    subtrans = {"account": params["name"],
-                                "subaccount": acct,
-                                "parents": [transaction["id"]],
-                                "date": transaction["date"],
-                                "desc": "BofA Check Deposit",
-                                "id": "%s-%s" % (transaction["id"], checkid) }
-                    subtrans["amount"] = record_detail.find_elements_by_name("credit_check_thumbnail")[checkid].text
-                    if common.scrolluntilclick(b,record_detail.find_elements_by_name("credit_check_thumbnail")[checkid]):
-                        b.get(record_detail.find_element_by_tag_name("img").get_attribute("src"))
-                        time.sleep(1.0)
-                        checkfn = subtrans["id"] + ".png"
+        b.find_element_by_link_text(acct).click()
+        time.sleep(2)
+        if acct[-4:].isdigit():
+            acct = acct[:-7]
+        while True:
+            for loop in range(len(b.find_elements_by_class_name("record"))):
+                if loop > len(b.find_elements_by_class_name("record")):
+                    continue
+                record = b.find_elements_by_class_name("record")[loop]
+                transaction = {"account": params["name"], "subaccount": acct}
+                date = record.find_element_by_class_name("date-action").find_elements_by_tag_name("span")[-1].text
+                m = datematch.match(date)
+                if not m:
+                    continue
+                transaction["date"] = datetime.datetime.strptime(date,"%m/%d/%Y").date()
+                if transaction["date"] > params["enddate"]:
+                    continue
+                if transaction["date"] < params["lastcheck"]:
+                    break
+                transaction["desc"] = record.find_element_by_class_name("description").find_elements_by_tag_name("span")[2].text.replace("\n","")
+                transaction["amount"] = record.find_element_by_class_name("amount").text
+                transaction["id"] = generateid(transaction)
+                if transaction["id"] in params["seenids"]:
+                    continue
+                showdetail(record, b)
+                for line in b.find_elements_by_class_name("record-detail")[-1].text.replace(":\n",": ").split("\n"):
+                    if ":" in line:
+                        transaction["attr_" + line.split(":")[0].strip()] = line.split(":")[1].strip()
+                record_detail = b.find_elements_by_class_name("record-detail")[-1]
+                if record_detail.find_elements_by_tag_name("img") and ("deposit slip" not in record_detail.text.lower() or transaction["desc"] == "Counter Credit"):
+                    image = record_detail.find_elements_by_tag_name("img")
+                    if image:
+                        b.get(image[0].get_attribute("src"))
+                        time.sleep(2.0)
+                        checkfn = transaction["id"] + ".png"
                         files[checkfn] = b.get_screenshot_as_base64()
                         b.back()
                         time.sleep(1.0)
-                        subtrans["file"] = checkfn
-                    newtransactions.append(subtrans)
-                    transaction.setdefault("children",[]).append(subtrans["id"])
-                    record = b.find_elements_by_class_name("record")[loop]
-                    showdetail(record, b)
-                    record_detail = b.find_elements_by_class_name("record-detail")[-1]
+                        transaction["file"] = checkfn
+                    newtransactions.append(transaction)
+                    continue
+                newtransactions.append(transaction)
+                if record_detail.find_elements_by_tag_name("img") and "deposit slip" in record_detail.text.lower():
+                    for checkid in range(len(record_detail.find_elements_by_name("credit_check_thumbnail"))):
+                        subtrans = {"account": params["name"],
+                                    "subaccount": acct,
+                                    "parents": [transaction["id"]],
+                                    "date": transaction["date"],
+                                    "desc": "BofA Check Deposit",
+                                    "id": "%s-%s" % (transaction["id"], checkid) }
+                        subtrans["amount"] = record_detail.find_elements_by_name("credit_check_thumbnail")[checkid].text
+                        if common.scrolluntilclick(b,record_detail.find_elements_by_name("credit_check_thumbnail")[checkid]):
+                            b.get(record_detail.find_element_by_tag_name("img").get_attribute("src"))
+                            time.sleep(1.0)
+                            checkfn = subtrans["id"] + ".png"
+                            files[checkfn] = b.get_screenshot_as_base64()
+                            b.back()
+                            time.sleep(1.0)
+                            subtrans["file"] = checkfn
+                        newtransactions.append(subtrans)
+                        transaction.setdefault("children",[]).append(subtrans["id"])
+                        record = b.find_elements_by_class_name("record")[loop]
+                        showdetail(record, b)
+                        record_detail = b.find_elements_by_class_name("record-detail")[-1]
+            else:
+                break
+            if b.find_elements_by_link_text("Previous"):
+                b.find_element_by_link_text("Previous").click()
+                time.sleep(2)
+            else:
+                break
         balance = b.find_element_by_class_name("TL_NPI_Amt").text
         balances.append({"account": params["name"], "subaccount": acct, "balance": balance, "date": datetime.date.today()})
         if b.find_elements_by_link_text("Accounts Overview"):
