@@ -55,7 +55,11 @@ def downloadaccount(b, params):
         b.find_element_by_class_name("login-submit").click()
     elif b.find_element_by_class_name("cA-cardsLoginSubmit"):
         b.find_element_by_class_name("cA-cardsLoginSubmit").click()
-    cards = [x.text for x in b.find_elements_by_class_name("cT-accountName") if x.find_elements_by_tag_name("a")]
+    for loop in range(10):
+        time.sleep(1)
+        cards = [x.text for x in b.find_elements_by_class_name("cA-spf-cardArtHeader") if x.find_elements_by_tag_name("a")]
+        if cards:
+            break
     transactions = []
     balances = []
     for card in cards:
@@ -85,17 +89,19 @@ def downloadaccount(b, params):
                 b.execute_script("document.body.scrollTop=document.body.scrollTop+40;")
                 if not b.find_elements_by_id("filterDropDown-menu-option-%s" % (page)):
                     break
-                common.scrolluntilclick(b.find_element_by_id("filterDropDown-menu-option-%s" % (page)))
+                common.scrolluntilclick(b,b.find_element_by_id("filterDropDown-menu-option-%s" % (page)))
                 time.sleep(4)
 
             skipped = 0
             for entry in b.find_elements_by_class_name("purchase"):
-                while True:
+                for loop in range(20):
                     try:
                         entry.find_element_by_class_name("cM-maximizeButton").click()
                         break
                     except:
                         b.execute_script("document.body.scrollTop=document.body.scrollTop+40;")
+                    if entry.find_elements_by_class_name("cM-minimizeButton"):
+                        break
                 else:
                     print "ERROR"
                 trans = {"account": params["name"], "subaccount": cardname(card)}
