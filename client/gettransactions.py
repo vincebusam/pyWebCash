@@ -34,7 +34,9 @@ class scrapethread(threading.Thread):
             open(self.account["bankname"]+".json","w").write(data)
         apilock.acquire()
         try:
-            if not api.callapi("newtransactions", {"data": data}):
+            if api.callapi("newtransactions", {"data": data}):
+                print "Uploaded transactions for %s" % (self.account["bankname"])
+            else:
                 print "Error uploading transactions for %s" % (self.account["bankname"])
         except Exception, e:
             print "Error uploading transacionts for %s" % (self.account["bankname"])
