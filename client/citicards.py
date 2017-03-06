@@ -20,16 +20,25 @@ def cardname(card):
         return "AmEx"
     if "amex" in card.lower():
         return "AmEx"
+    raise Exception("Unknown card %s" % (card))
 
 def parsetransaction(trans, lines):
-    trans["date"] = datetime.datetime.strptime(lines[0],"%m-%d-%Y").date()
-    trans["orig_amount_str"] = lines[-1]
+    trans["date"] = datetime.datetime.strptime(lines[0],"%b. %d, %Y").date()
+    for l in reversed(lines):
+        trans["orig_amount_str"] = l
+        try:
+            # Need to negate amount!
+            if trans["orig_amount_str"].startswith("("):
+                trans["orig_amount_str"] = "-" + trans["orig_amount_str"].strip("()")
+            trans["amount"] = -int(trans["orig_amount_str"].replace("$","").replace(".","").replace(",",""))
+        except:
+            break
     trans["desc"] = lines[1]
-    trans["attr_Merchant Category"] = lines[2]
-    # Need to negate amount!
-    if trans["orig_amount_str"].startswith("("):
-        trans["orig_amount_str"] = "-" + trans["orig_amount_str"].strip("()")
-    trans["amount"] = -int(trans["orig_amount_str"].replace("$","").replace(".","").replace(",",""))
+    try:
+        trans["attr_Merchant Category"] = filter(lambda x: x.startswith("Category:"),lines)[0].replace("Category: ","")
+    except:
+        pass
+    trans.update(dict([("attr_"+x.split(":")[0],x.split(":",1)[1].strip()) for x in lines if ":" in x]))
     return trans
 
 def downloadaccount(b, params):
@@ -51,9 +60,7 @@ def downloadaccount(b, params):
         b.find_element_by_id("pw").send_keys(params["password"])
     elif b.find_elements_by_name("PASSWORD"):
         b.find_element_by_name("PASSWORD").send_keys(params["password"])
-    if b.find_elements_by_class_name("login-submit"):
-        b.find_element_by_class_name("login-submit").click()
-    elif b.find_element_by_class_name("cA-cardsLoginSubmit"):
+    if b.find_element_by_class_name("cA-cardsLoginSubmit"):
         b.find_element_by_class_name("cA-cardsLoginSubmit").click()
     for loop in range(10):
         time.sleep(1)
@@ -66,7 +73,7 @@ def downloadaccount(b, params):
         for loop in range(5):
             if b.find_elements_by_link_text(card):
                 break
-            time.sleep(2)
+            time.sleep(10)
         else:
             raise Exception("Couldn't find card %s" % (card))
         while True:
@@ -79,24 +86,20 @@ def downloadaccount(b, params):
         while b.find_elements_by_id("cmlink_NoClosedAccountOverlay"):
             b.find_element_by_link_text("Cancel and Continue to Account Details").click()
             time.sleep(1)
-        if b.find_elements_by_class_name("cT-labelItem")and "Current Balance" in b.find_elements_by_class_name("cT-labelItem")[0].text:
-            balance = b.find_elements_by_class_name("cT-valueItem")[0].text.replace(" ","")
+        if b.find_elements_by_class_name("cA-ada-firstBalanceElementValue"):
+            balance = b.find_element_by_class_name("cA-ada-firstBalanceElementValue").text.replace(" ","")
             if balance != "$0.00":
                 balances.append({"account": params["name"], "subaccount": cardname(card), "balance": -int(balance.replace("$","").replace(".","").replace(",","")), "date": datetime.date.today()})
         for page in range(6):
             if page:
-                common.scrolluntilclick(b,b.find_elements_by_class_name("ui-selectmenu")[-1])
-                b.execute_script("document.body.scrollTop=document.body.scrollTop+40;")
-                if not b.find_elements_by_id("filterDropDown-menu-option-%s" % (page)):
-                    break
-                common.scrolluntilclick(b,b.find_element_by_id("filterDropDown-menu-option-%s" % (page)))
+                Select(b.find_element_by_id("statementFilterDropDown")).select_by_index(page)
                 time.sleep(4)
 
             skipped = 0
             for entry in b.find_elements_by_class_name("purchase"):
                 for loop in range(20):
                     try:
-                        entry.find_element_by_class_name("cM-maximizeButton").click()
+                        entry.find_element_by_class_name("cA-ada-expandLinkContainer").click()
                         break
                     except:
                         b.execute_script("document.body.scrollTop=document.body.scrollTop+40;")
@@ -106,9 +109,6 @@ def downloadaccount(b, params):
                     print "ERROR"
                 trans = {"account": params["name"], "subaccount": cardname(card)}
                 parsetransaction(trans, entry.text.split("\n"))
-                details = b.find_element_by_id(entry.get_attribute("id").replace("-","Ext-"))
-                for i in range(len(details.find_elements_by_class_name("cT-labelItem"))):
-                    trans["attr_"+details.find_elements_by_class_name("cT-labelItem")[i].text] = details.find_elements_by_class_name("cT-valueItem")[i].text
                 trans["id"] = "%s-%s-%s-%s" % (trans["date"], trans["account"], trans["subaccount"], trans.get("attr_Reference Number",hashlib.sha1(trans["desc"]).hexdigest()))
                 if trans["date"] < params["lastcheck"]:
                     skipped += 1
@@ -125,8 +125,8 @@ def downloadaccount(b, params):
                         raise Exception("No merchant categories found!")
             if skipped > 3:
                 break
-        b.back()
-        time.sleep(1)
+        b.find_element_by_link_text("Accounts").click()
+        time.sleep(4)
     b.execute_script("document.body.scrollTop=0;")
     if b.find_elements_by_class_name("signOffBtn"):
         common.scrolluntilclick(b,b.find_element_by_class_name("signOffBtn"))
