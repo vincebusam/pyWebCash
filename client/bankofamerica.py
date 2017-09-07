@@ -134,9 +134,9 @@ def downloadaccount(b, params):
                         transaction["attr_" + line.split(":")[0].strip()] = line.split(":")[1].strip()
                 record_detail = b.find_elements_by_class_name("record-detail")[-1]
                 if record_detail.find_elements_by_tag_name("img") and ("deposit slip" not in record_detail.text.lower() or transaction["desc"] == "Counter Credit"):
-                    image = record_detail.find_elements_by_tag_name("img")
+                    image = [x.get_attribute("src") for x in record_detail.find_elements_by_tag_name("img") if "icon-bubble" not in x.get_attribute("src")]
                     if image:
-                        b.get(image[0].get_attribute("src"))
+                        b.get(image[0])
                         time.sleep(2.0)
                         checkfn = transaction["id"] + ".png"
                         files[checkfn] = b.get_screenshot_as_base64()

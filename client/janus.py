@@ -25,6 +25,8 @@ def downloadaccount(b, params):
     #b.get("https://www.janus.com/")
     b.get("https://ww4.janus.com/Janus/Retail/AccountSummary?wt.svl=AccountBalance_nav")
     common.loadcookies(b, params.get("cookies",[]))
+    if b.find_elements_by_link_text("LOGIN")
+        b.find_element_by_link_text("LOGIN").click()
     if b.find_elements_by_id("selimg4"):
         b.find_element_by_id("selimg4").click()
         b.find_element_by_link_text("Log in to My Account").click()

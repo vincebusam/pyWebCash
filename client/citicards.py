@@ -64,6 +64,9 @@ def downloadaccount(b, params):
         b.find_element_by_class_name("cA-cardsLoginSubmit").click()
     for loop in range(10):
         time.sleep(1)
+        if b.find_elements_by_link_text("No Thanks"):
+            b.find_element_by_link_text("No Thanks").click()
+            time.sleep(1)
         cards = [x.text for x in b.find_elements_by_class_name("cA-spf-cardArtHeader") if x.find_elements_by_tag_name("a")]
         if cards:
             break
