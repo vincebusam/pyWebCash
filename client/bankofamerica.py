@@ -169,12 +169,11 @@ def downloadaccount(b, params):
                         showdetail(record, b)
                         record_detail = b.find_elements_by_class_name("record-detail")[-1]
             else:
-                break
-            if b.find_elements_by_link_text("Previous"):
-                b.find_element_by_link_text("Previous").click()
-                time.sleep(2)
-            else:
-                break
+                if b.find_elements_by_link_text("Previous"):
+                    common.scrolluntilclick(b,b.find_element_by_link_text("Previous"))
+                    time.sleep(2)
+                continue
+            break
         balance = b.find_element_by_class_name("TL_NPI_Amt").text
         balances.append({"account": params["name"], "subaccount": acct, "balance": balance, "date": datetime.date.today()})
         if b.find_elements_by_link_text("Accounts Overview"):
