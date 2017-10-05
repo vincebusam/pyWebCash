@@ -16,7 +16,7 @@ def scrolluntilclick(b,e):
             e.click()
             return True
         except:
-            b.execute_script("document.body.scrollTop=document.body.scrollTop+20;")
+            b.execute_script("window.scrollBy(0,20);")
             time.sleep(0.1)
 
 parsedate = lambda x: datetime.datetime.strptime(x,"%Y-%m-%d").date()
