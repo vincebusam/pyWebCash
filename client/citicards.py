@@ -65,7 +65,7 @@ def downloadaccount(b, params):
     for loop in range(10):
         time.sleep(1)
         if b.find_elements_by_link_text("No Thanks"):
-            b.find_element_by_link_text("No Thanks").click()
+            common.scrolluntilclick(b,b.find_element_by_link_text("No Thanks"))
             time.sleep(1)
         cards = [x.text for x in b.find_elements_by_class_name("cA-spf-cardArtHeader") if x.find_elements_by_tag_name("a")]
         if cards:
@@ -84,7 +84,7 @@ def downloadaccount(b, params):
                 b.find_element_by_link_text(card).click()
                 break
             except:
-                b.execute_script("document.body.scrollTop=document.body.scrollTop+40;")
+                b.execute_script("window.scrollBy(0,40);")
         time.sleep(4)
         while b.find_elements_by_id("cmlink_NoClosedAccountOverlay"):
             b.find_element_by_link_text("Cancel and Continue to Account Details").click()
@@ -100,12 +100,12 @@ def downloadaccount(b, params):
 
             skipped = 0
             for entry in b.find_elements_by_class_name("purchase"):
-                for loop in range(20):
+                for loop in range(40):
                     try:
                         entry.find_element_by_class_name("cA-ada-expandLinkContainer").click()
                         break
                     except:
-                        b.execute_script("document.body.scrollTop=document.body.scrollTop+40;")
+                        b.execute_script("window.scrollBy(0,40);")
                     if entry.find_elements_by_class_name("cM-minimizeButton"):
                         break
                 else:
@@ -128,9 +128,10 @@ def downloadaccount(b, params):
                         raise Exception("No merchant categories found!")
             if skipped > 3:
                 break
-        b.find_element_by_link_text("Accounts").click()
+        b.execute_script("window.scrollTo(0,0);")
+        common.scrolluntilclick(b,b.find_element_by_link_text("Accounts"))
         time.sleep(4)
-    b.execute_script("document.body.scrollTop=0;")
+    b.execute_script("window.scrollTo(0,0);")
     if b.find_elements_by_class_name("signOffBtn"):
         common.scrolluntilclick(b,b.find_element_by_class_name("signOffBtn"))
     elif b.find_elements_by_link_text("Sign Off"):
