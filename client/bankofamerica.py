@@ -42,8 +42,12 @@ def downloadaccount(b, params):
     b.get("https://www.bankofamerica.com/")
     common.loadcookies(b, params.get("cookies",[]))
     if b.find_elements_by_id("onlineId1"):
+        b.find_element_by_id("onlineId1").click()
         b.find_element_by_id("onlineId1").send_keys(params["username"])
-        b.find_element_by_id("passcode1").send_keys(params["password"] + Keys.ENTER)
+        b.find_element_by_id("passcode1").click()
+        b.find_element_by_id("passcode1").send_keys(params["password"])
+        b.find_element_by_id("passcode1").send_keys(Keys.ENTER)
+        # + Keys.ENTER)
     else:
         if not b.find_elements_by_id("id"):
             if b.find_elements_by_name("olb-sign-in"):
