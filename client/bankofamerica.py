@@ -113,6 +113,8 @@ def downloadaccount(b, params):
         if acct[-4:].isdigit():
             acct = acct[:-7]
         while True:
+            if not len(b.find_elements_by_class_name("record")):
+                break
             for loop in range(len(b.find_elements_by_class_name("record"))):
                 if loop > len(b.find_elements_by_class_name("record")):
                     continue
@@ -178,7 +180,10 @@ def downloadaccount(b, params):
                     time.sleep(2)
                 continue
             break
-        balance = b.find_element_by_class_name("TL_NPI_Amt").text
+        try:
+            balance = b.find_element_by_class_name("TL_NPI_Amt").text
+        except:
+            continue
         balances.append({"account": params["name"], "subaccount": acct, "balance": balance, "date": datetime.date.today()})
         if b.find_elements_by_link_text("Accounts Overview"):
             b.find_element_by_link_text("Accounts Overview").click()
